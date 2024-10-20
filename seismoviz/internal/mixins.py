@@ -1,13 +1,6 @@
-#----------------------------------------------------------------------------------------
-# IMPORTING MODULES
-#----------------------------------------------------------------------------------------
-
 import numpy as np
 import pandas as pd
 
-#----------------------------------------------------------------------------------------
-# DEFINING CLASSES & METHODS
-#----------------------------------------------------------------------------------------
 
 class GeospatialMixin:
     def __init__(self) -> None:
@@ -40,6 +33,7 @@ class GeospatialMixin:
         norths = np.sum(np.array(self.data.lat) >= 0)
         souths = len(self.data.lat) - norths
         return 'north' if norths >= souths else 'south'
+
 
 class DunderMethodMixin:
     def __init__(self) -> None:

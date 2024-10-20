@@ -1,16 +1,9 @@
-#----------------------------------------------------------------------------------------
-# IMPORTING MODULES
-#----------------------------------------------------------------------------------------
-
 import pandas as pd
 
 from seismoviz.internal.decorators import sync_signature
 from seismoviz.plotting.cat_plotting import CatalogPlotter
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 
-#----------------------------------------------------------------------------------------
-# DEFINING CLASS & METHODS
-#----------------------------------------------------------------------------------------
 
 class Catalog(DunderMethodMixin, GeospatialMixin):
     def __init__(self, data: pd.DataFrame) -> None:
@@ -22,10 +15,6 @@ class Catalog(DunderMethodMixin, GeospatialMixin):
         
         self.data = data
         self.plotter = CatalogPlotter(self.data)
-
-    #----------------------------------------------------------------------------------------
-    # BASIC METHODS
-    #----------------------------------------------------------------------------------------
 
     def filter(self, **kwargs) -> 'Catalog':
         """
@@ -119,9 +108,6 @@ class Catalog(DunderMethodMixin, GeospatialMixin):
         """
         return self.data.drop_duplicates(subset=['lon', 'lat', 'depth', 'time'])
 
-    #----------------------------------------------------------------------------------------
-    # VISUALIZATION METHODS
-    #----------------------------------------------------------------------------------------
     @sync_signature('plot_map', CatalogPlotter)
     def plot_map(self, **kwargs) -> None:
         """

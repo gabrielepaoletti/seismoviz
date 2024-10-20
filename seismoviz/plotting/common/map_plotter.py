@@ -1,7 +1,3 @@
-#----------------------------------------------------------------------------------------
-# IMPORTING MODULES
-#----------------------------------------------------------------------------------------
-
 import pandas as pd
 import cartopy.crs as ccrs
 import cartopy.feature as cf
@@ -14,9 +10,6 @@ from numpy.typing import ArrayLike
 from matplotlib.text import Annotation, Text
 from matplotlib.collections import PathCollection
 
-#----------------------------------------------------------------------------------------
-# DEFINING CLASS & METHODS
-#----------------------------------------------------------------------------------------
 
 class MapPlotter:
     def __init__(self, projection=ccrs.Mercator(), transform=ccrs.PlateCarree()):

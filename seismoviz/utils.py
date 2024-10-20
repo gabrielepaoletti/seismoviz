@@ -1,18 +1,10 @@
-#----------------------------------------------------------------------------------------
-# IMPORTING MODULES
-#----------------------------------------------------------------------------------------
-
 import pyproj
-
 import numpy as np
 
 from numpy.typing import ArrayLike
 
-#----------------------------------------------------------------------------------------
-# DEFINING FUNCTIONS
-#----------------------------------------------------------------------------------------
 
-def convert_to_geographical(utmx: ArrayLike, utmy: ArrayLike, zone: int, northern: bool, units: str, ellps: str='WGS84',
+def convert_to_geographical(utmx: ArrayLike, utmy: ArrayLike, zone: int, northern: bool, units: str,ellps: str='WGS84',
                             datum: str='WGS84')-> tuple[ArrayLike, ArrayLike]:
     """
     Converts UTM coordinates to geographical (longitude and latitude) coordinates.
@@ -79,6 +71,7 @@ def convert_to_geographical(utmx: ArrayLike, utmy: ArrayLike, zone: int, norther
     
     lon, lat = transformer.transform(utmx, utmy)
     return lon, lat
+
 
 def convert_to_utm(lon: ArrayLike, lat: ArrayLike, zone: int, units: str, ellps: str='WGS84', datum: str='WGS84') -> tuple[ArrayLike, ArrayLike]:
     """

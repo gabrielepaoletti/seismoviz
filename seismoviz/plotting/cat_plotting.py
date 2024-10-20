@@ -1,7 +1,3 @@
-#----------------------------------------------------------------------------------------
-# IMPORTING MODULES
-#----------------------------------------------------------------------------------------
-
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -10,9 +6,6 @@ import matplotlib.dates as mdates
 from seismoviz.plotting.common.map_plotter import MapPlotter
 from seismoviz.plotting.common.base_plotter import BasePlotter
 
-#----------------------------------------------------------------------------------------
-# DEFINING CLASS & METHODS
-#----------------------------------------------------------------------------------------
 
 class CatalogPlotter:
     def __init__(self, catalog: pd.DataFrame) -> None:

@@ -1,15 +1,8 @@
-#----------------------------------------------------------------------------------------
-# IMPORTING MODULES
-#----------------------------------------------------------------------------------------
-
 import pandas as pd
 
 from seismoviz.catalog import Catalog
 from seismoviz.cross_section import CrossSection
 
-#----------------------------------------------------------------------------------------
-# DEFINING FUNCTIONS
-#----------------------------------------------------------------------------------------
 
 def read_catalog(path: str) -> 'Catalog':
     """
@@ -28,6 +21,7 @@ def read_catalog(path: str) -> 'Catalog':
     data = pd.read_csv(path)
     data.time = pd.to_datetime(data.time)
     return Catalog(data)
+
 
 def create_cross_section(catalog: 'Catalog', center: tuple[float, float], num_sections: tuple[int, int], thickness: int, strike: int,
                          map_length: float, depth_range: tuple[float, float], section_distance: float=1.0) -> 'CrossSection':
