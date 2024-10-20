@@ -5,8 +5,6 @@
 import numpy as np
 import pandas as pd
 
-from typing import Union, Tuple
-
 #----------------------------------------------------------------------------------------
 # DEFINING CLASSES & METHODS
 #----------------------------------------------------------------------------------------
@@ -63,7 +61,7 @@ class DunderMethodMixin:
         """
         return self.data.equals(other.data)
     
-    def __getitem__(self, key: Union[tuple, int]) -> Union[pd.Series, pd.DataFrame]:
+    def __getitem__(self, key: tuple | int) -> pd.Series | pd.DataFrame:
         """
         Returns the row as a pandas Series or the sub-DataFrame at the specified index.
         
@@ -93,13 +91,13 @@ class DunderMethodMixin:
         else:
             return self.data.iloc[key]
     
-    def __len__(self) -> Union[int, Tuple[int, int]]:
+    def __len__(self) -> int | tuple[int, int]:
         """
         Returns the number of seismic events.
 
         Returns
         -------
-        Union[int, Tuple[int, int]]
+        Union[int, tuple[int, int]]
             The number of seismic events if the index is not MultiIndex,
             otherwise, a tuple containing the index and the number of seismic events for that index.
         """

@@ -5,15 +5,13 @@
 import inspect
 from functools import wraps
 
-from seismoviz.plotting.cat_plotting import CatalogPlotter
-
-from typing import Any, Callable, Type
+from collections.abc import Callable
 
 #----------------------------------------------------------------------------------------
 # DEFINING DECORATORS
 #----------------------------------------------------------------------------------------
 
-def sync_signature(method_name: str, cls: Type) -> Callable:
+def sync_signature(method_name: str, cls: type) -> Callable:
     """
     A decorator that synchronizes the signature of a method with a target method from a specified class.
 
@@ -22,7 +20,7 @@ def sync_signature(method_name: str, cls: Type) -> Callable:
     method_name : str
         The name of the method in the target class whose signature will be synced.
 
-    cls : Type
+    cls : type
         The class from which the target method is retrieved.
 
     Returns
@@ -45,24 +43,24 @@ def sync_signature(method_name: str, cls: Type) -> Callable:
             The wrapper function that filters keyword arguments and synchronizes the method signature.
         """
         @wraps(method)
-        def wrapper(self, *args, **kwargs) -> Any:
+        def wrapper(self, *args, **kwargs):
             """
             Wrapper function that filters the keyword arguments and calls the target method.
 
             Parameters
             ----------
-            self : Any
+            self : any type
                 The instance of the class that contains the decorated method.
 
-            *args : Any
+            *args : any type
                 Positional arguments passed to the method.
 
-            **kwargs : Any
+            **kwargs : any type
                 Keyword arguments passed to the method. Only the valid ones for the target method will be passed.
 
             Returns
             -------
-            result : Any
+            any type
                 The result of calling the target method with the filtered keyword arguments.
             """
             plotter_method = getattr(self.plotter, method_name)  # `self.plotter` è dinamico

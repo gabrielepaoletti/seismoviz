@@ -7,14 +7,13 @@ import pyproj
 import numpy as np
 
 from numpy.typing import ArrayLike
-from typing import Tuple
 
 #----------------------------------------------------------------------------------------
 # DEFINING FUNCTIONS
 #----------------------------------------------------------------------------------------
 
 def convert_to_geographical(utmx: ArrayLike, utmy: ArrayLike, zone: int, northern: bool, units: str, ellps: str='WGS84',
-                            datum: str='WGS84')-> Tuple[ArrayLike, ArrayLike]:
+                            datum: str='WGS84')-> tuple[ArrayLike, ArrayLike]:
     """
     Converts UTM coordinates to geographical (longitude and latitude) coordinates.
 
@@ -46,10 +45,10 @@ def convert_to_geographical(utmx: ArrayLike, utmy: ArrayLike, zone: int, norther
 
     Returns
     -------
-    lon : ArrayLike
+    ArrayLike
         The longitude value(s) obtained from the conversion, presented in the same format as the input coordinates.
 
-    lat : ArrayLike
+    ArrayLike
         The latitude value(s) obtained from the conversion, presented in the same format as the input coordinates.
 
     See Also
@@ -81,7 +80,7 @@ def convert_to_geographical(utmx: ArrayLike, utmy: ArrayLike, zone: int, norther
     lon, lat = transformer.transform(utmx, utmy)
     return lon, lat
 
-def convert_to_utm(lon: ArrayLike, lat: ArrayLike, zone: int, units: str, ellps: str='WGS84', datum: str='WGS84') -> Tuple[ArrayLike, ArrayLike]:
+def convert_to_utm(lon: ArrayLike, lat: ArrayLike, zone: int, units: str, ellps: str='WGS84', datum: str='WGS84') -> tuple[ArrayLike, ArrayLike]:
     """
     Converts geographical (longitude and latitude) coordinates to UTM coordinates.
 
@@ -111,10 +110,10 @@ def convert_to_utm(lon: ArrayLike, lat: ArrayLike, zone: int, units: str, ellps:
 
     Returns
     -------
-    utmx : ArrayLike
+    ArrayLike
         The resulting UTM x coordinates (easting), indicating the distance eastward from the central meridian of the UTM zone, presented in the same format as the input coordinates.
         
-    utmy : ArrayLike
+    ArrayLike
         The resulting UTM y coordinates (northing), indicating the distance northward from the equator, presented in the same format as the input coordinates.
 
     See Also

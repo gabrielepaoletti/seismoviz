@@ -10,8 +10,6 @@ import matplotlib.dates as mdates
 from seismoviz.plotting.common.map_plotter import MapPlotter
 from seismoviz.plotting.common.base_plotter import BasePlotter
 
-from typing import Tuple
-
 #----------------------------------------------------------------------------------------
 # DEFINING CLASS & METHODS
 #----------------------------------------------------------------------------------------
@@ -23,8 +21,8 @@ class CatalogPlotter:
         self.bp = BasePlotter()
 
     def plot_map(self, highlight_mag: int=None, color_by: str=None, cmap: str='jet', title: str=None, size: float=0.5, color: str='lightgrey',
-                 edgecolor: str='grey',alpha: float=0.5,legend: str=None, inset: bool=True, xlim: Tuple[float, float]=None,
-                 ylim: Tuple[float, float]=None, inset_buffer: float=3, bounds_res: str='50m', bmap_res: int=12, save_figure: bool=False,
+                 edgecolor: str='grey',alpha: float=0.5,legend: str=None, inset: bool=True, xlim: tuple[float, float]=None,
+                 ylim: tuple[float, float]=None, inset_buffer: float=3, bounds_res: str='50m', bmap_res: int=12, save_figure: bool=False,
                  save_name: str='map', save_extension: str='jpg'):
         """
         Visualizes seismic events on a map.
@@ -59,11 +57,11 @@ class CatalogPlotter:
         legend : str, optional
             Text for the legend describing the plotted seismic events. If None, no legend is displayed.
 
-        xlim : Tuple[float, float], optional
+        xlim : tuple[float, float], optional
             A tuple specifying the minimum and maximum longitude values to set the map extent horizontally. 
             If not provided, the extent will be set automatically based on the data.
 
-        ylim : Tuple[float, float], optional
+        ylim : tuple[float, float], optional
             A tuple specifying the minimum and maximum latitude values to set the map extent vertically.
             If not provided, the extent will be set automatically based on the data.
 

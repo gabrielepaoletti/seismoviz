@@ -8,8 +8,6 @@ from seismoviz.internal.decorators import sync_signature
 from seismoviz.plotting.cat_plotting import CatalogPlotter
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 
-from typing import Union
-
 #----------------------------------------------------------------------------------------
 # DEFINING CLASS & METHODS
 #----------------------------------------------------------------------------------------

@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 from cartopy.io.img_tiles import GoogleTiles
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
 
-from typing import List, Tuple
 from numpy.typing import ArrayLike
 from matplotlib.text import Annotation, Text
 from matplotlib.collections import PathCollection
@@ -39,7 +38,7 @@ class MapPlotter:
 
         self.fig, self.ax = None, None
 
-    def create_base_map(self, bounds_res: str = '50m', bmap_res: int = 12) -> Tuple[plt.Figure, plt.Axes]:
+    def create_base_map(self, bounds_res: str = '50m', bmap_res: int = 12) -> tuple[plt.Figure, plt.Axes]:
         """
         Creates a base map with common geographical features like land, ocean, coastlines, and a satellite image background.
 
@@ -83,7 +82,7 @@ class MapPlotter:
 
         return fig, ax
 
-    def extent(self, data: pd.DataFrame, xlim: Tuple[float, float] = None, ylim: Tuple[float, float] = None) -> Tuple[float, float, float, float]:
+    def extent(self, data: pd.DataFrame, xlim: tuple[float, float] = None, ylim: tuple[float, float] = None) -> tuple[float, float, float, float]:
         """
         Sets the map extent based on the provided data frame or explicit limits.
 
@@ -92,15 +91,15 @@ class MapPlotter:
         data : pd.DataFrame
             A pandas DataFrame containing 'lon' and 'lat' columns for longitude and latitude, respectively.
 
-        xlim : Tuple[float, float], optional
+        xlim : tuple[float, float], optional
             A tuple specifying the minimum and maximum longitude to set the map extent horizontally. Defaults to None.
 
-        ylim : Tuple[float, float], optional
+        ylim : tuple[float, float], optional
             A tuple specifying the minimum and maximum latitude to set the map extent vertically. Defaults to None.
 
         Returns
         -------
-        Tuple[float, float, float, float]
+        tuple[float, float, float, float]
             The determined longitude and latitude bounds as (lon_min, lon_max, lat_min, lat_max).
         """
         if xlim is None:
@@ -116,20 +115,20 @@ class MapPlotter:
         self.ax.set_extent([lon_min - 0.001, lon_max + 0.001, lat_min - 0.001, lat_max + 0.001], crs=self.transform)
         return lon_min, lon_max, lat_min, lat_max
 
-    def inset(self, extent: Tuple[float, float, float, float], buffer: int = 3, inset_size: Tuple[float, float] = (1.8, 1.8),
+    def inset(self, extent: tuple[float, float, float, float], buffer: int = 3, inset_size: tuple[float, float] = (1.8, 1.8),
               bounds_res: str = '50m') -> plt.Axes:
         """
         Adds an inset map to the main map, showing a broader area around the specified extent.
 
         Parameters
         ----------
-        extent : Tuple[float, float, float, float]
+        extent : tuple[float, float, float, float]
             A tuple specifying the extent of the main map as (lon_min, lon_max, lat_min, lat_max).
 
         buffer : int, optional
             A buffer around the extent to determine the area shown in the inset map (default is 3 degrees).
 
-        inset_size : Tuple[float, float], optional
+        inset_size : tuple[float, float], optional
             The size of the inset map in figure coordinates (default is (1.8, 1.8)).
         
         bounds_res : str, optional
@@ -160,7 +159,7 @@ class MapPlotter:
 
         return inset_ax
 
-    def plot(self, x: ArrayLike, y: ArrayLike, **kwargs) -> List[plt.Line2D]:
+    def plot(self, x: ArrayLike, y: ArrayLike, **kwargs) -> list[plt.Line2D]:
         """
         Plots data on the map using matplotlib's plot method, applying the specified transform.
 
@@ -177,7 +176,7 @@ class MapPlotter:
 
         Returns
         -------
-        List[plt.Line2D]
+        list[plt.Line2D]
             A list of matplotlib.lines.Line2D objects representing the plotted data.
         """
         plot = self.ax.plot(x, y, transform=self.transform, **kwargs)

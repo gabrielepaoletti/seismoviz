@@ -4,14 +4,13 @@
 
 import os
 import matplotlib.pyplot as plt
-from typing import Dict
 
 #----------------------------------------------------------------------------------------
 # DEFINING CLASS & METHODS
 #----------------------------------------------------------------------------------------
 
 class BasePlotter:
-    def __init__(self, style: Dict[str, str]=None):
+    def __init__(self, style: dict[str, str]=None):
         """
         Initializes the BasePlotter with a specific style configuration.
 
