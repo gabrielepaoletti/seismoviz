@@ -1,0 +1,9 @@
+cartopy
+holoview
+matplotlib
+numpy
+pandas
+panel
+pyproj
+scipy
+srtm
