@@ -1,7 +1,7 @@
 import pandas as pd
 
 from seismoviz.internal.decorators import sync_signature
-from seismoviz.seismoviz.seismoviz.plotters.cat_plotter import CatalogPlotter
+from seismoviz.plotters.cat_plotter import CatalogPlotter
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 
 
@@ -18,7 +18,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         self.data = data
         super().__init__()
 
-        self.plotter = CatalogPlotter(self.data)
+        self._plotter = CatalogPlotter(self)
 
     def filter(self, **kwargs) -> 'Catalog':
         """
@@ -232,7 +232,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
             The file extension to use when saving figures, such as 'jpg', 
             'png', etc. The default extension is 'jpg'.
         """
-        self.plotter.plot_map(**kwargs)
+        self._plotter.plot_map(**kwargs)
 
     @sync_signature('plot_magnitude_time', CatalogPlotter)
     def plot_magnitude_time(self, **kwargs) -> None:
@@ -254,7 +254,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
             The file extension to use when saving figures, such as 'jpg', 
             'png', etc. The default extension is 'jpg'.
         """
-        self.plotter.plot_magnitude_time(**kwargs)
+        self._plotter.plot_magnitude_time(**kwargs)
 
     @sync_signature('plot_event_timeline', CatalogPlotter)
     def plot_event_timeline(self, **kwargs) -> None:
@@ -300,4 +300,4 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
             The file extension to use when saving figures, such as 'jpg', 
             'png', etc. The default extension is 'jpg'.
         """
-        self.plotter.plot_attribute_distributions(**kwargs)
+        self._plotter.plot_attribute_distributions(**kwargs)

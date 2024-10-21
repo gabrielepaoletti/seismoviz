@@ -4,7 +4,7 @@ import pandas as pd
 from seismoviz.catalog import Catalog
 from seismoviz.utils import convert_to_utm
 from seismoviz.internal.decorators import sync_signature
-from seismoviz.seismoviz.seismoviz.plotters.crs_plotter import CrossSectionPlotter
+from seismoviz.plotters.crs_plotter import CrossSectionPlotter
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 
 from numpy.typing import ArrayLike
@@ -38,7 +38,7 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
         self.section_distance = section_distance
 
         self.data = self._cross_section()
-        self.plotter = CrossSectionPlotter(self)
+        self._plotter = CrossSectionPlotter(self)
 
     @staticmethod
     def _distance_point_from_plane(
@@ -275,7 +275,7 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
         ValueError
             If scale_loc is not one of the valid location strings or False.
         """
-        self.plotter.plot_sections(**kwargs)
+        self._plotter.plot_sections(**kwargs)
 
     @sync_signature('plot_section_lines', CrossSectionPlotter)
     def plot_section_lines(self, **kwargs):
@@ -359,4 +359,4 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
             The file extension to use when saving figures, such as 'jpg', 
             'png', etc... The default extension is 'jpg'.
         """
-        self.plotter.plot_section_lines(**kwargs)
+        self._plotter.plot_section_lines(**kwargs)

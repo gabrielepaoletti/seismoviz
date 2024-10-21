@@ -12,7 +12,7 @@ from seismoviz.plotters.common.base_plotter import BasePlotter
 
 
 class CrossSectionPlotter:
-    def __init__(self, cross_section: pd.DataFrame) -> None:
+    def __init__(self, cross_section: type) -> None:
         self.cs = cross_section
         self.mp = MapPlotter()
         self.bp = BasePlotter()

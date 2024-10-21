@@ -8,8 +8,8 @@ from seismoviz.plotters.common.base_plotter import BasePlotter
 
 
 class CatalogPlotter:
-    def __init__(self, catalog: pd.DataFrame) -> None:
-        self.catalog = catalog
+    def __init__(self, catalog: type) -> None:
+        self.ct = catalog
         self.mp = MapPlotter()
         self.bp = BasePlotter()
 
@@ -122,20 +122,20 @@ class CatalogPlotter:
             'png', etc. The default extension is 'jpg'.
         """
         self.mp.fig, self.mp.ax = self.mp.create_base_map(bounds_res, bmap_res)
-        main_extent = self.mp.extent(self.catalog, xlim=xlim, ylim=ylim)
+        main_extent = self.mp.extent(self.ct.data, xlim=xlim, ylim=ylim)
 
         if color_by:
-            if color_by not in self.catalog.columns:
+            if color_by not in self.ct.data.columns:
                 raise ValueError(f"Column '{color_by}' not found in catalog data.")
             
             if color_by == 'time':
-                global_min = mdates.date2num(self.catalog[color_by].min())
-                global_max = mdates.date2num(self.catalog[color_by].max())
+                global_min = mdates.date2num(self.ct.data[color_by].min())
+                global_max = mdates.date2num(self.ct.data[color_by].max())
             else:
-                global_min = np.floor(self.catalog[color_by].min())
-                global_max = np.ceil(self.catalog[color_by].max())
+                global_min = np.floor(self.ct.data[color_by].min())
+                global_max = np.ceil(self.ct.data[color_by].max())
 
-            color = self.catalog[color_by]
+            color = self.ct.data[color_by]
 
             if color_by == 'mag':
                 colorbar_label = 'Magnitude'
@@ -149,7 +149,7 @@ class CatalogPlotter:
             if color_by == 'time':
                 color_numeric = mdates.date2num(color)
                 scatter = self.mp.scatter(
-                    x=self.catalog.lon, y=self.catalog.lat, c=color_numeric, s=size, 
+                    x=self.ct.data.lon, y=self.ct.data.lat, c=color_numeric, s=size, 
                     cmap=cmap, edgecolor=edgecolor, linewidth=0.25, alpha=alpha, 
                     label=legend, vmin=global_min, vmax=global_max
                 )
@@ -162,7 +162,7 @@ class CatalogPlotter:
 
             else:
                 scatter = self.mp.scatter(
-                    x=self.catalog.lon, y=self.catalog.lat, c=color, s=size, cmap=cmap, 
+                    x=self.ct.data.lon, y=self.ct.data.lat, c=color, s=size, cmap=cmap, 
                     edgecolor=edgecolor, linewidth=0.25, alpha=alpha, label=legend,
                     vmin=global_min, vmax=global_max
                 )
@@ -171,7 +171,7 @@ class CatalogPlotter:
                 cbar.set_label(colorbar_label)
         else:
             self.mp.scatter(
-                x=self.catalog.lon, y=self.catalog.lat, c=color, s=size, 
+                x=self.ct.data.lon, y=self.ct.data.lat, c=color, s=size, 
                 edgecolor=edgecolor, linewidth=0.25, alpha=alpha, label=legend
             )
 
@@ -179,7 +179,7 @@ class CatalogPlotter:
             self.mp.ax.set_title(title, fontweight='bold')
 
         if highlight_mag is not None:
-            large_quakes = self.catalog[self.catalog['mag'] > highlight_mag]
+            large_quakes = self.ct.data[self.ct.data['mag'] > highlight_mag]
             self.mp.scatter(
                 x=large_quakes.lon, y=large_quakes.lat, c='red', s=200, marker='*', 
                 edgecolor='darkred', linewidth=0.75, label=f'Events M > {highlight_mag}'
@@ -226,8 +226,8 @@ class CatalogPlotter:
         ax.set_title('Magnitude-time distribution', fontweight='bold')
         
         ax.scatter(
-            self.catalog.time, self.catalog.mag, c='lightgrey', 
-            s=self.catalog.mag, edgecolor='grey', linewidth=0.25, 
+            self.ct.data.time, self.ct.data.mag, c='lightgrey', 
+            s=self.ct.data.mag, edgecolor='grey', linewidth=0.25, 
             alpha=0.5, zorder=10
         )
         ax.set_ylabel('Magnitude')
@@ -268,7 +268,7 @@ class CatalogPlotter:
             The file extension to use when saving figures, such as 'jpg', 
             'png', etc. The default extension is 'jpg'.
         """
-        events_sorted = self.catalog.sort_values('time')
+        events_sorted = self.ct.data.sort_values('time')
         time_data = pd.to_datetime(events_sorted['time'])
 
         fig = plt.figure(figsize=(10, 5))
@@ -321,7 +321,7 @@ class CatalogPlotter:
         for i, (attribute, label) in enumerate(labels.items()):
             row, col = divmod(i, cols)
             ax[row, col].hist(
-                self.catalog[attribute], bins=50, color='silver', 
+                self.ct.data[attribute], bins=50, color='silver', 
                 edgecolor='black', linewidth=0.5
             )
             ax[row, col].set_xlabel(label)
