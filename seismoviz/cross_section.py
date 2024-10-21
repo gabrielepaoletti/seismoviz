@@ -4,7 +4,7 @@ import pandas as pd
 from seismoviz.catalog import Catalog
 from seismoviz.utils import convert_to_utm
 from seismoviz.internal.decorators import sync_signature
-from seismoviz.plotting.crs_plotting import CrossSectionPlotter
+from seismoviz.seismoviz.seismoviz.plotters.crs_plotter import CrossSectionPlotter
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 
 from numpy.typing import ArrayLike

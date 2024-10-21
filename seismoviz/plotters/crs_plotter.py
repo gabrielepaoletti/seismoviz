@@ -7,8 +7,8 @@ import matplotlib.colors as mcolors
 import matplotlib.patches as patches
 
 from seismoviz.utils import convert_to_geographical
-from seismoviz.plotting.common.map_plotter import MapPlotter
-from seismoviz.plotting.common.base_plotter import BasePlotter
+from seismoviz.plotters.common.map_plotter import MapPlotter
+from seismoviz.plotters.common.base_plotter import BasePlotter
 
 
 class CrossSectionPlotter:

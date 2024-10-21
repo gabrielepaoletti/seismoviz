@@ -1,7 +1,7 @@
 import pandas as pd
 
 from seismoviz.internal.decorators import sync_signature
-from seismoviz.plotting.cat_plotting import CatalogPlotter
+from seismoviz.seismoviz.seismoviz.plotters.cat_plotter import CatalogPlotter
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 
 

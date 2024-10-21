@@ -3,8 +3,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
-from seismoviz.plotting.common.map_plotter import MapPlotter
-from seismoviz.plotting.common.base_plotter import BasePlotter
+from seismoviz.plotters.common.map_plotter import MapPlotter
+from seismoviz.plotters.common.base_plotter import BasePlotter
 
 
 class CatalogPlotter:
