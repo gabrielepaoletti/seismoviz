@@ -5,15 +5,15 @@ from seismoviz.plotting.cat_plotting import CatalogPlotter
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 
 
-class Catalog(DunderMethodMixin, GeospatialMixin):
+class Catalog(GeospatialMixin, DunderMethodMixin):
     def __init__(self, data: pd.DataFrame) -> None:
-        super().__init__()
-
         missing = {'lon', 'lat', 'depth', 'time', 'mag'} - set(data.columns)
         if missing:
             raise ValueError(f"Missing required columns: {', '.join(missing)}. You may have to add {'it' if len(missing) == 1 else 'them'} or rename the existing columns.")
         
         self.data = data
+        super().__init__()
+
         self.plotter = CatalogPlotter(self.data)
 
     def filter(self, **kwargs) -> 'Catalog':
