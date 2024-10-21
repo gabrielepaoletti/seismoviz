@@ -12,38 +12,49 @@ from matplotlib.collections import PathCollection
 
 
 class MapPlotter:
-    def __init__(self, projection=ccrs.Mercator(), transform=ccrs.PlateCarree()):
+    def __init__(
+        self, 
+        projection=ccrs.Mercator(), 
+        transform=ccrs.PlateCarree()
+    ):
         """
-        Initializes MapPlotter with default projection and transformation settings.
+        Initializes MapPlotter with default projection and transformation 
+        settings.
 
         Parameters
         ----------
         projection : cartopy.crs projection, optional
-            The map projection used to display the map. Defaults to `ccrs.Mercator()`.
+            The map projection used to display the map. Defaults to 
+            `ccrs.Mercator()`.
 
         transform : cartopy.crs projection, optional
-            The coordinate reference system of the data to be plotted. Defaults to `ccrs.PlateCarree()`.
+            The coordinate reference system of the data to be plotted. 
+            Defaults to `ccrs.PlateCarree()`.
         """
         plt.rc('axes', labelsize=14, titlesize=16)
-
         self.projection = projection
         self.transform = transform
-
         self.fig, self.ax = None, None
 
-    def create_base_map(self, bounds_res: str = '50m', bmap_res: int = 12) -> tuple[plt.Figure, plt.Axes]:
+    def create_base_map(
+        self,
+        bounds_res: str = '50m',
+        bmap_res: int = 12
+    ) -> tuple[plt.Figure, plt.Axes]:
         """
-        Creates a base map with common geographical features like land, ocean, coastlines, and a satellite image background.
+        Creates a base map with common geographical features like land, 
+        ocean, coastlines, and a satellite image background.
 
         Parameters
         ----------
         bounds_res : str, optional
-            The resolution for the geographical boundaries (such as coastlines and borders) on the map.
-            Common values are '10m', '50m', or '110m'. Defaults to '50m'.
+            The resolution for the geographical boundaries (such as 
+            coastlines and borders) on the map. Common values are '10m', 
+            '50m', or '110m'. Defaults to '50m'.
 
         bmap_res : int, optional
-            The zoom level or resolution for the underlying map image (e.g., satellite or terrain map).
-            A higher value provides a more detailed map image. Defaults to 12.
+            The zoom level or resolution for the underlying map image 
+            (e.g., satellite or terrain map). Defaults to 12.
 
         Returns
         -------
@@ -51,7 +62,8 @@ class MapPlotter:
             The matplotlib figure object containing the map.
 
         matplotlib.axes._axes.Axes
-            The matplotlib axes object configured with a cartographic projection and geographical features.
+            The matplotlib axes object configured with a cartographic 
+            projection and geographical features.
         """
         fig = plt.figure(figsize=(10, 8), dpi=100)
         ax = plt.axes(projection=self.projection)
@@ -75,25 +87,35 @@ class MapPlotter:
 
         return fig, ax
 
-    def extent(self, data: pd.DataFrame, xlim: tuple[float, float] = None, ylim: tuple[float, float] = None) -> tuple[float, float, float, float]:
+    def extent(
+        self,
+        data: pd.DataFrame,
+        xlim: tuple[float, float] = None, 
+        ylim: tuple[float, float] = None
+    ) -> tuple[float, float, float, float]:
         """
-        Sets the map extent based on the provided data frame or explicit limits.
+        Sets the map extent based on the provided data frame or explicit 
+        limits.
 
         Parameters
         ----------
         data : pd.DataFrame
-            A pandas DataFrame containing 'lon' and 'lat' columns for longitude and latitude, respectively.
+            A pandas DataFrame containing 'lon' and 'lat' columns for 
+            longitude and latitude, respectively.
 
         xlim : tuple[float, float], optional
-            A tuple specifying the minimum and maximum longitude to set the map extent horizontally. Defaults to None.
+            A tuple specifying the minimum and maximum longitude to set 
+            the map extent horizontally. Defaults to None.
 
         ylim : tuple[float, float], optional
-            A tuple specifying the minimum and maximum latitude to set the map extent vertically. Defaults to None.
+            A tuple specifying the minimum and maximum latitude to set 
+            the map extent vertically. Defaults to None.
 
         Returns
         -------
         tuple[float, float, float, float]
-            The determined longitude and latitude bounds as (lon_min, lon_max, lat_min, lat_max).
+            The determined longitude and latitude bounds as 
+            (lon_min, lon_max, lat_min, lat_max).
         """
         if xlim is None:
             lon_min, lon_max = data['lon'].min(), data['lon'].max()
@@ -105,28 +127,39 @@ class MapPlotter:
         else:
             lat_min, lat_max = ylim
 
-        self.ax.set_extent([lon_min - 0.001, lon_max + 0.001, lat_min - 0.001, lat_max + 0.001], crs=self.transform)
+        self.ax.set_extent(
+            [lon_min - 0.001, lon_max + 0.001, lat_min - 0.001, lat_max + 0.001], 
+            crs=self.transform
+        )
         return lon_min, lon_max, lat_min, lat_max
 
-    def inset(self, extent: tuple[float, float, float, float], buffer: int = 3, inset_size: tuple[float, float] = (1.8, 1.8),
-              bounds_res: str = '50m') -> plt.Axes:
+    def inset(
+        self,
+        extent: tuple[float, float, float, float],
+        buffer: int = 3, 
+        inset_size: tuple[float, float] = (1.8, 1.8),
+        bounds_res: str = '50m'
+    ) -> plt.Axes:
         """
-        Adds an inset map to the main map, showing a broader area around the specified extent.
+        Adds an inset map to the main map, showing a broader area around 
+        the specified extent.
 
         Parameters
         ----------
         extent : tuple[float, float, float, float]
-            A tuple specifying the extent of the main map as (lon_min, lon_max, lat_min, lat_max).
+            A tuple specifying the extent of the main map.
 
         buffer : int, optional
-            A buffer around the extent to determine the area shown in the inset map (default is 3 degrees).
+            A buffer around the extent to determine the area shown in 
+            the inset map. Default is 3 degrees.
 
         inset_size : tuple[float, float], optional
-            The size of the inset map in figure coordinates (default is (1.8, 1.8)).
-        
+            The size of the inset map in figure coordinates. Default is 
+            (1.8, 1.8).
+
         bounds_res : str, optional
-            The resolution for the geographical boundaries (such as coastlines and borders) on the map.
-            Common values are '10m', '50m', or '110m'. Defaults to '50m'.
+            The resolution for the geographical boundaries on the map. 
+            Defaults to '50m'.
 
         Returns
         -------
@@ -136,25 +169,39 @@ class MapPlotter:
         main_ax_bbox = self.ax.get_position()
         inset_left = main_ax_bbox.x1 - inset_size[0] / self.fig.get_figwidth() * (2.0 / 3.0)
         inset_bottom = main_ax_bbox.y1 - inset_size[1] / self.fig.get_figheight() * (2.0 / 3.0)
-        inset_position = [inset_left, inset_bottom, inset_size[0] / self.fig.get_figwidth(), inset_size[1] / self.fig.get_figheight()]
+        inset_position = [
+            inset_left, inset_bottom, 
+            inset_size[0] / self.fig.get_figwidth(), 
+            inset_size[1] / self.fig.get_figheight()
+        ]
 
         inset_ax = self.fig.add_axes(inset_position, projection=self.projection)
-        inset_extent = [extent[0] - buffer, extent[1] + buffer, extent[2] - buffer, extent[3] + buffer]
+        inset_extent = [
+            extent[0] - buffer, extent[1] + buffer, 
+            extent[2] - buffer, extent[3] + buffer
+        ]
         inset_ax.set_extent(inset_extent, crs=self.transform)
 
         inset_ax.add_feature(cf.OCEAN.with_scale(bounds_res), color='lightblue')
         inset_ax.add_feature(cf.COASTLINE.with_scale(bounds_res), lw=0.5)
         inset_ax.add_feature(cf.BORDERS.with_scale(bounds_res), lw=0.3)
 
-        inset_ax.plot([extent[0], extent[1], extent[1], extent[0], extent[0]],
-                      [extent[2], extent[2], extent[3], extent[3], extent[2]],
-                      color='red', linewidth=1, transform=self.transform)
+        inset_ax.plot(
+            [extent[0], extent[1], extent[1], extent[0], extent[0]],
+            [extent[2], extent[2], extent[3], extent[3], extent[2]],
+            color='red', linewidth=1, transform=self.transform
+        )
 
         return inset_ax
 
-    def plot(self, x: ArrayLike, y: ArrayLike, **kwargs) -> list[plt.Line2D]:
+    def plot(
+        self,
+        x: ArrayLike,
+        y: ArrayLike,
+        **kwargs) -> list[plt.Line2D]:
         """
-        Plots data on the map using matplotlib's plot method, applying the specified transform.
+        Plots data on the map using matplotlib's plot method, applying 
+        the specified transform.
 
         Parameters
         ----------
@@ -170,19 +217,22 @@ class MapPlotter:
         Returns
         -------
         list[plt.Line2D]
-            A list of matplotlib.lines.Line2D objects representing the plotted data.
+            A list of matplotlib.lines.Line2D objects representing the 
+            plotted data.
         """
         plot = self.ax.plot(x, y, transform=self.transform, **kwargs)
         return plot
 
     def scatter(self, **kwargs) -> PathCollection:
         """
-        Plots data points on the map using matplotlib's scatter method, applying the specified transform.
+        Plots data points on the map using matplotlib's scatter method, 
+        applying the specified transform.
 
         Parameters
         ----------
         **kwargs
-            Additional keyword arguments passed to matplotlib's scatter method.
+            Additional keyword arguments passed to matplotlib's scatter 
+            method.
 
         Returns
         -------
@@ -194,7 +244,8 @@ class MapPlotter:
 
     def text(self, **kwargs) -> Text:
         """
-        Adds text annotations to the map at specified locations, applying the specified transform.
+        Adds text annotations to the map at specified locations, applying 
+        the specified transform.
 
         Parameters
         ----------
@@ -211,12 +262,14 @@ class MapPlotter:
 
     def annotate(self, **kwargs) -> Annotation:
         """
-        Adds annotations with optional arrows to the map, applying the specified transform.
+        Adds annotations with optional arrows to the map, applying the 
+        specified transform.
 
         Parameters
         ----------
         **kwargs
-            Additional keyword arguments passed to matplotlib's annotate method.
+            Additional keyword arguments passed to matplotlib's annotate 
+            method.
 
         Returns
         -------

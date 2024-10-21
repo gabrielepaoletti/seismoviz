@@ -9,12 +9,14 @@ class GeospatialMixin:
 
     def utm_zone(self) -> int:
         """
-        Determines the most common UTM (Universal Transverse Mercator) zone based on the longitude values of the seismic events in the dataset.
+        Determines the most common UTM (Universal Transverse Mercator) zone 
+        based on the longitude values of the seismic events in the dataset.
 
         Returns
         -------
         int
-            The most common UTM zone number among the seismic events' longitude values. The UTM zone is determined as an integer representing one of the 60 longitudinal projection zones used in the UTM system.
+            The most common UTM zone number among the seismic events' longitude 
+            values.
         """
         utm_zones = np.int_((np.array(self.data.lon) + 180) / 6) + 1
         zones, counts = np.unique(utm_zones, return_counts=True)
@@ -23,12 +25,14 @@ class GeospatialMixin:
 
     def hemisphere(self) -> str:
         """
-        Determines the predominant hemisphere (either North or South) based on the latitude values of the seismic events in the dataset.
-        
+        Determines the predominant hemisphere (either North or South) based on 
+        the latitude values of the seismic events in the dataset.
+
         Returns
         -------
         str
-            A string indicating the predominant hemisphere where the seismic events are located. Returns 'north' if the majority of events are in the Northern Hemisphere and 'south' if the majority are in the Southern Hemisphere.
+            A string indicating the predominant hemisphere where the seismic 
+            events are located.
         """
         norths = np.sum(np.array(self.data.lat) >= 0)
         souths = len(self.data.lat) - norths
@@ -54,21 +58,25 @@ class DunderMethodMixin:
             True if the two catalogs contain identical data, False otherwise.
         """
         return self.data.equals(other.data)
-    
-    def __getitem__(self, key: tuple | int) -> pd.Series | pd.DataFrame:
+
+    def __getitem__(self, key: tuple[int, int] | int) -> pd.Series | pd.DataFrame:
         """
-        Returns the row as a pandas Series or the sub-DataFrame at the specified index.
-        
-        If a tuple (section_id, row_index) is provided, returns the row as a pandas Series.
-        
-        If only an integer is provided and the DataFrame is MultiIndexed, returns the sub-DataFrame for that section_id.
+        Returns the row as a pandas Series or the sub-DataFrame at the 
+        specified index.
+
+        If a tuple (section_id, row_index) is provided, returns the row as 
+        a pandas Series.
+
+        If only an integer is provided and the DataFrame is MultiIndexed, 
+        returns the sub-DataFrame for that section_id.
 
         Parameters
         ----------
         key : tuple or int
-            If a tuple, the first element is 'section_id' and the second is 'row_index'.
-            If an int, and the DataFrame is MultiIndexed, it returns the sub-DataFrame 
-            for that section_id. If the DataFrame is not MultiIndexed, it returns the row at this index as a Series.
+            If a tuple, the first element is 'section_id' and the second is 
+            'row_index'. If an int, and the DataFrame is MultiIndexed, it 
+            returns the sub-DataFrame for that section_id. If the DataFrame is 
+            not MultiIndexed, it returns the row at this index as a Series.
 
         Returns
         -------
@@ -84,7 +92,7 @@ class DunderMethodMixin:
                 return self.data.xs(key, level='section_id')
         else:
             return self.data.iloc[key]
-    
+
     def __len__(self) -> int | tuple[int, int]:
         """
         Returns the number of seismic events.
@@ -93,13 +101,14 @@ class DunderMethodMixin:
         -------
         Union[int, tuple[int, int]]
             The number of seismic events if the index is not MultiIndex,
-            otherwise, a tuple containing the index and the number of seismic events for that index.
+            otherwise, a tuple containing the index and the number of seismic 
+            events for that index.
         """
         if isinstance(self.data.index, pd.MultiIndex):
             return [(level, len(self.data.loc[level])) for level in self.data.index.levels[0]]
         else:
             return len(self.data)
-    
+
     def __repr__(self) -> str:
         """
         Generate a string representation of the instance.
@@ -107,7 +116,8 @@ class DunderMethodMixin:
         Returns
         -------
         str
-            A string representation of the instance, formatted with the class name and key-value pairs of the relevant attributes.
+            A string representation of the instance, formatted with the class 
+            name and key-value pairs of the relevant attributes.
         """
         parts = [f"{self.__class__.__name__}("]
         for key, value in self.__dict__.items():

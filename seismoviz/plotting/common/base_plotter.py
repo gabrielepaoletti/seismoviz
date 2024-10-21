@@ -3,31 +3,41 @@ import matplotlib.pyplot as plt
 
 
 class BasePlotter:
-    def __init__(self, style: dict[str, str]=None):
+    def __init__(self, style: dict[str, str] = None) -> None:
         """
         Initializes the BasePlotter with a specific style configuration.
 
         Parameters
         ----------
-        style : dict of str
-            A dictionary defining style attributes for the plot (e.g., font size, line width, colors).
+        style : dict of str, optional
+            A dictionary defining style attributes for the plot (e.g., 
+            font size, line width, colors).
         """
         self.style = style
 
-    def save_figure(self, save_name: str, save_extension: str = 'jpg', directory: str = './seismoviz_figures') -> None:
+    def save_figure(
+        self, 
+        save_name: str, 
+        save_extension: str = 'jpg', 
+        directory: str = './seismoviz_figures'
+    ) -> None:
         """
-        Saves the given figure to a file with the specified name, extension, and directory.
+        Saves the given figure to a file with the specified name, extension, 
+        and directory.
 
         Parameters
         ----------
         save_name : str
-            The base name used for saving the figure. It serves as the prefix for the file name.
+            The base name used for saving the figure. It serves as the prefix 
+            for the file name.
 
         save_extension : str, optional
-            The file extension to use when saving figures (e.g., 'jpg', 'png'). The default extension is 'jpg'.
+            The file extension to use when saving figures (e.g., 'jpg', 'png'). 
+            The default extension is 'jpg'.
 
         directory : str, optional
-            The directory where the figure will be saved. Defaults to './seismoviz_figures'.
+            The directory where the figure will be saved. Defaults to 
+            './seismoviz_figures'.
 
         Returns
         -------
