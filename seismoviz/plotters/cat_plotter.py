@@ -125,50 +125,16 @@ class CatalogPlotter:
         main_extent = self.mp.extent(self.ct.data, xlim=xlim, ylim=ylim)
 
         if color_by:
-            if color_by not in self.ct.data.columns:
-                raise ValueError(f"Column '{color_by}' not found in catalog data.")
-            
-            if color_by == 'time':
-                global_min = mdates.date2num(self.ct.data[color_by].min())
-                global_max = mdates.date2num(self.ct.data[color_by].max())
-            else:
-                global_min = np.floor(self.ct.data[color_by].min())
-                global_max = np.ceil(self.ct.data[color_by].max())
-
-            color = self.ct.data[color_by]
-
-            if color_by == 'mag':
-                colorbar_label = 'Magnitude'
-            elif color_by == 'time':
-                colorbar_label = 'Origin time'
-            elif color_by == 'depth':
-                colorbar_label = 'Depth [km]'
-            else:
-                colorbar_label = color_by
-
-            if color_by == 'time':
-                color_numeric = mdates.date2num(color)
-                scatter = self.mp.scatter(
-                    x=self.ct.data.lon, y=self.ct.data.lat, c=color_numeric, s=size, 
-                    cmap=cmap, edgecolor=edgecolor, linewidth=0.25, alpha=alpha, 
-                    label=legend, vmin=global_min, vmax=global_max
+                self.mp.plot_with_colorbar(
+                    data=self.ct.data,
+                    x='lon',
+                    y='lat',
+                    color_by=color_by,
+                    cmap=cmap,
+                    edgecolor=edgecolor,
+                    size=size,
+                    alpha=alpha
                 )
-
-                cbar = plt.colorbar(scatter, ax=self.mp.ax, orientation='horizontal', 
-                                    pad=0.07, shrink=0.6, aspect=40)
-                cbar.set_label(colorbar_label)
-                cbar.ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
-                plt.setp(cbar.ax.get_xticklabels(), rotation=45, ha='right')
-
-            else:
-                scatter = self.mp.scatter(
-                    x=self.ct.data.lon, y=self.ct.data.lat, c=color, s=size, cmap=cmap, 
-                    edgecolor=edgecolor, linewidth=0.25, alpha=alpha, label=legend,
-                    vmin=global_min, vmax=global_max
-                )
-                cbar = plt.colorbar(scatter, ax=self.mp.ax, orientation='horizontal', 
-                                    pad=0.07, shrink=0.6, aspect=40)
-                cbar.set_label(colorbar_label)
         else:
             self.mp.scatter(
                 x=self.ct.data.lon, y=self.ct.data.lat, c=color, s=size, 
@@ -333,3 +299,18 @@ class CatalogPlotter:
         
         plt.tight_layout()
         plt.show()
+
+
+class SubCatalogPlotter:
+    def __init__(self, sub_catalog: type) -> None:
+        self.sc = sub_catalog
+        self.mp = MapPlotter()
+        self.bp = BasePlotter()
+    
+    def plot_on_section(self, normalize: bool = True):
+        if self.sc.selected_from != 'CrossSection':
+            raise ValueError('To be plotted on-section, the SubCatalog must be '
+                             'sampled from a CrossSection object.')
+        
+        plt.figure(figsize=(12, 6))
+        plt.scatter

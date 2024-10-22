@@ -64,7 +64,7 @@ def sync_signature(method_name: str, cls: type) -> Callable:
                 The result of calling the target method with the filtered keyword 
                 arguments.
             """
-            plotter_method = getattr(self.plotter, method_name)
+            plotter_method = getattr(self._plotter, method_name)
             sig = inspect.signature(plotter_method)
 
             filtered_kwargs = {

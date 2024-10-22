@@ -1,5 +1,6 @@
 cartopy
 holoview
+jupyter_bokeh
 matplotlib
 numpy
 pandas

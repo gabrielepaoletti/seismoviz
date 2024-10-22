@@ -1,8 +1,8 @@
 import pandas as pd
 
 from seismoviz.internal.decorators import sync_signature
-from seismoviz.plotters.cat_plotter import CatalogPlotter
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
+from seismoviz.plotters.cat_plotter import CatalogPlotter, SubCatalogPlotter
 
 
 class Catalog(GeospatialMixin, DunderMethodMixin):
@@ -55,7 +55,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         .. code-block:: python
 
             filtered_catalog = catalog.filter(
-                mw=('greater', 4.5),
+                mag=('greater', 4.5),
                 depth=('between', [10, 50])
             )
 
@@ -301,3 +301,10 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
             'png', etc. The default extension is 'jpg'.
         """
         self._plotter.plot_attribute_distributions(**kwargs)
+
+
+class SubCatalog(Catalog):
+    def __init__(self, data: pd.DataFrame, selected_from: str) -> None:
+        super().__init__(data)
+        
+        self.selected_from = selected_from

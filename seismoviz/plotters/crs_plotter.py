@@ -84,7 +84,7 @@ class CrossSectionPlotter:
     def plot_sections(
         self,
         color_by: str = None,
-        cmap: str = None,
+        cmap: str = 'jet',
         title: str = 'Section',
         color: str = 'black',
         edgecolor: str = None,
@@ -169,17 +169,6 @@ class CrossSectionPlotter:
         ValueError
             If scale_loc is not one of the valid location strings or False.
         """
-        if color_by:
-            if color_by not in self.cs.data.columns:
-                raise ValueError(f"Column '{color_by}' not found in catalog data.")
-            
-            if color_by == 'time':
-                global_min = mdates.date2num(self.cs.data[color_by].min())
-                global_max = mdates.date2num(self.cs.data[color_by].max())
-            else:
-                global_min = np.floor(self.cs.data[color_by].min())
-                global_max = np.ceil(self.cs.data[color_by].max())
-
         elev_profiles = self._get_elevation_profiles()
 
         for section in range(self.cs.data.index.get_level_values('section_id').nunique()):
@@ -212,47 +201,17 @@ class CrossSectionPlotter:
             )
 
             if color_by:
-                color = self.cs.data.loc[section][color_by]
-
-                if color_by == 'mag':
-                    colorbar_label = 'Magnitude'
-                elif color_by == 'time':
-                    colorbar_label = 'Origin time'
-                elif color_by == 'depth':
-                    colorbar_label = 'Depth [km]'
-                else:
-                    colorbar_label = color_by
-
-                if color_by == 'time':
-                    color_numeric = mdates.date2num(color)
-
-                    scatter = ax.scatter(
-                        self.cs.data.loc[section].on_section_coords,
-                        self.cs.data.loc[section].depth,
-                        marker='.', c=color_numeric, cmap=cmap,
-                        edgecolor=edgecolor, s=size, alpha=alpha,
-                        linewidth=0.25, vmin=global_min, vmax=global_max
-                    )
-
-                    cbar = plt.colorbar(
-                        scatter, ax=ax, orientation='horizontal', pad=0.05, shrink=0.6, aspect=40
-                    )
-                    cbar.set_label(colorbar_label)
-                    cbar.ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
-                    plt.setp(cbar.ax.get_xticklabels(), rotation=45, ha='right')
-
-                else:
-                    scatter = ax.scatter(
-                        self.cs.data.loc[section].on_section_coords,
-                        self.cs.data.loc[section].depth,
-                        marker='.', c=color, cmap=cmap,
-                        edgecolor=edgecolor, s=size, alpha=alpha,
-                        linewidth=0.25, vmin=global_min, vmax=global_max
-                    )
-                    cbar = plt.colorbar(
-                        scatter, ax=ax, orientation='horizontal', pad=0.05, shrink=0.6, aspect=40
-                    )
-                    cbar.set_label(colorbar_label)
+                self.bp.plot_with_colorbar(
+                    ax=ax,
+                    data=self.cs.data.loc[section],
+                    x='on_section_coords',
+                    y='depth',
+                    color_by=color_by,
+                    cmap=cmap,
+                    edgecolor=edgecolor,
+                    size=size,
+                    alpha=alpha
+                )
             else:
                 ax.scatter(
                     self.cs.data.loc[section].on_section_coords,
