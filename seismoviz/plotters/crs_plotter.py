@@ -225,6 +225,7 @@ class CrossSectionPlotter:
                 raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
 
             if color_by:
+                fig.set_figheight(8)
                 self.bp.plot_with_colorbar(
                     ax=ax,
                     data=self.cs.data.loc[section],
@@ -234,7 +235,8 @@ class CrossSectionPlotter:
                     cmap=cmap,
                     edgecolor=edgecolor,
                     size=plt_size,
-                    alpha=alpha
+                    alpha=alpha,
+                    cbar_pad=0.05
                 )
             else:
                 ax.scatter(

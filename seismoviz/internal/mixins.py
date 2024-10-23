@@ -21,7 +21,7 @@ class GeospatialMixin:
         utm_zones = np.int_((np.array(self.data.lon) + 180) / 6) + 1
         zones, counts = np.unique(utm_zones, return_counts=True)
         utm_zone = zones[np.argmax(counts)]
-        return utm_zone
+        return utm_zone.item()
 
     def hemisphere(self) -> str:
         """

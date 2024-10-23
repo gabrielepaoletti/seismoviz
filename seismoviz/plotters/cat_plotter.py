@@ -150,6 +150,7 @@ class CatalogPlotter:
             raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
 
         if color_by:
+                self.mp.fig.set_figheight(10)
                 self.mp.plot_with_colorbar(
                     data=self.ct.data,
                     x='lon',
