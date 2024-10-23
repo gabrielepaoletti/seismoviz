@@ -171,9 +171,9 @@ class MapPlotter:
 
         cbar = plt.colorbar(
             scatter, ax=self.ax, orientation='horizontal',
-            pad=0.05, shrink=0.6, aspect=40
+            pad=0.06, shrink=0.6, aspect=40
         )
-        cbar.set_label(colorbar_label)
+        cbar.set_label(colorbar_label, fontsize=14)
 
         if color_by == 'time':
             cbar.ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))

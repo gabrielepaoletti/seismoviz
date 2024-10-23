@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
+from seismoviz.plotters.common import styling
 from seismoviz.plotters.common.map_plotter import MapPlotter
 from seismoviz.plotters.common.base_plotter import BasePlotter
 
@@ -19,10 +20,11 @@ class CatalogPlotter:
         color_by: str = None, 
         cmap: str = 'jet', 
         title: str = None, 
-        size: float = 0.5, 
-        color: str = 'lightgrey',
-        edgecolor: str = 'grey', 
-        alpha: float = 0.5, 
+        size: float = 10,
+        size_scale_factor: float = 3.2,
+        color: str = 'grey',
+        edgecolor: str = 'black', 
+        alpha: float = 0.75, 
         legend: str = None, 
         inset: bool = True, 
         xlim: tuple[float, float] = None,
@@ -56,22 +58,38 @@ class CatalogPlotter:
             The title to be displayed above the map. If not provided, 
             the map will have no title.
 
-        size : float, optional
+        size : float | str, optional
             The size of the markers used to represent seismic events on 
-            the map. Default is 0.5.
+            the map. Default is 10.
+
+            .. note::
+                If you want to plot events where the point size is proportional
+                to a specific dimension (e.g., magnitude or depth), you can
+                directly pass the corresponding column from the `pd.DataFrame`
+                to the argument as a string (`size='mag'`).
+
+        size_scale_factor : float, optional
+            A factor that scales the size of the markers when `size` is 
+            based on a column from the `pd.DataFrame`. The size is calculated 
+            as the values in the specified column raised to the power of 
+            `size_scale_factor`. Default is 3.2.
+
+            .. note::
+                This parameter has no effect if a constant size is passed to 
+                the `size` argument.
 
         color : str, optional
             The color used to fill the seismic event markers. Default is 
-            'lightgrey'.
+            'grey'.
 
         edgecolor : str, optional
             The color used for the edges of the seismic event markers. 
-            Default is 'grey'.
+            Default is 'black'.
 
         alpha : float, optional
             The transparency level of the markers. A value between 0 and 
             1, where 1 is fully opaque and 0 is fully transparent. 
-            Default is 0.5.
+            Default is 0.75.
 
         legend : str, optional
             Text for the legend describing the plotted seismic events. 
@@ -124,6 +142,13 @@ class CatalogPlotter:
         self.mp.fig, self.mp.ax = self.mp.create_base_map(bounds_res, bmap_res)
         main_extent = self.mp.extent(self.ct.data, xlim=xlim, ylim=ylim)
 
+        if isinstance(size, (int, float)):
+            plt_size = size
+        elif isinstance(size, str):
+            plt_size = (self.ct.data[size]*2) ** size_scale_factor
+        else:
+            raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
+
         if color_by:
                 self.mp.plot_with_colorbar(
                     data=self.ct.data,
@@ -132,12 +157,12 @@ class CatalogPlotter:
                     color_by=color_by,
                     cmap=cmap,
                     edgecolor=edgecolor,
-                    size=size,
+                    size=plt_size,
                     alpha=alpha
                 )
         else:
             self.mp.scatter(
-                x=self.ct.data.lon, y=self.ct.data.lat, c=color, s=size, 
+                x=self.ct.data.lon, y=self.ct.data.lat, c=color, s=plt_size, 
                 edgecolor=edgecolor, linewidth=0.25, alpha=alpha, label=legend
             )
 
@@ -166,6 +191,13 @@ class CatalogPlotter:
 
     def plot_magnitude_time(
         self,
+        color_by: str = None,
+        cmap: str = 'jet',
+        size: float | str = 10,
+        size_scale_factor: float = 3.2,
+        color: str = 'grey',
+        edgecolor: str = 'black',
+        alpha: float = 0.75,
         save_figure: bool = False,
         save_name: str = 'map', 
         save_extension: str = 'jpg'
@@ -175,6 +207,38 @@ class CatalogPlotter:
 
         Parameters
         ----------
+        size : float | str, optional
+            The size of the markers used to represent seismic events on 
+            the map. Default is 10.
+
+            .. note::
+                If you want to plot events where the point size is proportional
+                to a specific dimension (e.g., magnitude or depth), you can
+                directly pass the corresponding column from the `pd.DataFrame`
+                to the argument as a string (`size='mag'`).
+
+        size_scale_factor : float, optional
+            A factor that scales the size of the markers when `size` is 
+            based on a column from the `pd.DataFrame`. The size is calculated 
+            as the values in the specified column raised to the power of 
+            `size_scale_factor`. Default is 3.2.
+
+            .. note::
+                This parameter has no effect if a constant size is passed to 
+                the `size` argument.
+
+        color : str, optional
+            The color used to fill the seismic event markers. Default is 
+            'grey'.
+
+        edgecolor : str, optional
+            The color used for the edges of the seismic event markers. 
+            Default is 'black'.
+
+        alpha : float, optional
+            The transparency level of the markers. A value between 0 and 
+            1, where 1 is fully opaque and 0 is fully transparent. 
+            Default is 0.75.
         save_figure : bool, optional
             If set to True, the function saves the generated plots using 
             the provided base name and file extension. The default is False.
@@ -188,14 +252,45 @@ class CatalogPlotter:
             The file extension to use when saving figures, such as 'jpg', 
             'png', etc. The default extension is 'jpg'.
         """
+        self.bp.set_style(styling.DEFAULT)
+
         fig, ax = plt.subplots(figsize=(10, 5))
         ax.set_title('Magnitude-time distribution', fontweight='bold')
         
-        ax.scatter(
-            self.ct.data.time, self.ct.data.mag, c='lightgrey', 
-            s=self.ct.data.mag, edgecolor='grey', linewidth=0.25, 
-            alpha=0.5, zorder=10
-        )
+        if isinstance(size, (int, float)):
+            plt_size = size
+        elif isinstance(size, str):
+            plt_size = (self.ct.data[size]*2) ** size_scale_factor
+        else:
+            raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
+
+        if color_by:
+            fig.set_figwidth(12)
+            self.bp.plot_with_colorbar(
+                ax=ax,
+                data=self.ct.data,
+                x='time',
+                y='mag',
+                color_by=color_by,
+                cmap=cmap,
+                size=plt_size,
+                edgecolor=edgecolor,
+                alpha=alpha,
+                cbar_orientation='vertical',
+                cbar_shrink=1,
+                cbar_aspect=30,
+                cbar_pad=0.03
+            )
+        else:
+            ax.scatter(
+                x=self.ct.data.time,
+                y=self.ct.data.mag,
+                c=color,
+                s=plt_size,
+                edgecolor=edgecolor,
+                alpha=alpha,
+                lw=0.25
+            )
         ax.set_ylabel('Magnitude')
 
         ax.xaxis.set_major_locator(mdates.MonthLocator())
@@ -208,6 +303,7 @@ class CatalogPlotter:
             self.bp.save_figure(fig, save_name, save_extension)
         
         plt.show()
+        self.bp.reset_style()
 
     def plot_event_timeline(
         self, 
@@ -234,6 +330,8 @@ class CatalogPlotter:
             The file extension to use when saving figures, such as 'jpg', 
             'png', etc. The default extension is 'jpg'.
         """
+        self.bp.set_style(styling.DEFAULT)
+        
         events_sorted = self.ct.data.sort_values('time')
         time_data = pd.to_datetime(events_sorted['time'])
 
@@ -254,6 +352,7 @@ class CatalogPlotter:
             self.bp.save_figure(fig, save_name, save_extension)
         
         plt.show()
+        self.bp.reset_style()
 
     def plot_attribute_distributions(
         self, save_figure: bool = False, save_name: str = 'map', 
@@ -278,6 +377,8 @@ class CatalogPlotter:
             The file extension to use when saving figures, such as 'jpg', 
             'png', etc. The default extension is 'jpg'.
         """
+        self.bp.set_style(styling.DEFAULT)
+
         rows, cols = 2, 2
         fig, ax = plt.subplots(rows, cols, figsize=(10, 6), sharey=True)
         plt.suptitle('Attribute distributions', fontsize=18, fontweight='bold')
@@ -299,6 +400,7 @@ class CatalogPlotter:
         
         plt.tight_layout()
         plt.show()
+        self.bp.reset_style()
 
 
 class SubCatalogPlotter:

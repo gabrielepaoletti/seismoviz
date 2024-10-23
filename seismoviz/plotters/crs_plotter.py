@@ -1,11 +1,11 @@
 import srtm
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.colors as mcolors
 import matplotlib.patches as patches
 
+from seismoviz.plotters.common import styling
 from seismoviz.utils import convert_to_geographical
 from seismoviz.plotters.common.map_plotter import MapPlotter
 from seismoviz.plotters.common.base_plotter import BasePlotter
@@ -88,7 +88,8 @@ class CrossSectionPlotter:
         title: str = 'Section',
         color: str = 'black',
         edgecolor: str = None,
-        size: float = 5,
+        size: float | str = 5,
+        size_scale_factor: float = 3.2,
         alpha: float = 0.5,
         ylabel: str = 'Depth [km]',
         xlim: tuple[float, float] = None,
@@ -116,9 +117,25 @@ class CrossSectionPlotter:
         title : str, optional
             The title displayed at the top of the plot. Defaults to 'Section'.
 
-        size : float, optional
-            The size of the markers used to represent seismic events on the map. 
-            Default is 5.
+        size : float | str, optional
+            The size of the markers used to represent seismic events on 
+            the map. Default is 10.
+
+            .. note::
+                If you want to plot events where the point size is proportional
+                to a specific dimension (e.g., magnitude or depth), you can
+                directly pass the corresponding column from the `pd.DataFrame`
+                to the argument as a string (`size='mag'`).
+
+        size_scale_factor : float, optional
+            A factor that scales the size of the markers when `size` is 
+            based on a column from the `pd.DataFrame`. The size is calculated 
+            as the values in the specified column raised to the power of 
+            `size_scale_factor`. Default is 3.2.
+
+            .. note::
+                This parameter has no effect if a constant size is passed to 
+                the `size` argument.
 
         color : str, optional
             The color used to fill the seismic event markers. Default is 'black'.
@@ -170,9 +187,9 @@ class CrossSectionPlotter:
             If scale_loc is not one of the valid location strings or False.
         """
         elev_profiles = self._get_elevation_profiles()
-
+        
         for section in range(self.cs.data.index.get_level_values('section_id').nunique()):
-            plt.rcParams['axes.spines.right'] = True
+            self.bp.set_style(styling.CROSS_SECTION)
             fig, ax = plt.subplots(figsize=(12, 6))
 
             elev_profile = np.array(elev_profiles[section]) / 1000
@@ -200,6 +217,13 @@ class CrossSectionPlotter:
                 -elev_profile, color='black', lw=1
             )
 
+            if isinstance(size, (int, float)):
+                plt_size = size
+            elif isinstance(size, str):
+                plt_size = (self.cs.data.loc[section][size]*2) ** size_scale_factor
+            else:
+                raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
+
             if color_by:
                 self.bp.plot_with_colorbar(
                     ax=ax,
@@ -209,15 +233,15 @@ class CrossSectionPlotter:
                     color_by=color_by,
                     cmap=cmap,
                     edgecolor=edgecolor,
-                    size=size,
+                    size=plt_size,
                     alpha=alpha
                 )
             else:
                 ax.scatter(
                     self.cs.data.loc[section].on_section_coords,
                     self.cs.data.loc[section].depth,
-                    marker='.', color=color, edgecolor=edgecolor,
-                    s=size, alpha=alpha, linewidth=0.25
+                    color=color, edgecolor=edgecolor,
+                    s=plt_size, alpha=alpha, linewidth=0.25
                 )
 
             ax.set_title(f'{title} {section + 1}', fontweight='bold')
@@ -281,15 +305,17 @@ class CrossSectionPlotter:
                 self.bp.save_figure(fig, save_name, save_extension)
 
             plt.show()
+            self.bp.reset_style()
     
     def plot_section_lines(
         self,
         highlight_mag: int = None,
         title: str = None,
-        size: float = 0.5,
-        color: str = 'lightgrey',
-        edgecolor: str = 'grey',
-        alpha: float = 0.5,
+        size: float | str = 10,
+        size_scale_factor: float = 3.2,
+        color: str = 'grey',
+        edgecolor: str = 'black',
+        alpha: float = 0.75,
         legend: str = None,
         inset: bool = True,
         xlim: tuple[float, float] = None,
@@ -315,22 +341,38 @@ class CrossSectionPlotter:
             The title to be displayed above the map. If not provided, the 
             map will have no title.
 
-        size : float, optional
+        size : float | str, optional
             The size of the markers used to represent seismic events on 
-            the map. Default is 0.5.
+            the map. Default is 10.
+
+            .. note::
+                If you want to plot events where the point size is proportional
+                to a specific dimension (e.g., magnitude or depth), you can
+                directly pass the corresponding column from the `pd.DataFrame`
+                to the argument as a string (`size='mag'`).
+
+        size_scale_factor : float, optional
+            A factor that scales the size of the markers when `size` is 
+            based on a column from the `pd.DataFrame`. The size is calculated 
+            as the values in the specified column raised to the power of 
+            `size_scale_factor`. Default is 3.2.
+
+            .. note::
+                This parameter has no effect if a constant size is passed to 
+                the `size` argument.
 
         color : str, optional
             The color used to fill the seismic event markers. Default is 
-            'lightgrey'.
+            'grey'.
 
         edgecolor : str, optional
             The color used for the edges of the seismic event markers. 
-            Default is 'grey'.
+            Default is 'black'.
 
         alpha : float, optional
             The transparency level of the markers. A value between 0 and 
             1, where 1 is fully opaque and 0 is fully transparent. 
-            Default is 0.5.
+            Default is 0.75.
 
         legend : str, optional
             Text for the legend describing the plotted seismic events. If 
@@ -383,13 +425,20 @@ class CrossSectionPlotter:
         """
         self.mp.fig, self.mp.ax = self.mp.create_base_map(bounds_res, bmap_res)
 
+        if isinstance(size, (int, float)):
+            plt_size = size
+        elif isinstance(size, str):
+            plt_size = (self.ct.data[size]*2) ** size_scale_factor
+        else:
+            raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
+
         lon, lat = convert_to_geographical(
             utmx=self.cs._utmx, utmy=self.cs._utmy, zone=self.cs.zone,
             northern=True if self.cs.hemisphere == 'north' else False,
             units='km'
         )
         self.mp.scatter(
-            x=lon, y=lat, c=color, s=size, edgecolor=edgecolor,
+            x=lon, y=lat, c=color, s=plt_size, edgecolor=edgecolor,
             linewidth=0.25, alpha=alpha, label=legend
         )
 

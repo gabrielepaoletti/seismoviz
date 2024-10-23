@@ -9,17 +9,26 @@ from matplotlib.collections import PathCollection
 
 
 class BasePlotter:
-    def __init__(self, style: dict[str, str] = None) -> None:
+    def __init__(self) -> None:
+        pass
+
+    def set_style(self, style: dict):
         """
-        Initializes the BasePlotter with a specific style configuration.
+        Sets a custom style for plotting.
 
         Parameters
         ----------
-        style : dict of str, optional
+        style : dict
             A dictionary defining style attributes for the plot (e.g., 
             font size, line width, colors).
         """
-        self.style = style 
+        plt.rcParams.update(style)
+    
+    def reset_style(self):
+        """
+        Resets plotting style to the default one.
+        """
+        plt.rcdefaults()
 
     def plot_with_colorbar(
         self,
@@ -31,7 +40,11 @@ class BasePlotter:
         cmap: str,
         edgecolor: str,
         size: float,
-        alpha: float
+        alpha: float,
+        cbar_orientation: str = 'horizontal',
+        cbar_pad: float = 0.06,
+        cbar_aspect: int = 40,
+        cbar_shrink: float = 0.6,
     ) -> PathCollection:
         """
         Plots a scatter plot on the given axes with a colorbar.
@@ -103,10 +116,10 @@ class BasePlotter:
         )
 
         cbar = plt.colorbar(
-            scatter, ax=ax, orientation='horizontal',
-            pad=0.05, shrink=0.6, aspect=40
+            scatter, ax=ax, orientation=cbar_orientation,
+            pad=cbar_pad, shrink=cbar_shrink, aspect=cbar_aspect
         )
-        cbar.set_label(colorbar_label)
+        cbar.set_label(colorbar_label, fontsize=14)
 
         if color_by == 'time':
             cbar.ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
