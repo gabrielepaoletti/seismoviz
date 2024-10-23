@@ -84,8 +84,8 @@ class MapPlotter:
         gl.xlabel_style = {'size': 10}
         gl.ylabel_style = {'size': 10}
 
-        gl.xformatter = LongitudeFormatter(number_format='.1f', degree_symbol='')
-        gl.yformatter = LatitudeFormatter(number_format='.1f', degree_symbol='')
+        gl.xformatter = LongitudeFormatter(degree_symbol='')
+        gl.yformatter = LatitudeFormatter(degree_symbol='')
 
         return fig, ax
 
