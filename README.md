@@ -107,7 +107,7 @@ sd = selector.confirm_selection()
 
 This selection can be used for further analysis or to create focused visualizations of specific areas of interest.
 
-These examples showcase the basic functionalities of SeismoViz. For more advanced features - like event selections, more complex analysis tools and detailed parameter descriptions - please refer to the documentation.
+These examples showcase the basic functionalities of SeismoViz. For more advanced features like more complex analysis tools and detailed parameter descriptions, please refer to the documentation.
 
 ## 🤝 Contributing
 
