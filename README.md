@@ -13,7 +13,7 @@ Through a clean and efficient interface, it reduces complex analysis workflows t
 
 ## 📋 Documentation
 
-For a comprehensive guide on how to install, configure, and use this module, please refer to the SeismoViz official documentation. The documentation provides detailed instructions on setting up the module, as well as examples and best practices to help you get the most out of your experience.
+For a comprehensive guide on how to install, configure, and use this library, please refer to the SeismoViz official documentation. It provides detailed instructions on setting up the library, as well as examples and best practices to help you get the most out of your experience.
 
 ## 🚀 Getting started
 Here's a quick overview of SeismoViz's core functionalities. These examples demonstrate how to load, filter, and visualize seismic data in just a few lines of code.
