@@ -81,7 +81,7 @@ cs.plot_sections(
 )     
 ```
 <p align="center">
-  <img src="./docs/images/cross-section_example.jpg" alt="Cross-section example" width="500">
+  <img src="./docs/images/cross-section_example.jpg" alt="Cross-section example">
   <br>
   <em>Depth distribution of seismicity along the defined profile, colored by time.</em>
 </p>
