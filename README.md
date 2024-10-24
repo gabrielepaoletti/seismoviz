@@ -78,7 +78,6 @@ cs.plot_sections(
     color_by='time',        # Color events by occurrence time
     cmap='Blues',           # Choose colormap
     size='mag',             # Size proportional to magnitude
-    edgecolor='black'       # Event marker edgecolor
 )     
 ```
 <p align="center">
@@ -86,6 +85,27 @@ cs.plot_sections(
   <br>
   <em>Depth distribution of seismicity along the defined profile, colored by time.</em>
 </p>
+
+### Interactive selection
+Select events interactively by drawing directly on the data. The lasso selection tool allows for intuitive spatial filtering of the events:
+
+```python
+# Enable interactive selection mode on the cross-section
+selector = cv.select_on_section(cs)
+```
+
+<p align="center">
+  <img src="./docs/images/selection_example.gif" alt="Selection example">
+  <br>
+  <em>Interactive selection of seismic events using the lasso tool.</em>
+</p>
+
+```python
+# Return the selected events for further analysis
+sd = selector.confirm_selection()
+```
+
+This selection can be used for further analysis or to create focused visualizations of specific areas of interest.
 
 These examples showcase the basic functionalities of SeismoViz. For more advanced features - like event selections, more complex analysis tools and detailed parameter descriptions - please refer to the documentation.
 
