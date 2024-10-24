@@ -6,10 +6,10 @@ Through a clean and efficient interface, it reduces complex analysis workflows t
 
 ## ✨ Features
 
-- 🎯 Smart filtering: Easily filter seismic events by magnitude, time, location, and depth with intuitive methods.
-- 🗺️ Visualization: Create publication-ready maps, cross-sections and plots with just a few lines of code.
-- 📊 Statistical tools: Analyze seismic sequences, calculate magnitude distributions, and perform more complex statistical analyses.
-- 🔍 Interactive selection: Subset events by drawing polygons directly on maps or cross-section for detailed analysis.
+- 🎯 **Smart filtering:** Easily filter seismic events by magnitude, time, location, and depth with intuitive methods.
+- 🗺️ **Visualization:** Create publication-ready maps, cross-sections and plots with just a few lines of code.
+- 📊 **Statistical tools:** Analyze seismic sequences, calculate magnitude distributions, and perform more complex statistical analyses.
+- 🔍 **Interactive selection:** Subset events by drawing polygons directly on maps or cross-section for detailed analysis.
 
 ## 📋 Documentation
 
@@ -77,7 +77,8 @@ cs.plot_sections(
     color_by='time',        # Color events by occurrence time
     cmap='Blues',           # Choose colormap
     size='mag',             # Size proportional to magnitude
-    edgecolor='black')      # Event marker edgecolor
+    edgecolor='black'
+)      # Event marker edgecolor
 ```
 ![Cross-section example](./docs/images/cross-section_example.jpg)
 *Depth distribution of seismicity along the defined profile, colored by time*
@@ -94,6 +95,8 @@ Contributions are welcome! If you'd like to contribute, please follow these step
 4. Commit your changes (`git commit -m 'Add some feature'`).
 5. Push to the branch (`git push origin feature-branch`).
 6. Open a pull request.
+
+**NOTE:** Make sure your code contributions follow the Python PEP8 Style Guide standards.
 
 ## 📜 License
 
