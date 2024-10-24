@@ -52,8 +52,11 @@ fc.plot_map(
     legend='Seismicity'      # Custom legend label
 )
 ```
-![Map example](./docs/images/map_example.jpg)
-*Seismic events distribution colored by depth with size proportional to magnitude*
+<p align="center">
+  <img src="./docs/images/map_example.jpg" alt="Map example" width="500">
+  <br>
+  <em>Seismic events distribution colored by depth with size proportional to magnitude</em>
+</p>
 
 ### Create a cross-section
 Create detailed cross-sections to analyze the spatial distribution of seismicity at depth:
