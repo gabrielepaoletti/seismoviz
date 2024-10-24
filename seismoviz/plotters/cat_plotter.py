@@ -21,11 +21,12 @@ class CatalogPlotter:
         cmap: str = 'jet', 
         title: str = None, 
         size: float = 10,
-        size_scale_factor: float = 3.2,
+        size_scale_factor: tuple[int, int] = (1, 3),
         color: str = 'grey',
         edgecolor: str = 'black', 
         alpha: float = 0.75, 
-        legend: str = None, 
+        legend: str = None,
+        scale_legend: bool = True,
         inset: bool = True, 
         xlim: tuple[float, float] = None,
         ylim: tuple[float, float] = None, 
@@ -94,6 +95,10 @@ class CatalogPlotter:
         legend : str, optional
             Text for the legend describing the plotted seismic events. 
             If None, no legend is displayed.
+        
+        scale_legend : bool, optional
+            If True, displays a legend for the point sizes, indicating how 
+            they correspond to specific values. Default is True.
 
         xlim : tuple[float, float], optional
             A tuple specifying the minimum and maximum longitude values 
@@ -145,7 +150,7 @@ class CatalogPlotter:
         if isinstance(size, (int, float)):
             plt_size = size
         elif isinstance(size, str):
-            plt_size = (self.ct.data[size]*2) ** size_scale_factor
+            plt_size = (self.ct.data[size]*size_scale_factor[0]) ** size_scale_factor[1]
         else:
             raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
 
@@ -159,7 +164,8 @@ class CatalogPlotter:
                     cmap=cmap,
                     edgecolor=edgecolor,
                     size=plt_size,
-                    alpha=alpha
+                    alpha=alpha,
+                    legend=legend
                 )
         else:
             self.mp.scatter(
@@ -178,15 +184,43 @@ class CatalogPlotter:
             )
 
         if legend:
-            leg = plt.legend(loc='lower left', fancybox=False, edgecolor='black')
+            leg = plt.legend(
+                loc='lower left',
+                fancybox=False,
+                edgecolor='black'
+            )
             leg.legend_handles[0].set_sizes([50])
-            leg.legend_handles[1].set_sizes([70])
+            leg.legend_handles[1].set_sizes([90])
+            self.mp.ax.add_artist(leg)
+            
+            if isinstance(size, str) and scale_legend:
+                min_size = np.floor(min(self.ct.data[size]))
+                max_size = np.ceil(max(self.ct.data[size]))
+                size_values = [min_size, (min_size + max_size)/2, max_size]
+                size_legend_labels = [f"{'M' if size == 'mag' else 'D' if size == 'depth' else size} {v}" for v in size_values]
+                
+                size_handles = [
+                    plt.scatter([], [], s=(v*size_scale_factor[0]) ** size_scale_factor[1], 
+                                facecolor='white', edgecolor='black', alpha=alpha, label=label)
+                    for v, label in zip(size_values, size_legend_labels)
+                ]
+                
+                leg2 = plt.legend(
+                    handles=size_handles,
+                    loc='lower right',
+                    fancybox=False,
+                    edgecolor='black',
+                    ncol=len(size_values),
+                    borderpad=1.2,
+                )
+                
+                self.mp.ax.add_artist(leg2)
 
         if inset:
             self.mp.inset(main_extent, buffer=inset_buffer, bounds_res=bounds_res)
 
         if save_figure:
-            self.mp.save_figure(save_name, save_extension)
+            self.bp.save_figure(save_name, save_extension)
 
         plt.show()
 
@@ -301,7 +335,7 @@ class CatalogPlotter:
         ax.grid(True, alpha=0.25, axis='y', linestyle=':')
         
         if save_figure:
-            self.bp.save_figure(fig, save_name, save_extension)
+            self.bp.save_figure(save_name, save_extension)
         
         plt.show()
         self.bp.reset_style()
@@ -350,7 +384,7 @@ class CatalogPlotter:
         plt.tight_layout()
         
         if save_figure:
-            self.bp.save_figure(fig, save_name, save_extension)
+            self.bp.save_figure(save_name, save_extension)
         
         plt.show()
         self.bp.reset_style()
@@ -397,7 +431,7 @@ class CatalogPlotter:
             ax[row, col].grid(True, alpha=0.25, axis='y', linestyle=':')
 
         if save_figure:
-            self.bp.save_figure(fig, save_name, save_extension)
+            self.bp.save_figure(save_name, save_extension)
         
         plt.tight_layout()
         plt.show()

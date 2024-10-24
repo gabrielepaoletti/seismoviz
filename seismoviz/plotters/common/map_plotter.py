@@ -98,7 +98,8 @@ class MapPlotter:
         cmap: str,
         edgecolor: str,
         size: float,
-        alpha: float
+        alpha: float,
+        legend: str
     ) -> PathCollection:
         """
         Plots data on the map with a colorbar.
@@ -166,7 +167,7 @@ class MapPlotter:
         scatter = self.scatter(
             x=data[x], y=data[y], c=color_numeric, cmap=cmap,
             edgecolor=edgecolor, s=size, alpha=alpha, linewidth=0.25,
-            vmin=global_min, vmax=global_max
+            label=legend, vmin=global_min, vmax=global_max
         )
 
         cbar = plt.colorbar(

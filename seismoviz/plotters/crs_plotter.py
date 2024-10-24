@@ -304,7 +304,7 @@ class CrossSectionPlotter:
                 )
 
             if save_figure:
-                self.bp.save_figure(fig, save_name, save_extension)
+                self.bp.save_figure(save_name, save_extension)
 
             plt.show()
             self.bp.reset_style()
@@ -474,6 +474,6 @@ class CrossSectionPlotter:
             self.mp.inset(main_extent, buffer=inset_buffer, bounds_res=bounds_res)
 
         if save_figure:
-            self.mp.save_figure(save_name, save_extension)
+            self.bp.save_figure(save_name, save_extension)
 
         plt.show()

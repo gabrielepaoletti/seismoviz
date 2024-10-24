@@ -103,14 +103,14 @@ class select_on_section:
 
     def __init__(
         self,
-        cross_section: 'CrossSection',
+        cross_section: CrossSection,
         size: float = 1,
         color: str = 'black'
     ) -> None:
         self._selector = CrossSectionSelector(cross_section)
         self._selector.select(size=size, color=color)
 
-    def confirm_selection(self) -> 'SubCatalog':
+    def confirm_selection(self) -> SubCatalog:
         """
         Confirms the selection and returns a SubCatalog of the selected data.
 
