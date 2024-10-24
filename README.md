@@ -56,6 +56,7 @@ fc.plot_map(
   <img src="./docs/images/map_example.jpg" alt="Map example" width="500">
   <br>
 </p>
+
 *Seismic events distribution colored by depth with size proportional to magnitude.*
 
 ### Create a cross-section
