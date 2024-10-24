@@ -52,7 +52,7 @@ fc.plot_map(
     legend='Seismicity'      # Custom legend label
 )
 ```
-![Map example](./docs/images/map_example.png)
+![Map example](./docs/images/map_example.jpg)
 *Seismic events distribution colored by depth with size proportional to magnitude*
 
 ### Create a cross-section
@@ -76,7 +76,7 @@ cs.plot_sections(
     size='mag',             # Size proportional to magnitude
     edgecolor='black')      # Event marker edgecolor
 ```
-
+![Cross-section example](./docs/images/cross-section_example.jpg)
 *Depth distribution of seismicity along the defined profile, colored by time*
 
 These examples showcase the basic functionalities of SeismoViz. For more advanced features - like event selections, more complex analysis tools and detailed parameter descriptions - please refer to the documentation.
