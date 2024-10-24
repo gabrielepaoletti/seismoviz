@@ -90,7 +90,7 @@ class CrossSectionPlotter:
         color: str = 'black',
         edgecolor: str = None,
         size: float | str = 5,
-        size_scale_factor: float = 3.2,
+        size_scale_factor: tuple[float, float] = (1, 2),
         alpha: float = 0.5,
         ylabel: str = 'Depth [km]',
         xlim: tuple[float, float] = None,
@@ -133,11 +133,16 @@ class CrossSectionPlotter:
                 directly pass the corresponding column from the `pd.DataFrame`
                 to the argument as a string (`size='mag'`).
 
-        size_scale_factor : float, optional
-            A factor that scales the size of the markers when `size` is 
-            based on a column from the `pd.DataFrame`. The size is calculated 
-            as the values in the specified column raised to the power of 
-            `size_scale_factor`. Default is 3.2.
+        size_scale_factor : tuple[float, float], optional
+            A tuple of two factors used to scale the size of the markers when `size` is 
+            based on a column from the data. The size is calculated by first multiplying 
+            the values in the specified column by the first element of the tuple 
+            (`size_scale_factor[0]`), and then raising the result to the power of the 
+            second element (`size_scale_factor[1]`). Default is (1, 2).
+
+            .. note::
+                For example, if `size='mag'`, the size of the markers is calculated as:
+                `plt_size = (magnitude * size_scale_factor[0]) ** size_scale_factor[1]`.
 
             .. note::
                 This parameter has no effect if a constant size is passed to 
@@ -226,7 +231,7 @@ class CrossSectionPlotter:
             if isinstance(size, (int, float)):
                 plt_size = size
             elif isinstance(size, str):
-                plt_size = (self.cs.data.loc[section][size]*2) ** size_scale_factor
+                plt_size = (self.cs.data.loc[section][size]*size_scale_factor[0]) ** size_scale_factor[1]
             else:
                 raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
 
@@ -328,7 +333,7 @@ class CrossSectionPlotter:
         highlight_mag: int = None,
         title: str = None,
         size: float | str = 10,
-        size_scale_factor: float = 3.2,
+        size_scale_factor: tuple[float, float] = (1, 2),
         color: str = 'grey',
         edgecolor: str = 'black',
         alpha: float = 0.75,
@@ -367,15 +372,16 @@ class CrossSectionPlotter:
                 directly pass the corresponding column from the `pd.DataFrame`
                 to the argument as a string (`size='mag'`).
 
-        size_scale_factor : float, optional
-            A factor that scales the size of the markers when `size` is 
-            based on a column from the `pd.DataFrame`. The size is calculated 
-            as the values in the specified column raised to the power of 
-            `size_scale_factor`. Default is 3.2.
+        size_scale_factor : tuple[float, float], optional
+            A tuple of two factors used to scale the size of the markers when `size` is 
+            based on a column from the data. The size is calculated by first multiplying 
+            the values in the specified column by the first element of the tuple 
+            (`size_scale_factor[0]`), and then raising the result to the power of the 
+            second element (`size_scale_factor[1]`). Default is (1, 2).
 
             .. note::
-                This parameter has no effect if a constant size is passed to 
-                the `size` argument.
+                For example, if `size='mag'`, the size of the markers is calculated as:
+                `plt_size = (magnitude * size_scale_factor[0]) ** size_scale_factor[1]`.
 
         color : str, optional
             The color used to fill the seismic event markers. Default is 

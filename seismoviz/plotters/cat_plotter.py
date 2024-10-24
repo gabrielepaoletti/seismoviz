@@ -69,16 +69,17 @@ class CatalogPlotter:
                 directly pass the corresponding column from the `pd.DataFrame`
                 to the argument as a string (`size='mag'`).
 
-        size_scale_factor : float, optional
-            A factor that scales the size of the markers when `size` is 
-            based on a column from the `pd.DataFrame`. The size is calculated 
-            as the values in the specified column raised to the power of 
-            `size_scale_factor`. Default is 3.2.
+        size_scale_factor : tuple[float, float], optional
+            A tuple of two factors used to scale the size of the markers when `size` is 
+            based on a column from the data. The size is calculated by first multiplying 
+            the values in the specified column by the first element of the tuple 
+            (`size_scale_factor[0]`), and then raising the result to the power of the 
+            second element (`size_scale_factor[1]`). Default is (1, 2).
 
             .. note::
-                This parameter has no effect if a constant size is passed to 
-                the `size` argument.
-
+                For example, if `size='mag'`, the size of the markers is calculated as:
+                `plt_size = (magnitude * size_scale_factor[0]) ** size_scale_factor[1]`.
+        
         color : str, optional
             The color used to fill the seismic event markers. Default is 
             'grey'.
@@ -229,7 +230,7 @@ class CatalogPlotter:
         color_by: str = None,
         cmap: str = 'jet',
         size: float | str = 10,
-        size_scale_factor: float = 3.2,
+        size_scale_factor: tuple[float, float] = (1, 2),
         color: str = 'grey',
         edgecolor: str = 'black',
         alpha: float = 0.75,
@@ -252,15 +253,16 @@ class CatalogPlotter:
                 directly pass the corresponding column from the `pd.DataFrame`
                 to the argument as a string (`size='mag'`).
 
-        size_scale_factor : float, optional
-            A factor that scales the size of the markers when `size` is 
-            based on a column from the `pd.DataFrame`. The size is calculated 
-            as the values in the specified column raised to the power of 
-            `size_scale_factor`. Default is 3.2.
+        size_scale_factor : tuple[float, float], optional
+            A tuple of two factors used to scale the size of the markers when `size` is 
+            based on a column from the data. The size is calculated by first multiplying 
+            the values in the specified column by the first element of the tuple 
+            (`size_scale_factor[0]`), and then raising the result to the power of the 
+            second element (`size_scale_factor[1]`). Default is (1, 2).
 
             .. note::
-                This parameter has no effect if a constant size is passed to 
-                the `size` argument.
+                For example, if `size='mag'`, the size of the markers is calculated as:
+                `plt_size = (magnitude * size_scale_factor[0]) ** size_scale_factor[1]`.
 
         color : str, optional
             The color used to fill the seismic event markers. Default is 
