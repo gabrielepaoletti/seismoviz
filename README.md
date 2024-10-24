@@ -74,6 +74,7 @@ cs = sv.create_cross_section(
 
 # Visualize the cross-section
 cs.plot_sections(
+    highlight_mag=5,        # Highlight events with magnitude > 5
     color_by='time',        # Color events by occurrence time
     cmap='Blues',           # Choose colormap
     size='mag',             # Size proportional to magnitude

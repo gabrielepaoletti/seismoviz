@@ -83,6 +83,7 @@ class CrossSectionPlotter:
 
     def plot_sections(
         self,
+        highlight_mag: float = None,
         color_by: str = None,
         cmap: str = 'jet',
         title: str = 'Section',
@@ -105,6 +106,11 @@ class CrossSectionPlotter:
 
         Parameters
         ----------
+        highlight_mag : float, optional
+            If specified, highlights all seismic events (that are present 
+            in your sections) with a magnitude greater than this value 
+            by plotting them as stars.
+            
         color_by : str, optional
             Specifies the column in the DataFrame used to color the seismic events. 
             Common options include 'magnitude', 'time', or 'depth'. If not provided, 
@@ -244,6 +250,14 @@ class CrossSectionPlotter:
                     self.cs.data.loc[section].depth,
                     color=color, edgecolor=edgecolor,
                     s=plt_size, alpha=alpha, linewidth=0.25
+                )
+
+            if highlight_mag is not None:
+                large_quakes = self.cs.data.loc[section][self.cs.data.loc[section]['mag'] > highlight_mag]
+                ax.scatter(
+                    x=large_quakes.on_section_coords, y=large_quakes.depth, c='red', s=300,
+                    marker='*', edgecolor='darkred', linewidth=0.75,
+                    label=f'Events M > {highlight_mag}'
                 )
 
             ax.set_title(f'{title} {section + 1}', fontweight='bold')
