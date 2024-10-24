@@ -78,8 +78,8 @@ cs.plot_sections(
     color_by='time',        # Color events by occurrence time
     cmap='Blues',           # Choose colormap
     size='mag',             # Size proportional to magnitude
-    edgecolor='black'
-)      # Event marker edgecolor
+    edgecolor='black'       # Event marker edgecolor
+)     
 ```
 ![Cross-section example](./docs/images/cross-section_example.jpg)
 *Depth distribution of seismicity along the defined profile, colored by time.*
