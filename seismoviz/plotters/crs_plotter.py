@@ -348,7 +348,10 @@ class CrossSectionPlotter:
                     edgecolor='black'
                 )
                 leg.legend_handles[0].set_sizes([50])
-                leg.legend_handles[1].set_sizes([90])
+                
+                if hl_ms is not None:
+                    leg.legend_handles[1].set_sizes([90])
+                
                 ax.add_artist(leg)
                 
                 if isinstance(size, str) and size_legend:
@@ -385,11 +388,15 @@ class CrossSectionPlotter:
     
     def plot_section_lines(
         self,
-        title: str = None, 
+        title: str = None,
         hl_ms: int = None,
+        hl_size: int = 300,
+        hl_marker: str = '*',
+        hl_color: str = 'red',
+        hl_edgecolor: str = 'darkred',
         size: float = 10,
         color: str = 'grey',
-        edgecolor: str = 'black', 
+        edgecolor: str = None, 
         alpha: float = 0.75, 
         legend: str = None,
         legend_loc: str = 'lower left',
@@ -415,6 +422,19 @@ class CrossSectionPlotter:
             If specified, highlights seismic events with a magnitude 
             greater than this value using different markers. Default is None.
 
+        hl_size : float, optional
+            Size of the markers used for highlighting seismic events (when 
+            `hl_ms` is specified). Default is 200.
+
+        hl_marker : str, optional
+            Marker style for highlighted events. Default is '*'.
+
+        hl_color : str, optional
+            Color for highlighted seismic event markers. Default is 'red'.
+
+        hl_edgecolor : str, optional
+            Edge color for highlighted event markers. Default is 'darkred'.
+
         size : float or str, optional
             The size of the markers representing seismic events. If a string 
             is provided, it should refer to a column in the DataFrame (e.g., 
@@ -425,7 +445,7 @@ class CrossSectionPlotter:
             Default is 'grey'.
 
         edgecolor : str, optional
-            Edge color for event markers. Default is 'black'.
+            Edge color for event markers. Default is None.
 
         alpha : float, optional
             Transparency level for markers, ranging from 0 (transparent) to 1 
@@ -493,8 +513,8 @@ class CrossSectionPlotter:
         if hl_ms is not None:
             large_quakes = self.cs.data[self.cs.data['mag'] > hl_ms]
             self.mp.scatter(
-                x=large_quakes.lon, y=large_quakes.lat, c='red', s=200,
-                marker='*', edgecolor='darkred', linewidth=0.75,
+                x=large_quakes.lon, y=large_quakes.lat, c=hl_color, s=hl_size,
+                marker=hl_marker, edgecolor=hl_edgecolor, linewidth=0.75,
                 label=f'Events M > {hl_ms}'
             )
 

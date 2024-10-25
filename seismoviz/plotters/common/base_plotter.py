@@ -41,7 +41,7 @@ class BasePlotter:
         edgecolor: str,
         size: float,
         alpha: float,
-        legend: str,
+        legend: str = None,
         cbar_orientation: str = 'horizontal',
         cbar_pad: float = 0.06,
         cbar_aspect: int = 40,

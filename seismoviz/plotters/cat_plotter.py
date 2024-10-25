@@ -312,7 +312,7 @@ class CatalogPlotter:
         if isinstance(size, (int, float)):
             plt_size = size
         elif isinstance(size, str):
-            plt_size = (self.ct.data[size]*2) ** size_scale_factor
+            plt_size = (self.ct.data[size]*size_scale_factor[0]) ** size_scale_factor[1]
         else:
             raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
 
