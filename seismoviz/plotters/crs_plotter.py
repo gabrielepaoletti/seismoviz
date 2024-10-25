@@ -83,119 +83,137 @@ class CrossSectionPlotter:
 
     def plot_sections(
         self,
-        highlight_mag: float = None,
         color_by: str = None,
         cmap: str = 'jet',
         title: str = 'Section',
+        hl_ms: float = None,
+        hl_size: float = 200,
+        hl_marker: str = '*',
+        hl_color: str = 'red',
+        hl_edgecolor: str = 'darkred',
         color: str = 'black',
         edgecolor: str = None,
         size: float | str = 5,
         size_scale_factor: tuple[float, float] = (1, 2),
         alpha: float = 0.5,
+        legend: str = None,
+        legend_loc: str = 'lower left',
+        size_legend: bool = False,
+        size_legend_loc: str = 'lower right',
+        scale_legend: bool = True,
+        scale_legend_loc: str  = 'lower right',
         ylabel: str = 'Depth [km]',
         xlim: tuple[float, float] = None,
         ylim: tuple[float, float] = None,
-        scale_loc: str | bool = 'lower right',
         facecolor: tuple[str, str] = ('#F0F0F0', '#FFFFFF'),
         save_figure: bool = False,
         save_name: str = 'cross_section',
         save_extension: str = 'jpg'
     ) -> None:
         """
-        Visualizes seismic events on section.
+        Plots a cross-section of seismic events with customizable appearance.
 
         Parameters
         ----------
-        highlight_mag : float, optional
-            If specified, highlights all seismic events (that are present 
-            in your sections) with a magnitude greater than this value 
-            by plotting them as stars.
-            
         color_by : str, optional
-            Specifies the column in the DataFrame used to color the seismic events. 
-            Common options include 'magnitude', 'time', or 'depth'. If not provided, 
-            a default color is used.
+            Column name from the DataFrame to color seismic events (e.g., 
+            'magnitude', 'depth'). Default is None, using a uniform color.
 
         cmap : str, optional
-            The colormap to use when coloring the events based on the `color_by` 
-            column. Default is 'jet'.
+            Colormap to use when `color_by` is specified. Default is 'jet'.
 
         title : str, optional
-            The title displayed at the top of the plot. Defaults to 'Section'.
+            Title of the plot. Default is 'Section'.
 
-        size : float | str, optional
-            The size of the markers used to represent seismic events on 
-            the map. Default is 10.
+        hl_ms : float, optional
+            If specified, highlights seismic events with a magnitude greater 
+            than this value using special markers. Default is None.
 
-            .. note::
-                If you want to plot events where the point size is proportional
-                to a specific dimension (e.g., magnitude or depth), you can
-                directly pass the corresponding column from the `pd.DataFrame`
-                to the argument as a string (`size='mag'`).
+        hl_size : float, optional
+            Size of the markers used for highlighting seismic events (when 
+            `hl_ms` is specified). Default is 200.
 
-        size_scale_factor : tuple[float, float], optional
-            A tuple of two factors used to scale the size of the markers when `size` is 
-            based on a column from the data. The size is calculated by first multiplying 
-            the values in the specified column by the first element of the tuple 
-            (`size_scale_factor[0]`), and then raising the result to the power of the 
-            second element (`size_scale_factor[1]`). Default is (1, 2).
+        hl_marker : str, optional
+            Marker style for highlighted events. Default is '*'.
 
-            .. note::
-                For example, if `size='mag'`, the size of the markers is calculated as:
-                `plt_size = (magnitude * size_scale_factor[0]) ** size_scale_factor[1]`.
+        hl_color : str, optional
+            Color for highlighted seismic event markers. Default is 'red'.
 
-            .. note::
-                This parameter has no effect if a constant size is passed to 
-                the `size` argument.
+        hl_edgecolor : str, optional
+            Edge color for highlighted event markers. Default is 'darkred'.
 
         color : str, optional
-            The color used to fill the seismic event markers. Default is 'black'.
+            Default color for seismic event markers. Default is 'black'.
 
         edgecolor : str, optional
-            The color used for the edges of the seismic event markers. Default is 
-            None.
+            Edge color for event markers. If None, the default edge color is 
+            not applied. Default is None.
+
+        size : float or str, optional
+            Size of markers representing seismic events. If a string is 
+            provided, it should refer to a column from the DataFrame (e.g., 
+            'magnitude') to scale marker sizes proportionally. Default is 5.
+
+        size_scale_factor : tuple[float, float], optional
+            Tuple for scaling marker sizes when `size` is based on a column 
+            in the DataFrame. The first element scales values, and the second 
+            raises them to a power. Default is (1, 2).
 
         alpha : float, optional
-            The transparency level of the markers. A value between 0 and 1, where 
-            1 is fully opaque and 0 is fully transparent. Default is 0.5.
+            Transparency level for markers, where 0 is fully transparent and 
+            1 is fully opaque. Default is 0.5.
+
+        legend : str, optional
+            Label for the legend describing the seismic events. Default is None.
+
+        legend_loc : str, optional
+            Location of the main legend on the plot. Default is 'lower left'.
+
+        size_legend : bool, optional
+            If True, displays a legend that explains marker sizes. Default is True.
+
+        size_legend_loc : str, optional
+            Location of the size legend if it is shown. Default is 'lower right'.
+
+        scale_legend: bool, optional
+            If True, displays a scale bar on the plot to indicate real-world distances.
+            Default is True.
+
+        scale_legend_loc : str, optional
+                Location of the scale legend (e.g., size scaling). If False, the 
+                scale legend is not displayed. Default is 'lower right'.
 
         ylabel : str, optional
-            Label for the y-axis, usually indicating depth. Defaults to 'Depth [km]'.
+            Label for the y-axis (typically indicating depth). Default is 'Depth [km]'.
 
         xlim : tuple[float, float], optional
-            Limits for the x-axis as a tuple (min, max). If None, the limits are 
-            determined based on the data. Defaults to None.
+            Horizontal extent (limits) of the plot (x-axis). If None, limits 
+            are set automatically. Default is None.
 
         ylim : tuple[float, float], optional
-            Limits for the y-axis as a tuple (min, max), controlling the depth range 
-            displayed. If None, the limits are auto-scaled based on the data. 
-            Defaults to None.
-
-        scale_loc : str or bool, optional
-            Location for the scale bar (e.g., 'upper right', 'lower left', etc.). 
-            If set to False, no scale bar is shown. Defaults to 'lower right'.
+            Vertical extent (limits) of the plot (y-axis). If None, limits 
+            are set automatically. Default is None.
 
         facecolor : tuple[str, str], optional
-            Background color for the plot, specified as a hex code or recognized 
-            color name. Defaults to a light grey ('#F0F0F0').
+            Tuple specifying the background colors of the plot, with two 
+            values for gradient-like effects. Default is ('#F0F0F0', '#FFFFFF').
 
         save_figure : bool, optional
-            If set to True, the function saves the generated plots using the 
-            provided base name and file extension. The default is False.
+            If True, saves the plot to a file. Default is False.
 
         save_name : str, optional
-            The base name used for saving figures when `save_figure` is True. It 
-            serves as the prefix for file names. The default base name is 
-            'cross_section'.
+            Base name of the file to save when `save_figure` is True. 
+            Default is 'cross_section'.
 
         save_extension : str, optional
-            The file extension to use when saving figures, such as 'jpg', 'png', 
-            etc... The default extension is 'jpg'.
+            File format to use when saving the plot (e.g., 'jpg', 'png'). 
+            Default is 'jpg'.
 
-        Raises
-        ------
-        ValueError
-            If scale_loc is not one of the valid location strings or False.
+        Returns
+        -------
+        None
+            This function generates a cross-section plot but does not return 
+            any data.
         """
         elev_profiles = self._get_elevation_profiles()
         
@@ -247,7 +265,8 @@ class CrossSectionPlotter:
                     edgecolor=edgecolor,
                     size=plt_size,
                     alpha=alpha,
-                    cbar_pad=0.05
+                    legend=legend,
+                    cbar_pad=0.05,
                 )
             else:
                 ax.scatter(
@@ -257,12 +276,12 @@ class CrossSectionPlotter:
                     s=plt_size, alpha=alpha, linewidth=0.25
                 )
 
-            if highlight_mag is not None:
-                large_quakes = self.cs.data.loc[section][self.cs.data.loc[section]['mag'] > highlight_mag]
+            if hl_ms is not None:
+                large_quakes = self.cs.data.loc[section][self.cs.data.loc[section]['mag'] > hl_ms]
                 ax.scatter(
-                    x=large_quakes.on_section_coords, y=large_quakes.depth, c='red', s=300,
-                    marker='*', edgecolor='darkred', linewidth=0.75,
-                    label=f'Events M > {highlight_mag}'
+                    x=large_quakes.on_section_coords, y=large_quakes.depth, c=hl_color, s=hl_size,
+                    marker=hl_marker, edgecolor=hl_edgecolor, linewidth=0.75,
+                    label=f'Events M > {hl_ms}'
                 )
 
             ax.set_title(f'{title} {section + 1}', fontweight='bold')
@@ -272,26 +291,26 @@ class CrossSectionPlotter:
             ax.set_aspect('equal')
             ax.grid(True, alpha=0.25, linestyle=':')
 
-            if scale_loc:
+            if scale_legend:
                 scale_length = (self.cs.map_length / 2) / 5
                 scale_label = f'{scale_length:.1f} km'
 
-                if scale_loc == 'upper right':
+                if scale_legend_loc == 'upper right':
                     scale_x_start = ax.get_xlim()[1] - (scale_length * 1.1)
                     scale_y = ax.get_ylim()[1] + (self.cs.depth_range[1] - self.cs.depth_range[0]) * 0.09
-                elif scale_loc == 'upper left':
+                elif scale_legend_loc == 'upper left':
                     scale_x_start = ax.get_xlim()[0] + (scale_length * 0.1)
                     scale_y = ax.get_ylim()[1] + (self.cs.depth_range[1] - self.cs.depth_range[0]) * 0.09
-                elif scale_loc == 'upper center':
+                elif scale_legend_loc == 'upper center':
                     scale_x_start = (ax.get_xlim()[0] + ax.get_xlim()[1]) / 2 - (scale_length / 2)
                     scale_y = ax.get_ylim()[1] + (self.cs.depth_range[1] - self.cs.depth_range[0]) * 0.09
-                elif scale_loc == 'lower right':
+                elif scale_legend_loc == 'lower right':
                     scale_x_start = ax.get_xlim()[1] - (scale_length * 1.1)
                     scale_y = ax.get_ylim()[0] - (self.cs.depth_range[1] - self.cs.depth_range[0]) * 0.06
-                elif scale_loc == 'lower left':
+                elif scale_legend_loc == 'lower left':
                     scale_x_start = ax.get_xlim()[0] + (scale_length * 0.1)
                     scale_y = ax.get_ylim()[0] - (self.cs.depth_range[1] - self.cs.depth_range[0]) * 0.06
-                elif scale_loc == 'lower center':
+                elif scale_legend_loc == 'lower center':
                     scale_x_start = (ax.get_xlim()[0] + ax.get_xlim()[1]) / 2 - (scale_length / 2)
                     scale_y = ax.get_ylim()[0] - (self.cs.depth_range[1] - self.cs.depth_range[0]) * 0.06
                 else:
@@ -299,7 +318,7 @@ class CrossSectionPlotter:
                         'upper right', 'upper left', 'upper center',
                         'lower right', 'lower left', 'lower center'
                     ]
-                    raise ValueError(f'Invalid value for scale_loc: {scale_loc}.'
+                    raise ValueError(f'Invalid value for scale_legend_loc: {scale_legend_loc}.'
                                      f'Valid options are {valid_locations}.')
 
                 rect_width = scale_length / 4
@@ -322,30 +341,66 @@ class CrossSectionPlotter:
                     fontweight='bold', color='black'
                 )
 
+            if legend:
+                leg = plt.legend(
+                    loc=legend_loc,
+                    fancybox=False,
+                    edgecolor='black'
+                )
+                leg.legend_handles[0].set_sizes([50])
+                leg.legend_handles[1].set_sizes([90])
+                ax.add_artist(leg)
+                
+                if isinstance(size, str) and size_legend:
+                    min_size = np.floor(min(self.cs.data.loc[section][size]))
+                    max_size = np.ceil(max(self.cs.data.loc[section][size]))
+                    size_values = [min_size, (min_size + max_size)/2, max_size]
+                    size_legend_labels = [
+                        f"{'M' if size == 'mag' else 'D' if size == 'depth' else size} {v}" for v in size_values
+                    ]
+                    
+                    size_handles = [
+                        plt.scatter([], [], s=(v*size_scale_factor[0]) ** size_scale_factor[1], 
+                                    facecolor='white', edgecolor='black', alpha=alpha, label=label)
+                        for v, label in zip(size_values, size_legend_labels)
+                    ]
+                    
+                    leg2 = plt.legend(
+                        handles=size_handles,
+                        loc=size_legend_loc,
+                        fancybox=False,
+                        edgecolor='black',
+                        ncol=len(size_values),
+                    )
+                    
+                    ax.add_artist(leg2)
+
             if save_figure:
                 self.bp.save_figure(save_name, save_extension)
 
             plt.show()
             self.bp.reset_style()
     
+
+    
     def plot_section_lines(
         self,
-        highlight_mag: int = None,
-        title: str = None,
-        size: float | str = 10,
-        size_scale_factor: tuple[float, float] = (1, 2),
+        title: str = None, 
+        hl_ms: int = None,
+        size: float = 10,
         color: str = 'grey',
-        edgecolor: str = 'black',
-        alpha: float = 0.75,
+        edgecolor: str = 'black', 
+        alpha: float = 0.75, 
         legend: str = None,
-        inset: bool = True,
+        legend_loc: str = 'lower left',
+        inset: bool = True, 
         xlim: tuple[float, float] = None,
-        ylim: tuple[float, float] = None,
-        inset_buffer: float = 3,
-        bounds_res: str = '50m',
-        bmap_res: int = 12,
+        ylim: tuple[float, float] = None, 
+        inset_buffer: float = 3, 
+        bounds_res: str = '50m', 
+        bmap_res: int = 12, 
         save_figure: bool = False,
-        save_name: str = 'map',
+        save_name: str = 'map', 
         save_extension: str = 'jpg'
     ) -> None:
         """
@@ -353,106 +408,74 @@ class CrossSectionPlotter:
 
         Parameters
         ----------
-        highlight_mag : float, optional
-            If specified, highlights all seismic events (that are present 
-            in your sections) with a magnitude greater than this value 
-            by plotting them as stars.
-
         title : str, optional
-            The title to be displayed above the map. If not provided, the 
-            map will have no title.
+            Title of the map. If None, no title is displayed. Default is None.
 
-        size : float | str, optional
-            The size of the markers used to represent seismic events on 
-            the map. Default is 10.
+        hl_ms : int, optional
+            If specified, highlights seismic events with a magnitude 
+            greater than this value using different markers. Default is None.
 
-            .. note::
-                If you want to plot events where the point size is proportional
-                to a specific dimension (e.g., magnitude or depth), you can
-                directly pass the corresponding column from the `pd.DataFrame`
-                to the argument as a string (`size='mag'`).
-
-        size_scale_factor : tuple[float, float], optional
-            A tuple of two factors used to scale the size of the markers when `size` is 
-            based on a column from the data. The size is calculated by first multiplying 
-            the values in the specified column by the first element of the tuple 
-            (`size_scale_factor[0]`), and then raising the result to the power of the 
-            second element (`size_scale_factor[1]`). Default is (1, 2).
-
-            .. note::
-                For example, if `size='mag'`, the size of the markers is calculated as:
-                `plt_size = (magnitude * size_scale_factor[0]) ** size_scale_factor[1]`.
+        size : float or str, optional
+            The size of the markers representing seismic events. If a string 
+            is provided, it should refer to a column in the DataFrame (e.g., 
+            'magnitude') to scale point sizes proportionally. Default is 10.
 
         color : str, optional
-            The color used to fill the seismic event markers. Default is 
-            'grey'.
+            Default color for event markers when `color_by` is None. 
+            Default is 'grey'.
 
         edgecolor : str, optional
-            The color used for the edges of the seismic event markers. 
-            Default is 'black'.
+            Edge color for event markers. Default is 'black'.
 
         alpha : float, optional
-            The transparency level of the markers. A value between 0 and 
-            1, where 1 is fully opaque and 0 is fully transparent. 
-            Default is 0.75.
+            Transparency level for markers, ranging from 0 (transparent) to 1 
+            (opaque). Default is 0.75.
 
         legend : str, optional
-            Text for the legend describing the plotted seismic events. If 
-            None, no legend is displayed.
+            Text for the legend describing the seismic events. If None, 
+            no legend is displayed. Default is None.
+
+        legend_loc : str, optional
+            Location of the legend for the seismic event markers. 
+            Default is 'lower left'.
 
         xlim : tuple[float, float], optional
-            A tuple specifying the minimum and maximum longitude values 
-            to set the map extent horizontally. If not provided, the 
-            extent will be set automatically based on the data.
+            Longitude limits for the map's horizontal extent. If None, 
+            the limits are determined automatically based on the data. 
+            Default is None.
 
         ylim : tuple[float, float], optional
-            A tuple specifying the minimum and maximum latitude values 
-            to set the map extent vertically. If not provided, the extent 
-            will be set automatically based on the data.
+            Latitude limits for the map's vertical extent. If None, 
+            the limits are determined automatically based on the data. 
+            Default is None.
 
         inset : bool, optional
-            Determines whether to include an inset map showing a broader 
-            geographic context. Defaults to True.
+            If True, adds an inset map for broader geographic context. 
+            Default is True.
 
         inset_buffer : float, optional
-            A factor that enlarges the buffer area around the selection 
-            shape in the inset, enhancing visibility and context. The 
-            default value is 3.
+            Scaling factor for the area surrounding the selection shape 
+            in the inset map. Default is 3.
 
         bounds_res : str, optional
-            The resolution for the geographical boundaries (such as 
-            coastlines and borders) on the map. Common values are '10m', 
-            '50m', or '110m', with '10m' being the most detailed and 
-            '110m' the least.
+            Resolution of geographical boundaries (coastlines, borders) 
+            on the map. Options are '10m', '50m', and '110m', where '10m' 
+            is the highest resolution and '110m' the lowest. Default is '50m'.
 
         bmap_res : int, optional
-            The zoom level or resolution for the underlying map image 
-            (e.g., satellite or terrain map). A higher value provides a 
-            more detailed map image, with typical values ranging from 1 
-            (very coarse) to 12 (very detailed).
+            Resolution level for the base map image (e.g., satellite or 
+            terrain). Higher values provide more detail. Default is 12.
 
         save_figure : bool, optional
-            If set to True, the function saves the generated plots using 
-            the provided base name and file extension. The default is 
-            False.
+            If True, saves the plot to a file. Default is False.
 
         save_name : str, optional
-            The base name used for saving figures when `save_figure` is 
-            True. It serves as the prefix for file names. The default 
-            base name is 'section'.
+            Base name for the file if `save_figure` is True. Default is 'map'.
 
         save_extension : str, optional
-            The file extension to use when saving figures, such as 'jpg', 
-            'png', etc... The default extension is 'jpg'.
+            File format for the saved figure (e.g., 'jpg', 'png'). Default is 'jpg'.
         """
         self.mp.fig, self.mp.ax = self.mp.create_base_map(bounds_res, bmap_res)
-
-        if isinstance(size, (int, float)):
-            plt_size = size
-        elif isinstance(size, str):
-            plt_size = (self.ct.data[size]*2) ** size_scale_factor
-        else:
-            raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
 
         lon, lat = convert_to_geographical(
             utmx=self.cs._utmx, utmy=self.cs._utmy, zone=self.cs.zone,
@@ -460,19 +483,19 @@ class CrossSectionPlotter:
             units='km'
         )
         self.mp.scatter(
-            x=lon, y=lat, c=color, s=plt_size, edgecolor=edgecolor,
+            x=lon, y=lat, c=color, s=size, edgecolor=edgecolor,
             linewidth=0.25, alpha=alpha, label=legend
         )
 
         if title:
             self.mp.ax.set_title(title, fontweight='bold')
 
-        if highlight_mag is not None:
-            large_quakes = self.cs.data[self.cs.data['mag'] > highlight_mag]
+        if hl_ms is not None:
+            large_quakes = self.cs.data[self.cs.data['mag'] > hl_ms]
             self.mp.scatter(
                 x=large_quakes.lon, y=large_quakes.lat, c='red', s=200,
                 marker='*', edgecolor='darkred', linewidth=0.75,
-                label=f'Events M > {highlight_mag}'
+                label=f'Events M > {hl_ms}'
             )
 
         for idx, (lons, lats) in enumerate(self._get_section_lines()):
@@ -486,9 +509,11 @@ class CrossSectionPlotter:
         main_extent = self.mp.extent({'lon': lon, 'lat': lat}, xlim=xlim, ylim=ylim)
 
         if legend:
-            leg = plt.legend(loc='lower left', fancybox=False, edgecolor='black')
+            leg = plt.legend(loc=legend_loc, fancybox=False, edgecolor='black')
             leg.legend_handles[0].set_sizes([50])
-            leg.legend_handles[1].set_sizes([70])
+            
+            if hl_ms is not None:
+                leg.legend_handles[1].set_sizes([90])
 
         if inset:
             self.mp.inset(main_extent, buffer=inset_buffer, bounds_res=bounds_res)

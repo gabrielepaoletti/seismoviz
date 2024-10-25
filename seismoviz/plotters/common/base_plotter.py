@@ -41,13 +41,14 @@ class BasePlotter:
         edgecolor: str,
         size: float,
         alpha: float,
+        legend: str,
         cbar_orientation: str = 'horizontal',
         cbar_pad: float = 0.06,
         cbar_aspect: int = 40,
         cbar_shrink: float = 0.6,
     ) -> PathCollection:
         """
-        Plots a scatter plot on the given axes with a colorbar.
+        Plots a scatter plot on the given axes with an associated colorbar.
 
         Parameters
         ----------
@@ -55,38 +56,65 @@ class BasePlotter:
             The axes object on which to draw the scatter plot.
 
         data : pd.DataFrame
-            The data frame containing the data to be plotted.
+            The data frame containing the data to be plotted. It should contain 
+            the columns specified by `x`, `y`, and `color_by`.
 
         x : str
-            The column name for the x-coordinates (e.g., longitude).
+            The column name representing the x-coordinates (e.g., longitude).
 
         y : str
-            The column name for the y-coordinates (e.g., latitude).
+            The column name representing the y-coordinates (e.g., latitude).
 
         color_by : str
-            The column name used for coloring the points.
+            The column name used to color the points in the scatter plot. 
+            Values in this column will be mapped to the colormap specified 
+            by `cmap`.
 
         cmap : str
-            The colormap to be used for the scatter plot.
+            The colormap to use for mapping the values in the `color_by` 
+            column to colors in the scatter plot.
 
         edgecolor : str
-            Color of the point edges.
+            The color of the edges of the points in the scatter plot.
 
         size : float
-            Size of the points.
+            The size of the points in the scatter plot.
 
         alpha : float
-            Transparency of the points.
+            The transparency level for the points in the scatter plot, 
+            ranging from 0 (fully transparent) to 1 (fully opaque).
+
+        legend : str
+            Label for the scatter plot data, used for legend creation.
+
+        cbar_orientation : str, optional
+            Orientation of the colorbar, either 'horizontal' or 'vertical'. 
+            Default is 'horizontal'.
+
+        cbar_pad : float, optional
+            Padding between the colorbar and the main plot, as a fraction 
+            of the colorbar's height or width, depending on the orientation. 
+            Default is 0.06.
+
+        cbar_aspect : int, optional
+            Aspect ratio of the colorbar (length to width ratio). 
+            Default is 40.
+
+        cbar_shrink : float, optional
+            Factor by which to shrink the colorbar, as a fraction of the 
+            original size. Default is 0.6.
 
         Raises
         ------
         ValueError
-            If the specified `color_by` column is not found in the data.
+            If the specified `color_by` column is not found in the DataFrame.
 
         Returns
         -------
         matplotlib.collections.PathCollection
-            The scatter plot object created by `matplotlib`.
+            The scatter plot object created by `matplotlib`, which can be 
+            further modified or used for additional plotting.
+
         """
         if color_by not in data.columns:
             raise ValueError(f"Column '{color_by}' not found in data.")
@@ -112,7 +140,7 @@ class BasePlotter:
         scatter = ax.scatter(
             x=data[x], y=data[y], c=color_numeric, cmap=cmap,
             edgecolor=edgecolor, s=size, alpha=alpha, linewidth=0.25,
-            vmin=global_min, vmax=global_max, label=colorbar_label
+            vmin=global_min, vmax=global_max, label=legend
         )
 
         cbar = plt.colorbar(

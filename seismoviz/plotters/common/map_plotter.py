@@ -130,6 +130,9 @@ class MapPlotter:
         alpha : float
             Transparency of the points.
 
+        legend : str
+            Label for the scatter plot data, used for legend creation.
+
         Raises
         ------
         ValueError
