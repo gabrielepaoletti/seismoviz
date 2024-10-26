@@ -10,6 +10,9 @@ from seismoviz.utils import convert_to_geographical
 from seismoviz.plotters.common.map_plotter import MapPlotter
 from seismoviz.plotters.common.base_plotter import BasePlotter
 
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
+import matplotlib.font_manager as fm
+
 
 class CrossSectionPlotter:
     def __init__(self, cross_section: type) -> None:
@@ -295,51 +298,22 @@ class CrossSectionPlotter:
                 scale_length = (self.cs.map_length / 2) / 5
                 scale_label = f'{scale_length:.1f} km'
 
-                if scale_legend_loc == 'upper right':
-                    scale_x_start = ax.get_xlim()[1] - (scale_length * 1.1)
-                    scale_y = ax.get_ylim()[1] + (self.cs.depth_range[1] - self.cs.depth_range[0]) * 0.09
-                elif scale_legend_loc == 'upper left':
-                    scale_x_start = ax.get_xlim()[0] + (scale_length * 0.1)
-                    scale_y = ax.get_ylim()[1] + (self.cs.depth_range[1] - self.cs.depth_range[0]) * 0.09
-                elif scale_legend_loc == 'upper center':
-                    scale_x_start = (ax.get_xlim()[0] + ax.get_xlim()[1]) / 2 - (scale_length / 2)
-                    scale_y = ax.get_ylim()[1] + (self.cs.depth_range[1] - self.cs.depth_range[0]) * 0.09
-                elif scale_legend_loc == 'lower right':
-                    scale_x_start = ax.get_xlim()[1] - (scale_length * 1.1)
-                    scale_y = ax.get_ylim()[0] - (self.cs.depth_range[1] - self.cs.depth_range[0]) * 0.06
-                elif scale_legend_loc == 'lower left':
-                    scale_x_start = ax.get_xlim()[0] + (scale_length * 0.1)
-                    scale_y = ax.get_ylim()[0] - (self.cs.depth_range[1] - self.cs.depth_range[0]) * 0.06
-                elif scale_legend_loc == 'lower center':
-                    scale_x_start = (ax.get_xlim()[0] + ax.get_xlim()[1]) / 2 - (scale_length / 2)
-                    scale_y = ax.get_ylim()[0] - (self.cs.depth_range[1] - self.cs.depth_range[0]) * 0.06
-                else:
-                    valid_locations = [
-                        'upper right', 'upper left', 'upper center',
-                        'lower right', 'lower left', 'lower center'
-                    ]
-                    raise ValueError(f'Invalid value for scale_legend_loc: {scale_legend_loc}.'
-                                     f'Valid options are {valid_locations}.')
-
-                rect_width = scale_length / 4
-                rect_height = (self.cs.depth_range[1] - self.cs.depth_range[0]) * 0.02
-
-                for i in range(4):
-                    rect_x = scale_x_start + i * rect_width
-                    rec_col = 'black' if i % 2 == 0 else 'white'
-                    rect = patches.Rectangle(
-                        (rect_x, scale_y), rect_width, rect_height,
-                        facecolor=rec_col, edgecolor='black'
+                scalebar = AnchoredSizeBar(
+                    transform=ax.transData,
+                    size=scale_length,
+                    label=scale_label,
+                    loc=scale_legend_loc,           
+                    sep=5,
+                    color='black',
+                    frameon=False,
+                    size_vertical=0.1,
+                    fontproperties=fm.FontProperties(
+                        size=10, 
+                        weight='bold'
                     )
-                    ax.add_patch(rect)
-
-                ax.text(
-                    scale_x_start + scale_length / 2,
-                    scale_y + rect_height * -0.5,
-                    scale_label,
-                    ha='center', va='bottom', fontsize=10,
-                    fontweight='bold', color='black'
                 )
+
+                ax.add_artist(scalebar)
 
             if legend:
                 leg = plt.legend(
