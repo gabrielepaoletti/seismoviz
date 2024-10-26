@@ -102,7 +102,7 @@ class CrossSectionPlotter:
         legend: str = None,
         legend_loc: str = 'lower left',
         size_legend: bool = False,
-        size_legend_loc: str = 'lower right',
+        size_legend_loc: str = 'upper right',
         scale_legend: bool = True,
         scale_legend_loc: str  = 'lower right',
         ylabel: str = 'Depth [km]',
@@ -176,7 +176,7 @@ class CrossSectionPlotter:
             If True, displays a legend that explains marker sizes. Default is True.
 
         size_legend_loc : str, optional
-            Location of the size legend if it is shown. Default is 'lower right'.
+            Location of the size legend if it is shown. Default is 'upper right'.
 
         scale_legend: bool, optional
             If True, displays a scale bar on the plot to indicate real-world distances.
@@ -219,7 +219,7 @@ class CrossSectionPlotter:
             any data.
         """
         elev_profiles = self._get_elevation_profiles()
-        
+
         for section in range(self.cs.data.index.get_level_values('section_id').nunique()):
             self.bp.set_style(styling.CROSS_SECTION)
             fig, ax = plt.subplots(figsize=(12, 6))
@@ -252,7 +252,7 @@ class CrossSectionPlotter:
             if isinstance(size, (int, float)):
                 plt_size = size
             elif isinstance(size, str):
-                plt_size = (self.cs.data.loc[section][size]*size_scale_factor[0]) ** size_scale_factor[1]
+                plt_size = (self.cs.data.loc[section][size] * size_scale_factor[0]) ** size_scale_factor[1]
             else:
                 raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
 
@@ -302,46 +302,39 @@ class CrossSectionPlotter:
                     transform=ax.transData,
                     size=scale_length,
                     label=scale_label,
-                    loc=scale_legend_loc,           
+                    loc=scale_legend_loc,
                     sep=5,
                     color='black',
                     frameon=False,
                     size_vertical=0.1,
-                    fontproperties=fm.FontProperties(
-                        size=10, 
-                        weight='bold'
-                    )
+                    fontproperties=fm.FontProperties(size=10, weight='bold')
                 )
 
                 ax.add_artist(scalebar)
 
             if legend:
-                leg = plt.legend(
-                    loc=legend_loc,
-                    fancybox=False,
-                    edgecolor='black'
-                )
+                leg = plt.legend(loc=legend_loc, fancybox=False, edgecolor='black')
                 leg.legend_handles[0].set_sizes([50])
-                
+
                 if hl_ms is not None:
                     leg.legend_handles[1].set_sizes([90])
-                
+
                 ax.add_artist(leg)
-                
+
                 if isinstance(size, str) and size_legend:
                     min_size = np.floor(min(self.cs.data.loc[section][size]))
                     max_size = np.ceil(max(self.cs.data.loc[section][size]))
-                    size_values = [min_size, (min_size + max_size)/2, max_size]
+                    size_values = [min_size, (min_size + max_size) / 2, max_size]
                     size_legend_labels = [
                         f"{'M' if size == 'mag' else 'D' if size == 'depth' else size} {v}" for v in size_values
                     ]
-                    
+
                     size_handles = [
-                        plt.scatter([], [], s=(v*size_scale_factor[0]) ** size_scale_factor[1], 
+                        plt.scatter([], [], s=(v * size_scale_factor[0]) ** size_scale_factor[1],
                                     facecolor='white', edgecolor='black', alpha=alpha, label=label)
                         for v, label in zip(size_values, size_legend_labels)
                     ]
-                    
+
                     leg2 = plt.legend(
                         handles=size_handles,
                         loc=size_legend_loc,
@@ -349,7 +342,7 @@ class CrossSectionPlotter:
                         edgecolor='black',
                         ncol=len(size_values),
                     )
-                    
+
                     ax.add_artist(leg2)
 
             if save_figure:
@@ -357,8 +350,6 @@ class CrossSectionPlotter:
 
             plt.show()
             self.bp.reset_style()
-    
-
     
     def plot_section_lines(
         self,
@@ -495,9 +486,18 @@ class CrossSectionPlotter:
         for idx, (lons, lats) in enumerate(self._get_section_lines()):
             self.mp.plot(lons, lats, color='black', linewidth=1)
             self.mp.annotate(
-                text=str(idx + 1), xy=(lons[1], lats[1]), ha='center',
-                va='center', fontsize=10, color='white', weight='bold',
-                bbox=dict(boxstyle='circle', facecolor='black', edgecolor='black', pad=0.2)
+                text=str(idx + 1),
+                xy=(lons[1], lats[1]),
+                ha='center',
+                va='center',
+                fontsize=10,
+                color='white',
+                weight='bold',
+                bbox=dict(
+                    boxstyle='circle',
+                    facecolor='black',
+                    edgecolor='black',
+                    pad=0.2)
             )
 
         main_extent = self.mp.extent({'lon': lon, 'lat': lat}, xlim=xlim, ylim=ylim)

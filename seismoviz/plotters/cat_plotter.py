@@ -80,7 +80,7 @@ class CatalogPlotter:
         size : float or str, optional
             The size of the markers representing seismic events. If a string 
             is provided, it should refer to a column in the DataFrame (e.g., 
-            'magnitude') to scale point sizes proportionally. Default is 10.
+            'mag') to scale point sizes proportionally. Default is 10.
 
         size_scale_factor : tuple[float, float], optional
             A tuple to scale marker sizes when `size` is based on a DataFrame 
@@ -249,6 +249,8 @@ class CatalogPlotter:
         color: str = 'grey',
         edgecolor: str = 'black',
         alpha: float = 0.75,
+        size_legend: bool = False,
+        size_legend_loc: str = 'upper right',
         save_figure: bool = False,
         save_name: str = 'map', 
         save_extension: str = 'jpg'
@@ -258,26 +260,15 @@ class CatalogPlotter:
 
         Parameters
         ----------
-        size : float | str, optional
-            The size of the markers used to represent seismic events on 
-            the map. Default is 10.
-
-            .. note::
-                If you want to plot events where the point size is proportional
-                to a specific dimension (e.g., magnitude or depth), you can
-                directly pass the corresponding column from the `pd.DataFrame`
-                to the argument as a string (`size='mag'`).
+        size : float or str, optional
+            The size of the markers representing seismic events. If a string 
+            is provided, it should refer to a column in the DataFrame (e.g., 
+            'mag') to scale point sizes proportionally. Default is 10.
 
         size_scale_factor : tuple[float, float], optional
-            A tuple of two factors used to scale the size of the markers when `size` is 
-            based on a column from the data. The size is calculated by first multiplying 
-            the values in the specified column by the first element of the tuple 
-            (`size_scale_factor[0]`), and then raising the result to the power of the 
-            second element (`size_scale_factor[1]`). Default is (1, 2).
-
-            .. note::
-                For example, if `size='mag'`, the size of the markers is calculated as:
-                `plt_size = (magnitude * size_scale_factor[0]) ** size_scale_factor[1]`.
+            A tuple to scale marker sizes when `size` is based on a DataFrame 
+            column. The first element scales the values, and the second element 
+            raises them to a power. Default is (1, 3).
 
         color : str, optional
             The color used to fill the seismic event markers. Default is 
@@ -291,6 +282,14 @@ class CatalogPlotter:
             The transparency level of the markers. A value between 0 and 
             1, where 1 is fully opaque and 0 is fully transparent. 
             Default is 0.75.
+
+        size_legend : bool, optional
+            If True, displays a legend that explains marker sizes. Default is False.
+            
+        size_legend_loc : str, optional
+            Location of the size legend when `size_legend` is True. 
+            Default is 'upper right'.
+
         save_figure : bool, optional
             If set to True, the function saves the generated plots using 
             the provided base name and file extension. The default is False.
@@ -343,14 +342,37 @@ class CatalogPlotter:
                 alpha=alpha,
                 lw=0.25
             )
-        ax.set_ylabel('Magnitude')
 
+        if size_legend:   
+            if isinstance(size, str):
+                min_size = np.floor(min(self.ct.data[size]))
+                max_size = np.ceil(max(self.ct.data[size]))
+                size_values = [min_size, (min_size + max_size)/2, max_size]
+                size_legend_labels = [
+                    f"{'M' if size == 'mag' else 'D' if size == 'depth' else size} {v}" for v in size_values
+                ]
+                
+                size_handles = [
+                    plt.scatter([], [], s=(v*size_scale_factor[0]) ** size_scale_factor[1], 
+                                facecolor='white', edgecolor='black', alpha=alpha, label=label)
+                    for v, label in zip(size_values, size_legend_labels)
+                ]
+                
+                plt.legend(
+                    handles=size_handles,
+                    loc=size_legend_loc,
+                    fancybox=False,
+                    edgecolor='black',
+                    ncol=len(size_values),
+                )
+
+        ax.set_ylabel('Magnitude')
         ax.xaxis.set_major_locator(mdates.MonthLocator())
         ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
         plt.xticks(rotation=30, ha='right')
 
         ax.grid(True, alpha=0.25, axis='y', linestyle=':')
-        
+
         if save_figure:
             self.bp.save_figure(save_name, save_extension)
         
