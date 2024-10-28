@@ -540,10 +540,6 @@ class CatalogPlotter:
 
         save_extension : str, optional
             File extension for the saved figure. Default is 'jpg'.
-
-        Returns
-        -------
-        None
         """
         self.bp.set_style(styling.DEFAULT)
 

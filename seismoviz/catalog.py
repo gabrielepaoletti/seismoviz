@@ -304,6 +304,87 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
 
     @sync_signature('plot_space_time', CatalogPlotter)
     def plot_space_time(self, **kwargs) -> None:
+        """
+        Plots the space-time distribution of seismic events along a specified 
+        strike direction.
+
+        Parameters
+        ----------
+        center : tuple[float, float]
+            The (longitude, latitude) coordinates of the center point for distance calculation.
+
+        strike : int
+            The strike angle in degrees, measured clockwise from north. Defines 
+            the direction along which distances are calculated.
+
+        color_by : str, optional
+            Column name used to color points by a specific attribute. If None, 
+            uses a fixed color.
+
+        cmap : str, optional
+            Colormap to use when coloring points by an attribute. Default is 'jet'.
+
+        hl_ms : int, optional
+            Magnitude threshold for highlighting large seismic events. Default is None.
+
+        hl_size : float, optional
+            The size of the highlighted events. Default is 200.
+
+        hl_marker : str, optional
+            Marker style for highlighted events. Default is '*'.
+
+        hl_color : str, optional
+            Color for highlighted seismic events. Default is 'red'.
+
+        hl_edgecolor : str, optional
+            Edge color for highlighted events. Default is 'darkred'.
+
+        size : float or str, optional
+            Size of the points or the name of the column to use for size scaling. 
+            Default is 10.
+
+        size_scale_factor : tuple[float, float], optional
+            Scaling factors (base, exponent) for the point sizes. Default is (1, 2).
+
+        color : str, optional
+            Default color for the points if `color_by` is None. Default is 'grey'.
+
+        edgecolor : str, optional
+            Color for the edges of the points. Default is 'black'.
+
+        alpha : float, optional
+            Transparency level of the points. Default is 0.75.
+
+        xlim : tuple of str, optional
+            Time limits for the x-axis as start and end date strings. Default is None.
+
+        ylim : tuple[float, float], optional
+            Limits for the y-axis (distance from center). Default is None.
+
+        legend : str, optional
+            Label for the points. Default is None.
+
+        legend_loc : str, optional
+            Location for the legend. Default is 'lower right'.
+
+        size_legend : bool, optional
+            If True, includes a legend for point sizes. Default is False.
+
+        size_legend_loc : str, optional
+            Location for the size legend. Default is 'upper right'.
+
+        fig_size : tuple[float, float], optional
+            Figure size for the plot. Default is (10, 5).
+
+        save_figure : bool, optional
+            If True, saves the figure. Default is False.
+
+        save_name : str, optional
+            Base name for the saved figure. Default is 'map'.
+
+        save_extension : str, optional
+            File extension for the saved figure. Default is 'jpg'.
+        """
         self._plotter.plot_space_time(**kwargs)
 
 
