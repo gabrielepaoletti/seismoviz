@@ -3,7 +3,7 @@ import holoviews as hv
 
 from seismoviz.catalog import Catalog, SubCatalog
 from seismoviz.cross_section import CrossSection
-from seismoviz.internal.selector import CrossSectionSelector
+from seismoviz.internal.selector import CatalogSelector, CrossSectionSelector
 
 
 def read_catalog(path: str) -> Catalog:
@@ -81,6 +81,49 @@ def create_cross_section(
         catalog, center, num_sections, thickness, strike, 
         map_length, depth_range, section_distance
     )
+
+
+class select_on_map:
+    """
+    Simulates a function for selecting data from a map, using 
+    a CatalogSelector to interact with seismic data.
+
+    Parameters
+    ----------
+    catalog : Catalog
+        The Catalog object containing seismic data and plotting 
+        configurations.
+
+    size : float, optional
+        The size of the points in the scatter plot. Default is 1.
+
+    color : str, optional
+        The color of the points in the scatter plot. Default is 'black'.
+    """
+
+    def __init__(
+        self,
+        catalog: Catalog,
+        size: float = 1,
+        color: str = 'black'
+    ) -> None:
+        self._selector = CatalogSelector(catalog)
+        self._selector.select(size=size, color=color)
+
+    def confirm_selection(self) -> SubCatalog:
+        """
+        Confirms the selection and returns a SubCatalog of the selected data.
+
+        Returns
+        -------
+        SubCatalog
+            A SubCatalog object containing the selected data from the 
+            cross-section.
+        """
+        return SubCatalog(
+            data=self._selector.sd,
+            selected_from='Catalog'
+        )
 
 
 class select_on_section:

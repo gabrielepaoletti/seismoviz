@@ -3,6 +3,108 @@ import holoviews as hv
 from holoviews import streams
 
 
+class CatalogSelector:
+    """
+    A class to handle map plotting and selection of seismic event 
+    data in a Holoviews plot.
+
+    Parameters
+    ----------
+    catalog : type
+        The class containing the catalog data and plotting configurations.
+    """
+    def __init__(self, catalog: type) -> None:
+        self.ct = catalog
+        self.sd = None
+        hv.extension('bokeh')
+    
+    def _set_bounds(self, plot, element) -> None:
+        """
+        Set the x and y range bounds for the cross-section plot.
+
+        Parameters
+        ----------
+        plot : holoviews.plotting.bokeh.ElementPlot
+            The plot object that contains the current state of the figure.
+
+        element : holoviews.core.element.Element
+            The element being plotted (usually the Scatter plot).
+        """
+        plot.state.x_range.bounds = (
+            self.ct.data.lon.min(), self.ct.data.lon.max()
+        )
+        plot.state.y_range.bounds = (
+            self.ct.data.lat.min(), self.ct.data.lat.max()
+        )
+    
+    def _plot_map(self, size: float, color: str) -> hv.Scatter:
+        """
+        Create a Holoviews Scatter plot of the seismic data.
+
+        Parameters
+        ----------
+        size : float
+            The size of the points in the scatter plot.
+
+        color : str
+            The color of the points.
+
+        Returns
+        -------
+        holoviews.core.element.Scatter
+            A Scatter plot object configured with the cross-section data.
+        """
+        scatter = hv.Scatter(
+            self.ct.data,
+            kdims='lon',
+            vdims='lat'
+        ).opts(
+            size=size,
+            color=color,
+            active_tools=['lasso_select', 'wheel_zoom', 'pan'],
+            tools=['lasso_select', 'box_select'],
+            aspect='equal',
+            xlabel='Longitude [°]',
+            ylabel='Latitude [°]',
+            frame_width=800,
+            xlim=(self.ct.data.lon.min(), self.ct.data.lon.max()),
+            ylim=(self.ct.data.lat.min(), self.ct.data.lat.max()),
+            framewise=False,
+            hooks=[self._set_bounds]
+        )
+        return scatter
+
+    def _selection_callback(self, index: list[int]) -> None:
+        """
+        Callback function to handle point selection events.
+
+        Parameters
+        ----------
+        index : list of int
+            List of indices corresponding to selected points in the data.
+        """
+        if index:
+            self.sd = self.ct.data.iloc[index]
+
+    def select(self, size: float = 1, color: str = 'black') -> None:
+        """
+        Set up the cross-section plot and initialize the selection stream.
+
+        Parameters
+        ----------
+        size : float, optional
+            The size of the scatter plot points. Default is 1.
+
+        color : str, optional
+            The color of the points in the scatter plot. Default is 'black'.
+        """
+        scatter = self._plot_map(size=size, color=color)
+        selection = streams.Selection1D(source=scatter)
+        selection.add_subscriber(self._selection_callback)
+
+        hv.output(scatter)
+
+
 class CrossSectionSelector:
     """
     A class to handle cross-section plotting and selection of seismic event 
