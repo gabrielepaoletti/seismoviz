@@ -85,33 +85,34 @@ class CrossSectionPlotter:
         return all_elevations
 
     def plot_sections(
-        self,
-        color_by: str = None,
-        cmap: str = 'jet',
-        title: str = 'Section',
-        hl_ms: float = None,
-        hl_size: float = 200,
-        hl_marker: str = '*',
-        hl_color: str = 'red',
-        hl_edgecolor: str = 'darkred',
-        color: str = 'black',
-        edgecolor: str = None,
-        size: float | str = 5,
-        size_scale_factor: tuple[float, float] = (1, 2),
-        alpha: float = 0.5,
-        legend: str = None,
-        legend_loc: str = 'lower left',
-        size_legend: bool = False,
-        size_legend_loc: str = 'upper right',
-        scale_legend: bool = True,
-        scale_legend_loc: str  = 'lower right',
-        ylabel: str = 'Depth [km]',
-        xlim: tuple[float, float] = None,
-        ylim: tuple[float, float] = None,
-        facecolor: tuple[str, str] = ('#F0F0F0', '#FFFFFF'),
-        save_figure: bool = False,
-        save_name: str = 'cross_section',
-        save_extension: str = 'jpg'
+            self,
+            color_by: str = None,
+            cmap: str = 'jet',
+            title: str = 'Section',
+            hl_ms: float = None,
+            hl_size: float = 200,
+            hl_marker: str = '*',
+            hl_color: str = 'red',
+            hl_edgecolor: str = 'darkred',
+            color: str = 'black',
+            edgecolor: str = None,
+            size: float | str = 5,
+            size_scale_factor: tuple[float, float] = (1, 2),
+            alpha: float = 0.5,
+            legend: str = None,
+            legend_loc: str = 'lower left',
+            size_legend: bool = False,
+            size_legend_loc: str = 'upper right',
+            scale_legend: bool = True,
+            scale_legend_loc: str  = 'lower right',
+            ylabel: str = 'Depth [km]',
+            xlim: tuple[float, float] = None,
+            ylim: tuple[float, float] = None,
+            fig_size: tuple[float, float] = (12, 6),
+            facecolor: tuple[str, str] = ('#F0F0F0', '#FFFFFF'),
+            save_figure: bool = False,
+            save_name: str = 'cross_section',
+            save_extension: str = 'jpg'
     ) -> None:
         """
         Plots a cross-section of seismic events with customizable appearance.
@@ -197,6 +198,9 @@ class CrossSectionPlotter:
             Vertical extent (limits) of the plot (y-axis). If None, limits 
             are set automatically. Default is None.
 
+        fig_size : tuple[float, float], optional
+            Figure size for the plot. Default is (12, 6).
+
         facecolor : tuple[str, str], optional
             Tuple specifying the background colors of the plot, with two 
             values for gradient-like effects. Default is ('#F0F0F0', '#FFFFFF').
@@ -222,7 +226,7 @@ class CrossSectionPlotter:
 
         for section in range(self.cs.data.index.get_level_values('section_id').nunique()):
             self.bp.set_style(styling.CROSS_SECTION)
-            fig, ax = plt.subplots(figsize=(12, 6))
+            fig, ax = plt.subplots(figsize=fig_size)
 
             elev_profile = np.array(elev_profiles[section]) / 1000
 
@@ -352,28 +356,28 @@ class CrossSectionPlotter:
             self.bp.reset_style()
     
     def plot_section_lines(
-        self,
-        title: str = None,
-        hl_ms: int = None,
-        hl_size: int = 300,
-        hl_marker: str = '*',
-        hl_color: str = 'red',
-        hl_edgecolor: str = 'darkred',
-        size: float = 10,
-        color: str = 'grey',
-        edgecolor: str = None, 
-        alpha: float = 0.75, 
-        legend: str = None,
-        legend_loc: str = 'lower left',
-        inset: bool = True, 
-        xlim: tuple[float, float] = None,
-        ylim: tuple[float, float] = None, 
-        inset_buffer: float = 3, 
-        bounds_res: str = '50m', 
-        bmap_res: int = 12, 
-        save_figure: bool = False,
-        save_name: str = 'map', 
-        save_extension: str = 'jpg'
+            self,
+            title: str = None,
+            hl_ms: int = None,
+            hl_size: int = 300,
+            hl_marker: str = '*',
+            hl_color: str = 'red',
+            hl_edgecolor: str = 'darkred',
+            size: float = 10,
+            color: str = 'grey',
+            edgecolor: str = None, 
+            alpha: float = 0.75, 
+            legend: str = None,
+            legend_loc: str = 'lower left',
+            inset: bool = True, 
+            xlim: tuple[float, float] = None,
+            ylim: tuple[float, float] = None, 
+            inset_buffer: float = 3, 
+            bounds_res: str = '50m', 
+            bmap_res: int = 12, 
+            save_figure: bool = False,
+            save_name: str = 'map', 
+            save_extension: str = 'jpg'
     ) -> None:
         """
         Visualizes section lines on a map.

@@ -12,15 +12,15 @@ from numpy.typing import ArrayLike
 
 class CrossSection(GeospatialMixin, DunderMethodMixin):
     def __init__(
-        self, 
-        data: Catalog, 
-        center: tuple[float, float], 
-        num_sections: tuple[int, int], 
-        tickness: int, 
-        strike: int, 
-        map_length: int, 
-        depth_range: tuple[float, float], 
-        section_distance: int = 0
+            self, 
+            data: Catalog, 
+            center: tuple[float, float], 
+            num_sections: tuple[int, int], 
+            tickness: int, 
+            strike: int, 
+            map_length: int, 
+            depth_range: tuple[float, float], 
+            section_distance: int = 0
     ) -> None:
         if isinstance(data, Catalog):
             self.data = data.data
@@ -42,11 +42,11 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
 
     @staticmethod
     def _distance_point_from_plane(
-        x: float, 
-        y: float, 
-        z: float, 
-        normal: ArrayLike, 
-        origin: ArrayLike
+            x: float, 
+            y: float, 
+            z: float, 
+            normal: ArrayLike, 
+            origin: ArrayLike
     ) -> float:
         """
         Calculate the perpendicular distance of a point (x, y, z) from 
@@ -81,10 +81,10 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
 
     @staticmethod
     def _section_center_positions(
-        center_x: float, 
-        center_y: float, 
-        section_centers: float, 
-        strike: float
+            center_x: float, 
+            center_y: float, 
+            section_centers: float, 
+            strike: float
     ) -> tuple[ArrayLike, ArrayLike]:
         """
         Calculate the positions of section centers based on a reference 

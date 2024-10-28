@@ -15,10 +15,10 @@ from matplotlib.collections import PathCollection
 
 class MapPlotter:
     def __init__(
-        self, 
-        projection=ccrs.Mercator(), 
-        transform=ccrs.PlateCarree()
-    ):
+            self, 
+            projection=ccrs.Mercator(), 
+            transform=ccrs.PlateCarree()
+    ) -> None:
         """
         Initializes MapPlotter with default projection and transformation 
         settings.
@@ -39,9 +39,9 @@ class MapPlotter:
         self.fig, self.ax = None, None
 
     def create_base_map(
-        self,
-        bounds_res: str = '50m',
-        bmap_res: int = 12
+            self,
+            bounds_res: str = '50m',
+            bmap_res: int = 12
     ) -> tuple[plt.Figure, plt.Axes]:
         """
         Creates a base map with common geographical features like land, 
@@ -90,16 +90,16 @@ class MapPlotter:
         return fig, ax
 
     def plot_with_colorbar(
-        self,
-        data: pd.DataFrame,
-        x: str,
-        y: str,
-        color_by: str,
-        cmap: str,
-        edgecolor: str,
-        size: float,
-        alpha: float,
-        legend: str
+            self,
+            data: pd.DataFrame,
+            x: str,
+            y: str,
+            color_by: str,
+            cmap: str,
+            edgecolor: str,
+            size: float,
+            alpha: float,
+            legend: str
     ) -> PathCollection:
         """
         Plots data on the map with a colorbar.
@@ -186,10 +186,10 @@ class MapPlotter:
         return scatter
 
     def extent(
-        self,
-        data: pd.DataFrame,
-        xlim: tuple[float, float] = None, 
-        ylim: tuple[float, float] = None
+            self,
+            data: pd.DataFrame,
+            xlim: tuple[float, float] = None, 
+            ylim: tuple[float, float] = None
     ) -> tuple[float, float, float, float]:
         """
         Sets the map extent based on the provided data frame or explicit 
@@ -232,11 +232,11 @@ class MapPlotter:
         return lon_min, lon_max, lat_min, lat_max
 
     def inset(
-        self,
-        extent: tuple[float, float, float, float],
-        buffer: int = 3, 
-        inset_size: tuple[float, float] = (1.8, 1.8),
-        bounds_res: str = '50m'
+            self,
+            extent: tuple[float, float, float, float],
+            buffer: int = 3, 
+            inset_size: tuple[float, float] = (1.8, 1.8),
+            bounds_res: str = '50m'
     ) -> plt.Axes:
         """
         Adds an inset map to the main map, showing a broader area around 
@@ -293,9 +293,9 @@ class MapPlotter:
         return inset_ax
 
     def plot(
-        self,
-        x: ArrayLike,
-        y: ArrayLike,
+            self,
+            x: ArrayLike,
+            y: ArrayLike,
         **kwargs) -> list[plt.Line2D]:
         """
         Plots data on the map using matplotlib's plot method, applying 

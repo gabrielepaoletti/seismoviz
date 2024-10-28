@@ -31,21 +31,21 @@ class BasePlotter:
         plt.rcdefaults()
 
     def plot_with_colorbar(
-        self,
-        ax: Axes,
-        data: pd.DataFrame,
-        x: str,
-        y: str,
-        color_by: str,
-        cmap: str,
-        edgecolor: str,
-        size: float,
-        alpha: float,
-        legend: str = None,
-        cbar_orientation: str = 'horizontal',
-        cbar_pad: float = 0.06,
-        cbar_aspect: int = 40,
-        cbar_shrink: float = 0.6,
+            self,
+            ax: Axes,
+            data: pd.DataFrame,
+            x: str,
+            y: str,
+            color_by: str,
+            cmap: str,
+            edgecolor: str,
+            size: float,
+            alpha: float,
+            legend: str = None,
+            cbar_orientation: str = 'horizontal',
+            cbar_pad: float = 0.06,
+            cbar_aspect: int = 40,
+            cbar_shrink: float = 0.6
     ) -> PathCollection:
         """
         Plots a scatter plot on the given axes with an associated colorbar.
@@ -156,10 +156,10 @@ class BasePlotter:
         return scatter
     
     def save_figure(
-        self, 
-        save_name: str, 
-        save_extension: str = 'jpg', 
-        directory: str = './seismoviz_figures'
+            self, 
+            save_name: str, 
+            save_extension: str = 'jpg', 
+            directory: str = './seismoviz_figures'
     ) -> None:
         """
         Saves the given figure to a file with the specified name, extension, 

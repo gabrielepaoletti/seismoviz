@@ -302,6 +302,10 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         """
         self._plotter.plot_attribute_distributions(**kwargs)
 
+    @sync_signature('plot_space_time', CatalogPlotter)
+    def plot_space_time(self, **kwargs) -> None:
+        self._plotter.plot_space_time(**kwargs)
+
 
 class SubCatalog(Catalog):
     def __init__(self, data: pd.DataFrame, selected_from: str) -> None:
