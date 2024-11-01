@@ -279,8 +279,12 @@ class CrossSectionPlotter:
                 ax.scatter(
                     self.cs.data.loc[section].on_section_coords,
                     self.cs.data.loc[section].depth,
-                    color=color, edgecolor=edgecolor,
-                    s=plt_size, alpha=alpha, linewidth=0.25
+                    color=color, 
+                    edgecolor=edgecolor,
+                    s=plt_size, 
+                    alpha=alpha,
+                    linewidth=0.25,
+                    label=legend
                 )
 
             if hl_ms is not None:

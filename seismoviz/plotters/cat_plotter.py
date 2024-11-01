@@ -277,7 +277,7 @@ class CatalogPlotter:
                     fancybox=False,
                     edgecolor='black',
                     ncol=len(size_values),
-                    borderpad=1.2,
+                    borderpad=1.1,
                 )
                 
                 self.mp.ax.add_artist(leg2)

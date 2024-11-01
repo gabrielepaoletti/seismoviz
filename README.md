@@ -33,7 +33,7 @@ Apply multiple filtering criteria to extract your subset of interest. The flexib
 
 ```python
 fc = catalog.filter(
-    mag=('greater', 2),             # Magnitude > 2
+    mag=('greater', 1,             # Magnitude > 1
     lon=('between', [12.9, 13.5]),  # Longitude range
     lat=('between', [42.6, 43.1])   # Latitude range
 )
@@ -45,10 +45,10 @@ Generate publication-ready maps with customizable parameters. Visualize your eve
 ```python
 fc.plot_map(
     title='Tan et al. 2021', # Set the title of the map
-    highlight_mag=5,         # Highlight events with magnitude > 5
+    hl_ms=5,                 # Highlight events with magnitude > 5
     color_by='depth',        # Color events by depth
-    size='mag',              # Size proportional to magnitude
     cmap='Blues',            # Choose colormap
+    size='mag',              # Size proportional to magnitude
     legend='Seismicity'      # Custom legend label
 )
 ```
@@ -74,7 +74,7 @@ cs = sv.create_cross_section(
 
 # Visualize the cross-section
 cs.plot_sections(
-    highlight_mag=5,        # Highlight events with magnitude > 5
+    hl_ms=5,                # Highlight events with magnitude > 5
     color_by='time',        # Color events by occurrence time
     cmap='Blues',           # Choose colormap
     size='mag',             # Size proportional to magnitude
