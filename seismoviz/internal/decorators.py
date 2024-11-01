@@ -1,22 +1,19 @@
 import inspect
 from functools import wraps
-
 from collections.abc import Callable
 
-
-def sync_signature(method_name: str, cls: type) -> Callable:
+def sync_signature(attribute_name: str, method_name: str) -> Callable:
     """
     A decorator that synchronizes the signature of a method with a target 
-    method from a specified class.
+    method from a specified attribute's class.
 
     Parameters
     ----------
+    attribute_name : str
+        The name of the attribute containing the target method.
     method_name : str
-        The name of the method in the target class whose signature will be 
-        synced.
-
-    cls : type
-        The class from which the target method is retrieved.
+        The name of the method in the target attribute's class whose signature
+        will be synced.
 
     Returns
     -------
@@ -50,10 +47,8 @@ def sync_signature(method_name: str, cls: type) -> Callable:
             ----------
             self : any type
                 The instance of the class that contains the decorated method.
-
             *args : any type
                 Positional arguments passed to the method.
-
             **kwargs : any type
                 Keyword arguments passed to the method. Only the valid ones for 
                 the target method will be passed.
@@ -64,17 +59,22 @@ def sync_signature(method_name: str, cls: type) -> Callable:
                 The result of calling the target method with the filtered keyword 
                 arguments.
             """
-            plotter_method = getattr(self._plotter, method_name)
-            sig = inspect.signature(plotter_method)
+            target_instance = getattr(self, attribute_name)
+            target_method = getattr(target_instance, method_name)
+            sig = inspect.signature(target_method)
 
             filtered_kwargs = {
                 k: v for k, v in kwargs.items() if k in sig.parameters
             }
 
-            return plotter_method(*args, **filtered_kwargs)
+            return target_method(*args, **filtered_kwargs)
 
-        target_method = getattr(cls, method_name)
-        wrapper.__signature__ = inspect.signature(target_method)
+        def set_signature_on_wrapper(instance):
+            target_class = type(getattr(instance, attribute_name))
+            target_method = getattr(target_class, method_name)
+            wrapper.__signature__ = inspect.signature(target_method)
+
+        wrapper._set_signature_on_wrapper = set_signature_on_wrapper
 
         return wrapper
 

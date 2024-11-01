@@ -197,7 +197,7 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
 
         return section_dataframes
 
-    @sync_signature('plot_sections', CrossSectionPlotter)
+    @sync_signature('_plotter', 'plot_sections')
     def plot_sections(self, **kwargs):
         """
         Visualizes seismic events on section.
@@ -277,7 +277,7 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
         """
         self._plotter.plot_sections(**kwargs)
 
-    @sync_signature('plot_section_lines', CrossSectionPlotter)
+    @sync_signature('_plotter', 'plot_section_lines')
     def plot_section_lines(self, **kwargs):
         """
         Visualizes section lines on a map.

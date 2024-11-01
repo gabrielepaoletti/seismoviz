@@ -146,7 +146,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         """
         return self.data.drop_duplicates(subset=['lon', 'lat', 'depth', 'time'])
 
-    @sync_signature('plot_map', CatalogPlotter)
+    @sync_signature('_plotter', 'plot_map')
     def plot_map(self, **kwargs) -> None:
         """
         Visualizes seismic events on a map.
@@ -236,7 +236,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         """
         self._plotter.plot_map(**kwargs)
 
-    @sync_signature('plot_magnitude_time', CatalogPlotter)
+    @sync_signature('_plotter', 'plot_magnitude_time')
     def plot_magnitude_time(self, **kwargs) -> None:
         """
         Plots seismic event magnitudes over time.
@@ -258,7 +258,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         """
         self._plotter.plot_magnitude_time(**kwargs)
 
-    @sync_signature('plot_event_timeline', CatalogPlotter)
+    @sync_signature('_plotter', 'plot_event_timeline')
     def plot_event_timeline(self, **kwargs) -> None:
         """
         Plots a timeline of seismic events to visualize the cumulative 
@@ -281,7 +281,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         """
         self.plotter.plot_event_timeline(**kwargs)
 
-    @sync_signature('plot_attribute_distributions', CatalogPlotter)
+    @sync_signature('_plotter', 'plot_attribute_distributions')
     def plot_attribute_distributions(self, **kwargs) -> None:
         """
         Visualizes the distribution of key attributes in the seismic event 
@@ -304,7 +304,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         """
         self._plotter.plot_attribute_distributions(**kwargs)
 
-    @sync_signature('plot_space_time', CatalogPlotter)
+    @sync_signature('_plotter', 'plot_space_time')
     def plot_space_time(self, **kwargs) -> None:
         """
         Plots the space-time distribution of seismic events along a specified 
@@ -389,8 +389,91 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         """
         self._plotter.plot_space_time(**kwargs)
     
+    @sync_signature('_bvc', 'fmd')
     def plot_fmd(self, **kwargs):
+        """
+        Calculates the frequency-magnitude distribution (FMD) for seismic events, 
+        which represents the number of events in each magnitude bin.
+
+        Parameters
+        ----------
+        bin_size : float
+            The size of each magnitude bin.
+
+        plot : bool, optional
+            If True, plots the FMD. Default is False.
+
+        save_figure : bool, optional
+            If True, saves the figure when `plot` is True. Default is False.
+
+        save_name : str, optional
+            The base name for saving the figure if `save_figure` is True. Default is 'fmd'.
+
+        save_extension : str, optional
+            The file extension for the saved figure. Default is 'jpg'.
+
+        Returns
+        -------
+        tuple[np.ndarray, np.ndarray, np.ndarray]
+            - bins : np.ndarray
+                Array of magnitude bin edges.
+            - events_per_bin : np.ndarray
+                Array with the number of events in each magnitude bin.
+            - cumulative_events : np.ndarray
+                Array with the cumulative number of events for magnitudes greater than 
+                or equal to each bin.
+
+        """
         self._bvc.fmd(**kwargs, plot=True)
+    
+    def estimate_b_value(self, bin_size: float, mc: str | float, **kwargs):
+        """
+        Estimates the b-value for seismic events, a measure of earthquake 
+        frequency-magnitude distribution, and calculates the associated uncertainties.
+
+        Parameters
+        ----------
+        bin_size : float
+            The size of each magnitude bin for calculating frequency-magnitude 
+            distribution.
+
+        mc : str or float
+            The completeness magnitude (threshold), above which the b-value 
+            estimation is considered valid.
+
+        plot : bool, optional
+            If True, plots the frequency-magnitude distribution with the 
+            calculated b-value curve. Default is True.
+
+        plot_uncertainty : str, optional
+            Type of uncertainty to display in the plot. Options are 'shi_bolt' 
+            for Shi and Bolt uncertainty and 'aki' for Aki uncertainty. Default is 'shi_bolt'.
+
+        save_figure : bool, optional
+            If True, saves the plot. Default is False.
+
+        save_name : str, optional
+            Base name for the saved figure, if `save_figure` is True. Default is 'b-value'.
+
+        save_extension : str, optional
+            File extension for the saved figure. Default is 'jpg'.
+
+        Returns
+        -------
+        tuple[float, float, float, float]
+            - a_value : float
+                The a-value, representing the logarithmic scale of the seismicity rate.
+            - b_value : float
+                The b-value, indicating the relative occurrence of large and small 
+                earthquakes.
+            - aki_uncertainty : float
+                The Aki uncertainty in the b-value estimation.
+            - shi_bolt_uncertainty : float
+                The Shi and Bolt uncertainty in the b-value estimation.
+        """
+        if mc == 'maxc':
+            mc_maxc = self._bvc._maxc(bin_size=bin_size)
+            self._bvc.estimate_b_value(bin_size=bin_size, mc=mc_maxc, **kwargs)
 
 
 class SubCatalog(Catalog):
