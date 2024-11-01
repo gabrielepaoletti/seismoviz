@@ -1,8 +1,9 @@
 import pandas as pd
 
 from seismoviz.internal.decorators import sync_signature
+from seismoviz.components.analysis.b_value import BValueCalculator
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
-from seismoviz.plotters.cat_plotter import CatalogPlotter, SubCatalogPlotter
+from seismoviz.components.plotters.cat_plotter import CatalogPlotter, SubCatalogPlotter
 
 
 class Catalog(GeospatialMixin, DunderMethodMixin):
@@ -19,6 +20,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         super().__init__()
 
         self._plotter = CatalogPlotter(self)
+        self._bvc = BValueCalculator(self)
 
     def filter(self, **kwargs) -> 'Catalog':
         """
@@ -386,6 +388,9 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
             File extension for the saved figure. Default is 'jpg'.
         """
         self._plotter.plot_space_time(**kwargs)
+    
+    def plot_fmd(self, **kwargs):
+        self._bvc.fmd(**kwargs, plot=True)
 
 
 class SubCatalog(Catalog):

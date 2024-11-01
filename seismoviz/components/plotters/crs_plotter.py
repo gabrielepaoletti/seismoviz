@@ -5,10 +5,10 @@ import matplotlib.dates as mdates
 import matplotlib.colors as mcolors
 import matplotlib.patches as patches
 
-from seismoviz.plotters.common import styling
 from seismoviz.utils import convert_to_geographical
-from seismoviz.plotters.common.map_plotter import MapPlotter
-from seismoviz.plotters.common.base_plotter import BasePlotter
+from seismoviz.components.common import styling
+from seismoviz.components.common.map_plotter import MapPlotter
+from seismoviz.components.common.base_plotter import BasePlotter
 
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 import matplotlib.font_manager as fm

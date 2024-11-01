@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
 from seismoviz.utils import convert_to_utm
-from seismoviz.plotters.common import styling
-from seismoviz.plotters.common.map_plotter import MapPlotter
-from seismoviz.plotters.common.base_plotter import BasePlotter
+from seismoviz.components.common import styling
+from seismoviz.components.common.map_plotter import MapPlotter
+from seismoviz.components.common.base_plotter import BasePlotter
 
 
 class CatalogPlotter:

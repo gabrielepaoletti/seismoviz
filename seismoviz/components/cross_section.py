@@ -1,11 +1,11 @@
 import numpy as np
 import pandas as pd
 
-from seismoviz.catalog import Catalog
 from seismoviz.utils import convert_to_utm
+from seismoviz.components.catalog import Catalog
 from seismoviz.internal.decorators import sync_signature
-from seismoviz.plotters.crs_plotter import CrossSectionPlotter
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
+from seismoviz.components.plotters.crs_plotter import CrossSectionPlotter
 
 from numpy.typing import ArrayLike
 
