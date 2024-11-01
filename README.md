@@ -33,7 +33,7 @@ Apply multiple filtering criteria to extract your subset of interest. The flexib
 
 ```python
 fc = catalog.filter(
-    mag=('greater', 1,             # Magnitude > 1
+    mag=('greater', 1,              # Magnitude > 1
     lon=('between', [12.9, 13.5]),  # Longitude range
     lat=('between', [42.6, 43.1])   # Latitude range
 )
