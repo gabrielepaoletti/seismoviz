@@ -314,7 +314,7 @@ class CrossSectionPlotter:
                     sep=5,
                     color='black',
                     frameon=False,
-                    size_vertical=0.1,
+                    size_vertical=(self.cs.data.loc[section].depth.max() - self.cs.data.loc[section].depth.min()) / 100,
                     fontproperties=fm.FontProperties(size=10, weight='bold')
                 )
 

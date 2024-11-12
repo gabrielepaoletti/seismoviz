@@ -93,15 +93,15 @@ class BValueCalculator:
         return bins, events_per_bin, cumulative_events
 
     def estimate_b_value(
-            self,
-            bin_size: float,
-            mc: str | float,
-            plot: bool = True,
-            plot_uncertainty: str = 'shi_bolt',
-            save_figure: bool = False,
-            save_name: str = 'b-value',
-            save_extension: str = 'jpg'
-    ) -> tuple[float, float, float, float]:
+                self,
+                bin_size: float,
+                mc: str | float,
+                plot: bool = True,
+                plot_uncertainty: str = 'shi_bolt',
+                save_figure: bool = False,
+                save_name: str = 'b-value',
+                save_extension: str = 'jpg'
+        ) -> tuple[float, float, float, float]:
         """
         Estimates the b-value for seismic events, a measure of earthquake 
         frequency-magnitude distribution, and calculates the associated uncertainties.
@@ -146,7 +146,14 @@ class BValueCalculator:
             - shi_bolt_uncertainty : float
                 The Shi and Bolt uncertainty in the b-value estimation.
         """
-        threshold = round(mc, 1) - bin_size / 2
+        def count_decimals(number):
+            decimal_str = str(number).split(".")[1] if "." in str(number) else ""
+            return len(decimal_str)
+        
+        decimals = count_decimals(bin_size)
+
+        mag_compl = round(mc, decimals)
+        threshold = mag_compl - bin_size / 2
         log10_e = np.log10(np.exp(1))
 
         fm = self.ct.data.mag[self.ct.data.mag > threshold].values
@@ -159,7 +166,7 @@ class BValueCalculator:
             mean_magnitude = np.mean(fm)
             delta_m = mean_magnitude - threshold
             b_value = log10_e / delta_m
-            a_value = np.log10(num_events) + b_value * mc
+            a_value = np.log10(num_events) + b_value * mag_compl
             aki_uncertainty = b_value / np.sqrt(num_events)
             variance = np.var(fm, ddof=1)
             shi_bolt_uncertainty = 2.3 * b_value**2 * np.sqrt(variance / num_events)
@@ -167,19 +174,43 @@ class BValueCalculator:
         if plot:
             self.bp.set_style(styling.DEFAULT)
             bins, events_per_bin, cumulative_events = self.fmd(bin_size=bin_size)
+            bins = np.round(bins, decimals)
 
             fig, ax = plt.subplots(figsize=(10, 5))
             ax.set_title('b-value', fontsize=14, fontweight='bold')
 
+            below_mc = bins < mag_compl
+            above_mc = bins >= mag_compl
+
             ax.scatter(
-                bins, cumulative_events, color='white', marker='o', edgecolor='black',
+                bins[above_mc], cumulative_events[above_mc], color='white', marker='o', edgecolor='black',
                 linewidth=0.75, label='Cumulative no. of events'
             )
             ax.scatter(
-                bins, events_per_bin, color='white', marker='o', edgecolor='red',
+                bins[below_mc], cumulative_events[below_mc], color='black', marker='x', linewidth=0.75
+            )
+
+            ax.scatter(
+                bins[above_mc], events_per_bin[above_mc], color='white', marker='o', edgecolor='red',
                 linewidth=0.75, label='No. of events per mag. bin'
             )
-            ax.plot(bins, (10**(a_value - (b_value * bins))), color='blue')
+            ax.scatter(
+                bins[below_mc], events_per_bin[below_mc], color='red', marker='x', linewidth=0.75
+            )
+
+            ax.plot(
+                bins[above_mc], (10**(a_value - (b_value * bins[above_mc]))), color='blue'
+            )
+
+            ax.axvline(x=mag_compl, color='gray', linestyle='--', linewidth=1)
+
+            mc_index = np.where(bins == mag_compl)
+            ax.scatter(
+                bins[mc_index], cumulative_events[mc_index], color='black', marker='o', s=50
+            )
+            ax.scatter(
+                bins[mc_index], events_per_bin[mc_index], color='red', marker='o', s=50
+            )
 
             ax.set_yscale('log')
             ax.set_xlabel('Magnitude')
@@ -196,7 +227,7 @@ class BValueCalculator:
                 raise ValueError("Uncertainty must be 'shi_bolt' or 'aki'.")
 
             text_str = (
-                f'$M_c$ = {round(mc, 1)}\n'
+                f'$M_c$ = {mag_compl}\n'
                 f'$b-value$ = {round(b_value, 3)} ± {round(plot_uncert, 3)}'
             )
             ax.text(

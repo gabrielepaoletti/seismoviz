@@ -16,7 +16,7 @@ class CatalogSelector:
     def __init__(self, catalog: type) -> None:
         self.ct = catalog
         self.sd = None
-        hv.extension('bokeh')
+        hv.extension('bokeh', logo=False)
     
     def _set_bounds(self, plot, element) -> None:
         """
@@ -119,7 +119,7 @@ class CrossSectionSelector:
     def __init__(self, cross_section: type) -> None:
         self.cs = cross_section
         self.sd = None
-        hv.extension('bokeh')
+        hv.extension('bokeh', logo=False)
 
     def _set_bounds(self, plot, element) -> None:
         """

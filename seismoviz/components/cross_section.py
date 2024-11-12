@@ -216,6 +216,23 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
         title : str, optional
             The title displayed at the top of the plot. Defaults to 
             'Section'.
+            
+        hl_ms : float, optional
+            If specified, highlights seismic events with a magnitude greater 
+            than this value using special markers. Default is None.
+
+        hl_size : float, optional
+            Size of the markers used for highlighting seismic events (when 
+            `hl_ms` is specified). Default is 200.
+
+        hl_marker : str, optional
+            Marker style for highlighted events. Default is '*'.
+
+        hl_color : str, optional
+            Color for highlighted seismic event markers. Default is 'red'.
+
+        hl_edgecolor : str, optional
+            Edge color for highlighted event markers. Default is 'darkred'.
 
         size : float, optional
             The size of the markers used to represent seismic events on 

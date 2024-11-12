@@ -2,6 +2,8 @@ import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import matplotlib.font_manager as fm
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
 from seismoviz.utils import convert_to_utm
 from seismoviz.components.common import styling
@@ -765,10 +767,142 @@ class SubCatalogPlotter:
             self.mp = MapPlotter()
             self.bp = BasePlotter()
     
-    def plot_on_section(self, normalize: bool = True):
+    def plot_on_section(
+            self, 
+            title: str = None,
+            color_by: str = None,
+            cmap: str = 'jet',
+            hl_ms: float = 300,
+            hl_size: float = 200,
+            hl_marker: str = '*',
+            hl_color: str = 'red',
+            hl_edgecolor: str = 'darkred',
+            size: float = 1,
+            size_scale_factor: tuple[float, float] = (1, 2),
+            color: str = 'grey',
+            edgecolor: str = 'black',
+            alpha: float = 0.75,
+            legend: str = None,
+            legend_loc: str = 'lower left',
+            size_legend: bool = False,
+            size_legend_loc: str = 'upper right',
+            scale_legend: bool = True,
+            scale_legend_loc: str  = 'lower right',
+            ylabel: str = 'Depth [km]',
+            normalize: bool = True
+        ) -> None:
         if self.sc.selected_from != 'CrossSection':
             raise ValueError('To be plotted on-section, the SubCatalog must be '
                              'sampled from a CrossSection object.')
+        self.bp.set_style(styling.DEFAULT)
         
-        plt.figure(figsize=(12, 6))
-        plt.scatter
+        osc = self.sc.data.on_section_coords
+        if normalize:
+            osc = osc - osc.median()
+        
+        if isinstance(size, (int, float)):
+            plt_size = size
+        elif isinstance(size, str):
+            plt_size = (self.sc.data[size] * size_scale_factor[0]) ** size_scale_factor[1]
+        else:
+            raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
+
+        fig, ax = plt.subplots(figsize=(12, 6))
+
+        if color_by:
+            fig.set_figheight(8)
+            self.bp.plot_with_colorbar(
+                ax=ax,
+                data=self.sc.data,
+                x='on_section_coords',
+                y='depth',
+                color_by=color_by,
+                cmap=cmap,
+                edgecolor=edgecolor,
+                size=plt_size,
+                alpha=alpha,
+                legend=legend,
+                cbar_pad=0.05,
+            )
+        else:
+            ax.scatter(
+                self.sc.data.on_section_coords,
+                self.sc.data.depth,
+                color=color, 
+                edgecolor=edgecolor,
+                s=plt_size, 
+                alpha=alpha,
+                linewidth=0.25,
+                label=legend
+            )
+    
+        if title:
+            ax.set_title(f'{title}', fontweight='bold')
+        
+        if hl_ms is not None:
+            large_quakes = self.sc.data[self.sc.data['mag'] > hl_ms]
+            ax.scatter(
+                x=large_quakes.on_section_coords, y=large_quakes.depth, c=hl_color, s=hl_size,
+                marker=hl_marker, edgecolor=hl_edgecolor, linewidth=0.75,
+                label=f'Events M > {hl_ms}'
+            )
+        
+        ax.set_ylabel(ylabel)
+        #ax.xaxis.set_visible(False)
+        ax.invert_yaxis()
+        ax.set_aspect('equal')
+        ax.grid(True, alpha=0.25, linestyle=':')
+
+        if scale_legend:
+            scale_length = ((osc.max() - osc.min()) / 2) / 5
+            scale_label = f'{scale_length:.1f} km'
+
+            scalebar = AnchoredSizeBar(
+                transform=ax.transData,
+                size=scale_length,
+                label=scale_label,
+                loc=scale_legend_loc,
+                sep=5,
+                color='black',
+                frameon=False,
+                size_vertical=(self.sc.data.depth.max() - self.sc.data.depth.min()) / 100,
+                fontproperties=fm.FontProperties(size=10, weight='bold')
+            )
+
+            ax.add_artist(scalebar)
+
+        if legend:
+            leg = plt.legend(loc=legend_loc, fancybox=False, edgecolor='black')
+            leg.legend_handles[0].set_sizes([50])
+
+            if hl_ms is not None:
+                leg.legend_handles[1].set_sizes([90])
+
+            ax.add_artist(leg)
+
+            if isinstance(size, str) and size_legend:
+                min_size = np.floor(min(self.sc.data[size]))
+                max_size = np.ceil(max(self.sc.data[size]))
+                size_values = [min_size, (min_size + max_size) / 2, max_size]
+                size_legend_labels = [
+                    f"{'M' if size == 'mag' else 'D' if size == 'depth' else size} {v}" for v in size_values
+                ]
+
+                size_handles = [
+                    plt.scatter([], [], s=(v * size_scale_factor[0]) ** size_scale_factor[1],
+                                facecolor='white', edgecolor='black', alpha=alpha, label=label)
+                    for v, label in zip(size_values, size_legend_labels)
+                ]
+
+                leg2 = plt.legend(
+                    handles=size_handles,
+                    loc=size_legend_loc,
+                    fancybox=False,
+                    edgecolor='black',
+                    ncol=len(size_values),
+                )
+
+                ax.add_artist(leg2)
+        
+        plt.show()
+        self.bp.reset_style()

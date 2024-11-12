@@ -401,7 +401,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
             The size of each magnitude bin.
 
         plot : bool, optional
-            If True, plots the FMD. Default is False.
+            If True, plots the FMD. Default is True.
 
         save_figure : bool, optional
             If True, saves the figure when `plot` is True. Default is False.
@@ -473,7 +473,11 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         """
         if mc == 'maxc':
             mc_maxc = self._bvc._maxc(bin_size=bin_size)
-            self._bvc.estimate_b_value(bin_size=bin_size, mc=mc_maxc, **kwargs)
+            return self._bvc.estimate_b_value(bin_size=bin_size, mc=mc_maxc, **kwargs)
+        elif isinstance(mc, int) or isinstance(mc, float):
+            return self._bvc.estimate_b_value(bin_size=bin_size, mc=mc, **kwargs)
+        else:
+            raise ValueError('Mc value is not valid.')
 
 
 class SubCatalog(Catalog):
@@ -481,3 +485,8 @@ class SubCatalog(Catalog):
         super().__init__(data)
         
         self.selected_from = selected_from
+        self._sc_plotter = SubCatalogPlotter(self)
+    
+    @sync_signature('_sc_plotter', 'plot_on_section')
+    def plot_on_section(self, **kwargs):
+        self._sc_plotter.plot_on_section(**kwargs)

@@ -6,7 +6,7 @@ from seismoviz.components.cross_section import CrossSection
 from seismoviz.internal.selector import CatalogSelector, CrossSectionSelector
 
 
-def read_catalog(path: str) -> Catalog:
+def read_catalog(path: str, **kwargs) -> Catalog:
     """
     Reads a CSV file and returns a Catalog object.
     
@@ -20,8 +20,7 @@ def read_catalog(path: str) -> Catalog:
     Catalog
         An instance of the Catalog class with the data loaded.
     """
-    data = pd.read_csv(path)
-    data.time = pd.to_datetime(data.time)
+    data = pd.read_csv(path, parse_dates=['time'], **kwargs)
     return Catalog(data)
 
 
