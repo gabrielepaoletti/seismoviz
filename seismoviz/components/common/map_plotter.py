@@ -40,6 +40,9 @@ class MapPlotter:
 
     def create_base_map(
             self,
+            terrain_style: str = 'satellite',
+            terrain_cmap: str = 'gray_r',
+            terrain_alpha: str = 0.35,
             bounds_res: str = '50m',
             bmap_res: int = 12
     ) -> tuple[plt.Figure, plt.Axes]:
@@ -49,6 +52,17 @@ class MapPlotter:
 
         Parameters
         ----------
+        terrain_style : str, optional
+            The style of the terrain background for the map. Common values 
+            include 'satellite', 'terrain' or 'street'. Defaults to 'satellite'.
+
+        terrain_cmap : str, optional
+            The colormap to be applied to the terrain layer. Defaults to 'gray_r'.
+
+        terrain_alpha : float, optional
+            The transparency level for the terrain layer, where 0 is fully 
+            transparent and 1 is fully opaque. Defaults to 0.35.
+
         bounds_res : str, optional
             The resolution for the geographical boundaries (such as 
             coastlines and borders) on the map. Common values are '10m', 
@@ -70,9 +84,9 @@ class MapPlotter:
         fig = plt.figure(figsize=(10, 8), dpi=100)
         ax = plt.axes(projection=self.projection)
 
-        terrain = GoogleTiles(desired_tile_form='L', style='satellite')
-        ax.add_image(terrain, bmap_res, alpha=0.35)
-        plt.set_cmap('gray_r')
+        terrain = GoogleTiles(desired_tile_form='L', style=terrain_style)
+        ax.add_image(terrain, bmap_res, alpha=terrain_alpha)
+        plt.set_cmap(terrain_cmap)
 
         ax.add_feature(cf.LAND.with_scale(bounds_res), color='white')
         ax.add_feature(cf.OCEAN.with_scale(bounds_res), color='lightblue')

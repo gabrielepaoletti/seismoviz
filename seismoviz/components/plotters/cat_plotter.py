@@ -85,6 +85,9 @@ class CatalogPlotter:
             legend_loc: str = 'lower left',
             size_legend: bool = True,
             size_legend_loc: str = 'lower right',
+            terrain_style: str = 'satellite',
+            terrain_cmap: str = 'gray_r',
+            terrain_alpha: str = 0.35,
             inset: bool = True, 
             xlim: tuple[float, float] = None,
             ylim: tuple[float, float] = None, 
@@ -175,6 +178,17 @@ class CatalogPlotter:
             the limits are determined automatically based on the data. 
             Default is None.
 
+        terrain_cmap : str, optional
+            The colormap to be applied to the terrain layer. Defaults to 'gray_r'.            
+
+        terrain_style : str, optional
+            The style of the terrain background for the map. Common values 
+            include 'satellite', 'terrain' or 'street'. Defaults to 'satellite'.
+
+        terrain_alpha : float, optional
+            The transparency level for the terrain layer, where 0 is fully 
+            transparent and 1 is fully opaque. Defaults to 0.35.     
+
         inset : bool, optional
             If True, adds an inset map for broader geographic context. 
             Default is True.
@@ -207,7 +221,13 @@ class CatalogPlotter:
             This function generates a map with seismic events but does not 
             return any data.
         """
-        self.mp.fig, self.mp.ax = self.mp.create_base_map(bounds_res, bmap_res)
+        self.mp.fig, self.mp.ax = self.mp.create_base_map(
+            terrain_style=terrain_style,
+            terrain_cmap=terrain_cmap,
+            terrain_alpha=terrain_alpha,
+            bounds_res=bounds_res, 
+            bmap_res=bmap_res
+        )
         main_extent = self.mp.extent(self.ct.data, xlim=xlim, ylim=ylim)
 
         if isinstance(size, (int, float)):
@@ -218,18 +238,18 @@ class CatalogPlotter:
             raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
 
         if color_by:
-                self.mp.fig.set_figheight(10)
-                self.mp.plot_with_colorbar(
-                    data=self.ct.data,
-                    x='lon',
-                    y='lat',
-                    color_by=color_by,
-                    cmap=cmap,
-                    edgecolor=edgecolor,
-                    size=plt_size,
-                    alpha=alpha,
-                    legend=legend
-                )
+            self.mp.fig.set_figheight(10)
+            self.mp.plot_with_colorbar(
+                data=self.ct.data,
+                x='lon',
+                y='lat',
+                color_by=color_by,
+                cmap=cmap,
+                edgecolor=edgecolor,
+                size=plt_size,
+                alpha=alpha,
+                legend=legend
+            )
         else:
             self.mp.scatter(
                 x=self.ct.data.lon, y=self.ct.data.lat, c=color, s=plt_size, 
