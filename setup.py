@@ -11,7 +11,7 @@ config = {
     'download_url': 'https://github.com/gabrielepaoletti/seismoviz',
     'author_email': 'gabriele.paoletti@uniroma1.it',
     'version': '0.0.1',
-    'python_requires': '>=3.10',
+    'python_requires': '>=3.11',
     'install_requires': ['cartopy', 'holoview', 'jupyter_bokeh', 'matplotlib', 'numpy', 'pandas', 'panel', 'pyproj', 'scipy', 'srtm'],
     'packages': find_packages(),
     'name': 'seismoviz',
