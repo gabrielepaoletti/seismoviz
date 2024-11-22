@@ -15,9 +15,9 @@ from matplotlib.collections import PathCollection
 
 class MapPlotter:
     def __init__(
-            self, 
-            projection=ccrs.Mercator(), 
-            transform=ccrs.PlateCarree()
+        self, 
+        projection=ccrs.Mercator(), 
+        transform=ccrs.PlateCarree()
     ) -> None:
         """
         Initializes MapPlotter with default projection and transformation 
@@ -81,7 +81,7 @@ class MapPlotter:
             The matplotlib axes object configured with a cartographic 
             projection and geographical features.
         """
-        fig = plt.figure(figsize=(10, 8), dpi=150)
+        fig = plt.figure(figsize=(10, 8), dpi=100)
         ax = plt.axes(projection=self.projection)
 
         terrain = GoogleTiles(desired_tile_form='L', style=terrain_style)

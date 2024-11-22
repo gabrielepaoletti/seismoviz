@@ -149,90 +149,135 @@ class Catalog(DunderMethodMixin):
     @sync_signature('_plotter', 'plot_map')
     def plot_map(self, **kwargs) -> None:
         """
-        Visualizes seismic events on a map.
-        
-        Parameters
-        ----------
-        highlight_mag : int, optional
-            If specified, highlights all seismic events with a magnitude 
-            greater than this value by plotting them as stars.
+        Visualizes seismic events on a geographical map.
 
+        Parameters
+        ----------            
         color_by : str, optional
-            Specifies the column in the DataFrame used to color the seismic 
-            events. Common options include 'magnitude', 'time', or 'depth'. 
-            If not provided, a default color is used.
+            Specifies the column in the DataFrame used to color the 
+            seismic events (e.g., 'magnitude', 'time', or 'depth'). 
+            Default is None, which applies a single color to all points.
 
         cmap : str, optional
-            The colormap to use when coloring the events based on the 
-            `color_by` column. Default is 'jet'.
+            The colormap to use for coloring events if `color_by` is specified. 
+            Default is 'jet'.
 
         title : str, optional
-            The title to be displayed above the map. If not provided, the 
-            map will have no title.
+            Title of the map. If None, no title is displayed. Default is None.
 
-        size : float, optional
-            The size of the markers used to represent seismic events on 
-            the map. Default is 0.5.
+        hl_ms : int, optional
+            If specified, highlights seismic events with a magnitude 
+            greater than this value using different markers. Default is None.
+
+        hl_size : float, optional
+            Size of the markers used for highlighted seismic events (if `hl_ms` 
+            is specified). Default is 200.
+
+        hl_marker : str, optional
+            Marker style for highlighted events. Default is '*'.
+
+        hl_color : str, optional
+            Color of the highlighted event markers. Default is 'red'.
+
+        hl_edgecolor : str, optional
+            Edge color for highlighted event markers. Default is 'darkred'.
+
+        size : float or str, optional
+            The size of the markers representing seismic events. If a string 
+            is provided, it should refer to a column in the DataFrame (e.g., 
+            'mag') to scale point sizes proportionally. Default is 10.
+
+        size_scale_factor : tuple[float, float], optional
+            A tuple to scale marker sizes when `size` is based on a DataFrame 
+            column. The first element scales the values, and the second element 
+            raises them to a power. Default is (1, 3).
 
         color : str, optional
-            The color used to fill the seismic event markers. Default is 
-            'lightgrey'.
-
-        edgecolor : str, optional
-            The color used for the edges of the seismic event markers. 
+            Default color for event markers when `color_by` is None. 
             Default is 'grey'.
 
+        edgecolor : str, optional
+            Edge color for event markers. Default is 'black'.
+
         alpha : float, optional
-            The transparency level of the markers. A value between 0 and 1, 
-            where 1 is fully opaque and 0 is fully transparent. Default is 0.5.
+            Transparency level for markers, ranging from 0 (transparent) to 1 
+            (opaque). Default is 0.75.
 
         legend : str, optional
-            Text for the legend describing the plotted seismic events. If 
-            None, no legend is displayed.
+            Text for the legend describing the seismic events. If None, 
+            no legend is displayed. Default is None.
 
-        xlim : Tuple[float, float], optional
-            A tuple specifying the minimum and maximum longitude values to 
-            set the map extent horizontally. If not provided, the extent 
-            will be set automatically based on the data.
+        legend_loc : str, optional
+            Location of the legend for the seismic event markers. 
+            Default is 'lower left'.
 
-        ylim : Tuple[float, float], optional
-            A tuple specifying the minimum and maximum latitude values to 
-            set the map extent vertically. If not provided, the extent 
-            will be set automatically based on the data.
+        size_legend : bool, optional
+            If True, displays a legend that explains marker sizes. Default is True.
+            
+        size_legend_loc : str, optional
+            Location of the size legend when `size_legend` is True. 
+            Default is 'lower right'.
+
+        xlim : tuple[float, float], optional
+            Longitude limits for the map's horizontal extent. If None, 
+            the limits are determined automatically based on the data. 
+            Default is None.
+
+        ylim : tuple[float, float], optional
+            Latitude limits for the map's vertical extent. If None, 
+            the limits are determined automatically based on the data. 
+            Default is None.
+
+        terrain_cmap : str, optional
+            The colormap to be applied to the terrain layer. Defaults to 'gray_r'.            
+
+        terrain_style : str, optional
+            The style of the terrain background for the map. Common values 
+            include 'satellite', 'terrain' or 'street'. Defaults to 'satellite'.
+
+        terrain_alpha : float, optional
+            The transparency level for the terrain layer, where 0 is fully 
+            transparent and 1 is fully opaque. Defaults to 0.35.     
+
+        projection : cartopy.crs projection, optional
+            The map projection used to display the map. Defaults to 
+            `ccrs.Mercator()`.
+
+        transform : cartopy.crs projection, optional
+            The coordinate reference system of the data to be plotted. 
+            Defaults to `ccrs.PlateCarree()`.
 
         inset : bool, optional
-            Determines whether to include an inset map showing a broader 
-            geographic context. Defaults to True.
+            If True, adds an inset map for broader geographic context. 
+            Default is True.
 
         inset_buffer : float, optional
-            A factor that enlarges the buffer area around the selection 
-            shape in the inset, enhancing visibility and context. The 
-            default value is 3.
+            Scaling factor for the area surrounding the selection shape 
+            in the inset map. Default is 3.
 
         bounds_res : str, optional
-            The resolution for the geographical boundaries (such as 
-            coastlines and borders) on the map. Common values are '10m', 
-            '50m', or '110m', with '10m' being the most detailed and 
-            '110m' the least.
+            Resolution of geographical boundaries (coastlines, borders) 
+            on the map. Options are '10m', '50m', and '110m', where '10m' 
+            is the highest resolution and '110m' the lowest. Default is '50m'.
 
         bmap_res : int, optional
-            The zoom level or resolution for the underlying map image 
-            (e.g., satellite or terrain map). A higher value provides a 
-            more detailed map image, with typical values ranging from 1 
-            (very coarse) to 12 (very detailed).
+            Resolution level for the base map image (e.g., satellite or 
+            terrain). Higher values provide more detail. Default is 12.
 
         save_figure : bool, optional
-            If set to True, the function saves the generated plots using 
-            the provided base name and file extension. The default is False.
+            If True, saves the plot to a file. Default is False.
 
         save_name : str, optional
-            The base name used for saving figures when `save_figure` is True. 
-            It serves as the prefix for file names. The default base name 
-            is 'map'.
+            Base name for the file if `save_figure` is True. Default is 'map'.
 
         save_extension : str, optional
-            The file extension to use when saving figures, such as 'jpg', 
-            'png', etc. The default extension is 'jpg'.
+            File format for the saved figure (e.g., 'jpg', 'png'). Default is 'jpg'.
+
+        Returns
+        -------
+        None
+            This function generates a map with seismic events but does not 
+            return any data.
         """
         self._plotter.plot_map(**kwargs)
 

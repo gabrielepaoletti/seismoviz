@@ -1,5 +1,6 @@
 import numpy as np
 import pandas as pd
+import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import matplotlib.font_manager as fm
@@ -12,9 +13,17 @@ from seismoviz.components.common.base_plotter import BasePlotter
 
 
 class CatalogPlotter:
-    def __init__(self, catalog: type) -> None:
+    def __init__(
+            self,
+            catalog: type,
+            projection = ccrs.Mercator(),
+            transform = ccrs.PlateCarree()
+    ) -> None:
         self.ct = catalog
-        self.mp = MapPlotter()
+        self.mp = MapPlotter(
+            projection=projection,
+            transform=transform
+        )
         self.bp = BasePlotter()
 
     def _get_distance_from_center(
@@ -67,7 +76,7 @@ class CatalogPlotter:
         return df_copy
 
     def plot_map(
-            self,  
+            self,
             color_by: str = None, 
             cmap: str = 'jet', 
             title: str = None, 
@@ -93,7 +102,9 @@ class CatalogPlotter:
             ylim: tuple[float, float] = None, 
             inset_buffer: float = 3, 
             bounds_res: str = '50m', 
-            bmap_res: int = 12, 
+            bmap_res: int = 5,
+            projection = ccrs.Mercator(),
+            transform = ccrs.PlateCarree(),
             save_figure: bool = False,
             save_name: str = 'map', 
             save_extension: str = 'jpg'
@@ -189,6 +200,14 @@ class CatalogPlotter:
             The transparency level for the terrain layer, where 0 is fully 
             transparent and 1 is fully opaque. Defaults to 0.35.     
 
+        projection : cartopy.crs projection, optional
+            The map projection used to display the map. Defaults to 
+            `ccrs.Mercator()`.
+
+        transform : cartopy.crs projection, optional
+            The coordinate reference system of the data to be plotted. 
+            Defaults to `ccrs.PlateCarree()`.
+
         inset : bool, optional
             If True, adds an inset map for broader geographic context. 
             Default is True.
@@ -221,6 +240,8 @@ class CatalogPlotter:
             This function generates a map with seismic events but does not 
             return any data.
         """
+        self.mp.transform, self.mp.projection = transform, projection
+
         self.mp.fig, self.mp.ax = self.mp.create_base_map(
             terrain_style=terrain_style,
             terrain_cmap=terrain_cmap,
@@ -298,8 +319,7 @@ class CatalogPlotter:
                     loc=size_legend_loc,
                     fancybox=False,
                     edgecolor='black',
-                    ncol=len(size_values),
-                    borderpad=1.1,
+                    ncol=len(size_values)
                 )
                 
                 self.mp.ax.add_artist(leg2)
