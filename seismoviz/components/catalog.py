@@ -1,12 +1,12 @@
 import pandas as pd
 
+from seismoviz.internal.mixins import DunderMethodMixin
 from seismoviz.internal.decorators import sync_signature
 from seismoviz.components.analysis.b_value import BValueCalculator
-from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 from seismoviz.components.plotters.cat_plotter import CatalogPlotter, SubCatalogPlotter
 
 
-class Catalog(GeospatialMixin, DunderMethodMixin):
+class Catalog(DunderMethodMixin):
     def __init__(self, data: pd.DataFrame) -> None:
         missing = {'lon', 'lat', 'depth', 'time', 'mag'} - set(data.columns)
         if missing:

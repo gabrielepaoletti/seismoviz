@@ -81,7 +81,7 @@ class MapPlotter:
             The matplotlib axes object configured with a cartographic 
             projection and geographical features.
         """
-        fig = plt.figure(figsize=(10, 8), dpi=100)
+        fig = plt.figure(figsize=(10, 8), dpi=150)
         ax = plt.axes(projection=self.projection)
 
         terrain = GoogleTiles(desired_tile_form='L', style=terrain_style)

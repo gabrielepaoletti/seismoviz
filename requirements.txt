@@ -1,5 +1,5 @@
 cartopy
-holoview
+holoviews
 jupyter_bokeh
 matplotlib
 numpy
@@ -7,4 +7,4 @@ pandas
 panel
 pyproj
 scipy
-srtm
+srtm.py
