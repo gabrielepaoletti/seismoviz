@@ -234,7 +234,7 @@ class Catalog(DunderMethodMixin):
         size_scale_factor : tuple[float, float], optional
             A tuple to scale marker sizes when ``size`` is based on a DataFrame 
             column. The first element scales the values, and the second element 
-            raises them to a power. Default is (1, 3).
+            raises them to a power. Default is ``(1, 3)``.
 
         color : str, optional
             Default color for event markers when ``color_by`` is ``None``. 
@@ -328,7 +328,7 @@ class Catalog(DunderMethodMixin):
         --------
         An example of a seismic map generated using this function:
 
-        .. figure:: docs/images/global_seismicity_catalog.jpg
+        .. figure:: images/global_seismicity_catalog.jpg
             :alt: Global seismicity map plot example with seismic events color-
             coded by depth.
             
@@ -353,72 +353,94 @@ class Catalog(DunderMethodMixin):
             the direction along which distances are calculated.
 
         color_by : str, optional
-            Column name used to color points by a specific attribute. If ``None``, 
-            uses a fixed color.
+            Specifies the column in the DataFrame used to color the 
+            seismic events. Default is ``None``, which applies a single color to 
+            all points.
 
         cmap : str, optional
-            Colormap to use when coloring points by an attribute. Default is 'jet'.
+            The colormap to use for coloring events if ``color_by`` is specified. 
+            Default is ``'jet'``.
+
+        title : str, optional
+            Title of the map. If ``None``, no title is displayed. Default is ``None``.
 
         hl_ms : int, optional
-            Magnitude threshold for highlighting large seismic events. Default is ``None``.
+            If specified, highlights seismic events with a magnitude 
+            greater than this value using different markers. Default is ``None``.
 
         hl_size : float, optional
-            The size of the highlighted events. Default is 200.
+            Size of the markers used for highlighted seismic events (if ``hl_ms`` 
+            is specified). Default is 200.
 
         hl_marker : str, optional
-            Marker style for highlighted events. Default is '*'.
+            Marker style for highlighted events. Default is ``'*'``.
 
         hl_color : str, optional
-            Color for highlighted seismic events. Default is 'red'.
+            Color of the highlighted event markers. Default is ``'red'``.
 
         hl_edgecolor : str, optional
-            Edge color for highlighted events. Default is 'darkred'.
+            Edge color for highlighted event markers. Default is ``'darkred'``.
 
         size : float or str, optional
-            Size of the points or the name of the column to use for size scaling. 
-            Default is 10.
+            The size of the markers representing seismic events. If a string 
+            is provided, it should refer to a column in the DataFrame to scale 
+            point sizes proportionally. Default is 10.
 
         size_scale_factor : tuple[float, float], optional
-            Scaling factors (base, exponent) for the point sizes. Default is (1, 2).
+            A tuple to scale marker sizes when ``size`` is based on a DataFrame 
+            column. The first element scales the values, and the second element 
+            raises them to a power. Default is ``(1, 2)``.
 
         color : str, optional
-            Default color for the points if `color_by` is ``None``. Default is 'grey'.
+            Default color for event markers when ``color_by`` is ``None``. 
+            Default is ``'grey'``.
 
         edgecolor : str, optional
-            Color for the edges of the points. Default is 'black'.
+            Edge color for event markers. Default is ``'black'``.
 
         alpha : float, optional
-            Transparency level of the points. Default is 0.75.
+            Transparency level for markers, ranging from 0 (transparent) to 1 
+            (opaque). Default is 0.75.
 
-        xlim : tuple of str, optional
-            Time limits for the x-axis as start and end date strings. Default is ``None``.
+        legend : str, optional
+            Text for the legend describing the seismic events. If ``None``, 
+            no legend is displayed. Default is ``None``.
+
+        legend_loc : str, optional
+            Location of the legend for the seismic event markers. 
+            Default is ``'lower left'``.
+
+        size_legend : bool, optional
+            If ``True``, displays a legend that explains marker sizes. Default is ``False``.
+            
+        size_legend_loc : str, optional
+            Location of the size legend when ``size_legend`` is ``True``. Default is 
+            ``'lower right'``.
+
+        xlim : tuple[float, float], optional
+            Time limits for the x-axis as start and end date strings. Default 
+            is ``None``.
 
         ylim : tuple[float, float], optional
             Limits for the y-axis (distance from center). Default is ``None``.
 
-        legend : str, optional
-            Label for the points. Default is ``None``.
-
-        legend_loc : str, optional
-            Location for the legend. Default is 'lower right'.
-
-        size_legend : bool, optional
-            If True, includes a legend for point sizes. Default is False.
-
-        size_legend_loc : str, optional
-            Location for the size legend. Default is 'upper right'.
-
         fig_size : tuple[float, float], optional
-            Figure size for the plot. Default is (10, 5).
+            Figure size for the plot. Default is ``(10, 5)``.
 
         save_figure : bool, optional
-            If True, saves the figure. Default is False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            Base name for the saved figure. Default is 'map'.
+            Base name for the file if `save_figure` is ``True``. Default is ``'space_time'``.
 
         save_extension : str, optional
-            File extension for the saved figure. Default is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
+
+        Returns
+        -------
+        None
+            This function generates a space-time plot.        
         """
         self._plotter.plot_space_time(**kwargs)
 
@@ -490,22 +512,27 @@ class Catalog(DunderMethodMixin):
     def plot_event_timeline(self, **kwargs) -> None:
         """
         Plots a timeline of seismic events to visualize the cumulative 
-        number of events over time.
-        
+        number of events over time.  
+
         Parameters
-        ----------
+        ----------  
+        fig_size : tuple[float, float], optional
+            Figure size for the plot. Default is ``(10, 5)``.
+            
         save_figure : bool, optional
-            If set to True, the function saves the generated plots using 
-            the provided base name and file extension. The default is False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            The base name used for saving figures when `save_figure` is True. 
-            It serves as the prefix for file names. The default base name 
-            is 'section'.
+            Base name for the file if `save_figure` is ``True``. Default is ``'event_timeline'``.
 
         save_extension : str, optional
-            The file extension to use when saving figures, such as 'jpg', 
-            'png', etc. The default extension is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
+
+        Returns
+        -------
+        None
+            This function generates the event timeline plot.
         """
         self.plotter.plot_event_timeline(**kwargs)
 
@@ -518,17 +545,20 @@ class Catalog(DunderMethodMixin):
         Parameters
         ----------
         save_figure : bool, optional
-            If set to True, the function saves the generated plots using 
-            the provided base name and file extension. The default is False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            The base name used for saving figures when `save_figure` is True. 
-            It serves as the prefix for file names. The default base name 
-            is 'map'.
+            Base name for the file if `save_figure` is ``True``. Default is ``'attribute_distributions'``.
 
         save_extension : str, optional
-            The file extension to use when saving figures, such as 'jpg', 
-            'png', etc. The default extension is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
+
+        Returns
+        -------
+        None
+            This function shows the distribution of the main attributes of the 
+            catalog.
         """
         self._plotter.plot_attribute_distributions(**kwargs)
     
@@ -544,29 +574,31 @@ class Catalog(DunderMethodMixin):
             The size of each magnitude bin.
 
         plot : bool, optional
-            If True, plots the FMD. Default is False.
+            If ``True``, plots the FMD. Default is ``True``.
 
         return_values : bool, optional
-            If True, returns the calculated FMD values (bins, events_per_bin, 
-            cumulative_events). Default is False.
+            If ``True``, returns the calculated FMD values. Default is ``False``.
 
         save_figure : bool, optional
-            If True, saves the figure when `plot` is True. Default is False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            The base name for saving the figure if `save_figure` is True. Default is 'fmd'.
+            Base name for the file if `save_figure` is ``True``. Default is ``'fmd'``.
 
         save_extension : str, optional
-            The file extension for the saved figure. Default is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
 
         Returns
         -------
+        If ``return_value`` is ``True``:
+
         tuple[np.ndarray, np.ndarray, np.ndarray]
-            - bins : np.ndarray
+            - ``bins`` : np.ndarray
                 Array of magnitude bin edges.
-            - events_per_bin : np.ndarray
+            - ``events_per_bin`` : np.ndarray
                 Array with the number of events in each magnitude bin.
-            - cumulative_events : np.ndarray
+            - ``cumulative_events`` : np.ndarray
                 Array with the cumulative number of events for magnitudes greater than 
                 or equal to each bin.
 
@@ -575,8 +607,7 @@ class Catalog(DunderMethodMixin):
     
     def estimate_b_value(self, bin_size: float, mc: str | float, **kwargs):
         """
-        Estimates the b-value for seismic events, a measure of earthquake 
-        frequency-magnitude distribution, and calculates the associated uncertainties.
+        Estimates the b-value for seismic events, and calculates the associated uncertainties.
 
         Parameters
         ----------
@@ -589,34 +620,45 @@ class Catalog(DunderMethodMixin):
             estimation is considered valid.
 
         plot : bool, optional
-            If True, plots the frequency-magnitude distribution with the 
-            calculated b-value curve. Default is True.
+            If ``True``, plots the frequency-magnitude distribution with the 
+            calculated b-value curve. Default is ``True``.
 
         plot_uncertainty : str, optional
-            Type of uncertainty to display in the plot. Options are 'shi_bolt' 
-            for Shi and Bolt uncertainty and 'aki' for Aki uncertainty. Default is 'shi_bolt'.
+            Type of uncertainty to display in the plot. Options are ``'shi_bolt'`` 
+            for Shi and Bolt uncertainty and ``'aki'`` for Aki uncertainty. Default is ``'shi_bolt'``.
+
+        return_values : bool, optional
+            If ``True``, returns the calculated values. Default is ``False``.
 
         save_figure : bool, optional
-            If True, saves the plot. Default is False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            Base name for the saved figure, if `save_figure` is True. Default is 'b-value'.
+            Base name for the file if `save_figure` is ``True``. Default is ``'b-value'``.
 
         save_extension : str, optional
-            File extension for the saved figure. Default is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
 
         Returns
         -------
+        If ``return_value`` is ``True``:
+
         tuple[float, float, float, float]
-            - a_value : float
+            - ``a_value`` : float
                 The a-value, representing the logarithmic scale of the seismicity rate.
-            - b_value : float
+            - ``b_value`` : float
                 The b-value, indicating the relative occurrence of large and small 
                 earthquakes.
-            - aki_uncertainty : float
+            - ``aki_uncertainty`` : float
                 The Aki uncertainty in the b-value estimation.
-            - shi_bolt_uncertainty : float
+            - ``shi_bolt_uncertainty`` : float
                 The Shi and Bolt uncertainty in the b-value estimation.
+        
+        Raise
+        -----
+        ValueError
+            If the selected Mc type or value is not valid.
         """
         if mc == 'maxc':
             mc_maxc = self._bvc._maxc(bin_size=bin_size)

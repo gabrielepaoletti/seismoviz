@@ -116,85 +116,86 @@ class CatalogPlotter:
         ----------            
         color_by : str, optional
             Specifies the column in the DataFrame used to color the 
-            seismic events (e.g., 'magnitude', 'time', or 'depth'). 
-            Default is None, which applies a single color to all points.
+            seismic events. Default is ``None``, which applies a single color to 
+            all points.
 
         cmap : str, optional
-            The colormap to use for coloring events if `color_by` is specified. 
-            Default is 'jet'.
+            The colormap to use for coloring events if ``color_by`` is specified. 
+            Default is ``'jet'``.
 
         title : str, optional
-            Title of the map. If None, no title is displayed. Default is None.
+            Title of the map. If ``None``, no title is displayed. Default is ``None``.
 
         hl_ms : int, optional
             If specified, highlights seismic events with a magnitude 
-            greater than this value using different markers. Default is None.
+            greater than this value using different markers. Default is ``None``.
 
         hl_size : float, optional
-            Size of the markers used for highlighted seismic events (if `hl_ms` 
+            Size of the markers used for highlighted seismic events (if ``hl_ms`` 
             is specified). Default is 200.
 
         hl_marker : str, optional
-            Marker style for highlighted events. Default is '*'.
+            Marker style for highlighted events. Default is ``'*'``.
 
         hl_color : str, optional
-            Color of the highlighted event markers. Default is 'red'.
+            Color of the highlighted event markers. Default is ``'red'``.
 
         hl_edgecolor : str, optional
-            Edge color for highlighted event markers. Default is 'darkred'.
+            Edge color for highlighted event markers. Default is ``'darkred'``.
 
         size : float or str, optional
             The size of the markers representing seismic events. If a string 
-            is provided, it should refer to a column in the DataFrame (e.g., 
-            'mag') to scale point sizes proportionally. Default is 10.
+            is provided, it should refer to a column in the DataFrame to scale 
+            point sizes proportionally. Default is 10.
 
         size_scale_factor : tuple[float, float], optional
-            A tuple to scale marker sizes when `size` is based on a DataFrame 
+            A tuple to scale marker sizes when ``size`` is based on a DataFrame 
             column. The first element scales the values, and the second element 
-            raises them to a power. Default is (1, 3).
+            raises them to a power. Default is ``(1, 3)``.
 
         color : str, optional
-            Default color for event markers when `color_by` is None. 
-            Default is 'grey'.
+            Default color for event markers when ``color_by`` is ``None``. 
+            Default is ``'grey'``.
 
         edgecolor : str, optional
-            Edge color for event markers. Default is 'black'.
+            Edge color for event markers. Default is ``'black'``.
 
         alpha : float, optional
             Transparency level for markers, ranging from 0 (transparent) to 1 
             (opaque). Default is 0.75.
 
         legend : str, optional
-            Text for the legend describing the seismic events. If None, 
-            no legend is displayed. Default is None.
+            Text for the legend describing the seismic events. If ``None``, 
+            no legend is displayed. Default is ``None``.
 
         legend_loc : str, optional
             Location of the legend for the seismic event markers. 
-            Default is 'lower left'.
+            Default is ``'lower left'``.
 
         size_legend : bool, optional
-            If True, displays a legend that explains marker sizes. Default is True.
+            If ``True``, displays a legend that explains marker sizes. Default is ``False``.
             
         size_legend_loc : str, optional
-            Location of the size legend when `size_legend` is True. 
-            Default is 'lower right'.
+            Location of the size legend when ``size_legend`` is ``True``. Default is 
+            ``'lower right'``.
 
         xlim : tuple[float, float], optional
-            Longitude limits for the map's horizontal extent. If None, 
+            Longitude limits for the map's horizontal extent. If ``None``, 
             the limits are determined automatically based on the data. 
-            Default is None.
+            Default is ``None``.
 
         ylim : tuple[float, float], optional
-            Latitude limits for the map's vertical extent. If None, 
+            Latitude limits for the map's vertical extent. If ``None``, 
             the limits are determined automatically based on the data. 
-            Default is None.
+            Default is ``None``.
 
         terrain_cmap : str, optional
-            The colormap to be applied to the terrain layer. Defaults to 'gray_r'.            
+            The colormap to be applied to the terrain layer. Defaults to ``'gray_r'``.            
 
         terrain_style : str, optional
             The style of the terrain background for the map. Common values 
-            include 'satellite', 'terrain' or 'street'. Defaults to 'satellite'.
+            include ``'satellite'``, ``'terrain'`` or ``'street'``.Defaults to 
+            ``'satellite'``.
 
         terrain_alpha : float, optional
             The transparency level for the terrain layer, where 0 is fully 
@@ -202,15 +203,15 @@ class CatalogPlotter:
 
         projection : cartopy.crs projection, optional
             The map projection used to display the map. Defaults to 
-            `ccrs.Mercator()`.
+            ``ccrs.Mercator()``.
 
         transform : cartopy.crs projection, optional
             The coordinate reference system of the data to be plotted. 
-            Defaults to `ccrs.PlateCarree()`.
+            Defaults to ``ccrs.PlateCarree()``.
 
         inset : bool, optional
-            If True, adds an inset map for broader geographic context. 
-            Default is True.
+            If ``True``, adds an inset map for broader geographic context. 
+            Default is ``False``.
 
         inset_buffer : float, optional
             Scaling factor for the area surrounding the selection shape 
@@ -218,27 +219,38 @@ class CatalogPlotter:
 
         bounds_res : str, optional
             Resolution of geographical boundaries (coastlines, borders) 
-            on the map. Options are '10m', '50m', and '110m', where '10m' 
-            is the highest resolution and '110m' the lowest. Default is '50m'.
+            on the map. Options are ``'10m'`` (highest resolution), ``'50m'``, 
+            and ``'110m'`` (lowest resolution). Default is '50m'.
 
         bmap_res : int, optional
             Resolution level for the base map image (e.g., satellite or 
             terrain). Higher values provide more detail. Default is 12.
 
         save_figure : bool, optional
-            If True, saves the plot to a file. Default is False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            Base name for the file if `save_figure` is True. Default is 'map'.
+            Base name for the file if `save_figure` is ``True``. Default is ``'map'``.
 
         save_extension : str, optional
-            File format for the saved figure (e.g., 'jpg', 'png'). Default is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
 
         Returns
         -------
         None
-            This function generates a map with seismic events but does not 
-            return any data.
+            This function generates a map with seismic events.
+        
+        Examples
+        --------
+        An example of a seismic map generated using this function:
+
+        .. figure:: images/global_seismicity_catalog.jpg
+            :alt: Global seismicity map plot example with seismic events color-
+            coded by depth.
+            
+        For detailed examples and step-by-step instructions on how to plot this 
+        map, refer to the tutorials page in the documentation.
         """
         self.mp.transform, self.mp.projection = transform, projection
 
@@ -352,52 +364,61 @@ class CatalogPlotter:
         Plots seismic event magnitudes over time.
 
         Parameters
-        ----------
+        ----------            
+        color_by : str, optional
+            Specifies the column in the DataFrame used to color the 
+            seismic events. Default is ``None``, which applies a single color to 
+            all points.
+
+        cmap : str, optional
+            The colormap to use for coloring events if ``color_by`` is specified. 
+            Default is ``'jet'``.
+
         size : float or str, optional
             The size of the markers representing seismic events. If a string 
-            is provided, it should refer to a column in the DataFrame (e.g., 
-            'mag') to scale point sizes proportionally. Default is 10.
+            is provided, it should refer to a column in the DataFrame to scale 
+            point sizes proportionally. Default is 10.
 
         size_scale_factor : tuple[float, float], optional
-            A tuple to scale marker sizes when `size` is based on a DataFrame 
+            A tuple to scale marker sizes when ``size`` is based on a DataFrame 
             column. The first element scales the values, and the second element 
             raises them to a power. Default is (1, 3).
 
         color : str, optional
-            The color used to fill the seismic event markers. Default is 
-            'grey'.
+            Default color for event markers when ``color_by`` is ``None``. 
+            Default is ``'grey'``.
 
         edgecolor : str, optional
-            The color used for the edges of the seismic event markers. 
-            Default is 'black'.
+            Edge color for event markers. Default is ``'black'``.
 
         alpha : float, optional
-            The transparency level of the markers. A value between 0 and 
-            1, where 1 is fully opaque and 0 is fully transparent. 
-            Default is 0.75.
+            Transparency level for markers, ranging from 0 (transparent) to 1 
+            (opaque). Default is 0.75.
 
         size_legend : bool, optional
-            If True, displays a legend that explains marker sizes. Default is False.
+            If ``True``, displays a legend that explains marker sizes. Default is ``False``.
             
         size_legend_loc : str, optional
-            Location of the size legend when `size_legend` is True. 
-            Default is 'upper right'.
+            Location of the size legend when ``size_legend`` is ``True``. Default is 
+            ``'upper right'``. 
 
         fig_size : tuple[float, float], optional
-            Figure size for the plot. Default is (10, 5).
-
+            Figure size for the plot. Default is ``(10, 5)``.
+            
         save_figure : bool, optional
-            If set to True, the function saves the generated plots using 
-            the provided base name and file extension. The default is False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            The base name used for saving figures when `save_figure` is 
-            True. It serves as the prefix for file names. The default base 
-            name is 'section'.
+            Base name for the file if `save_figure` is ``True``. Default is ``'magnitude_time'``.
 
         save_extension : str, optional
-            The file extension to use when saving figures, such as 'jpg', 
-            'png', etc. The default extension is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
+
+        Returns
+        -------
+        None
+            This function generates a magnitude-time plot.
         """
         self.bp.set_style(styling.DEFAULT)
 
@@ -499,7 +520,7 @@ class CatalogPlotter:
             size_legend_loc: str = 'upper right',
             fig_size: tuple[float, float] = (10, 5),
             save_figure: bool = False,
-            save_name: str = 'map', 
+            save_name: str = 'space_time', 
             save_extension: str = 'jpg'
     ) -> None:
         """
@@ -516,72 +537,94 @@ class CatalogPlotter:
             the direction along which distances are calculated.
 
         color_by : str, optional
-            Column name used to color points by a specific attribute. If None, 
-            uses a fixed color.
+            Specifies the column in the DataFrame used to color the 
+            seismic events. Default is ``None``, which applies a single color to 
+            all points.
 
         cmap : str, optional
-            Colormap to use when coloring points by an attribute. Default is 'jet'.
+            The colormap to use for coloring events if ``color_by`` is specified. 
+            Default is ``'jet'``.
+
+        title : str, optional
+            Title of the map. If ``None``, no title is displayed. Default is ``None``.
 
         hl_ms : int, optional
-            Magnitude threshold for highlighting large seismic events. Default is None.
+            If specified, highlights seismic events with a magnitude 
+            greater than this value using different markers. Default is ``None``.
 
         hl_size : float, optional
-            The size of the highlighted events. Default is 200.
+            Size of the markers used for highlighted seismic events (if ``hl_ms`` 
+            is specified). Default is 200.
 
         hl_marker : str, optional
-            Marker style for highlighted events. Default is '*'.
+            Marker style for highlighted events. Default is ``'*'``.
 
         hl_color : str, optional
-            Color for highlighted seismic events. Default is 'red'.
+            Color of the highlighted event markers. Default is ``'red'``.
 
         hl_edgecolor : str, optional
-            Edge color for highlighted events. Default is 'darkred'.
+            Edge color for highlighted event markers. Default is ``'darkred'``.
 
         size : float or str, optional
-            Size of the points or the name of the column to use for size scaling. 
-            Default is 10.
+            The size of the markers representing seismic events. If a string 
+            is provided, it should refer to a column in the DataFrame to scale 
+            point sizes proportionally. Default is 10.
 
         size_scale_factor : tuple[float, float], optional
-            Scaling factors (base, exponent) for the point sizes. Default is (1, 2).
+            A tuple to scale marker sizes when ``size`` is based on a DataFrame 
+            column. The first element scales the values, and the second element 
+            raises them to a power. Default is ``(1, 2)``.
 
         color : str, optional
-            Default color for the points if `color_by` is None. Default is 'grey'.
+            Default color for event markers when ``color_by`` is ``None``. 
+            Default is ``'grey'``.
 
         edgecolor : str, optional
-            Color for the edges of the points. Default is 'black'.
+            Edge color for event markers. Default is ``'black'``.
 
         alpha : float, optional
-            Transparency level of the points. Default is 0.75.
-
-        xlim : tuple of str, optional
-            Time limits for the x-axis as start and end date strings. Default is None.
-
-        ylim : tuple[float, float], optional
-            Limits for the y-axis (distance from center). Default is None.
+            Transparency level for markers, ranging from 0 (transparent) to 1 
+            (opaque). Default is 0.75.
 
         legend : str, optional
-            Label for the points. Default is None.
+            Text for the legend describing the seismic events. If ``None``, 
+            no legend is displayed. Default is ``None``.
 
         legend_loc : str, optional
-            Location for the legend. Default is 'lower right'.
+            Location of the legend for the seismic event markers. 
+            Default is ``'lower left'``.
 
         size_legend : bool, optional
-            If True, includes a legend for point sizes. Default is False.
-
+            If ``True``, displays a legend that explains marker sizes. Default is ``False``.
+            
         size_legend_loc : str, optional
-            Location for the size legend. Default is 'upper right'.
+            Location of the size legend when ``size_legend`` is ``True``. Default is 
+            ``'lower right'``.
+
+        xlim : tuple[float, float], optional
+            Time limits for the x-axis as start and end date strings. Default 
+            is ``None``.
+
+        ylim : tuple[float, float], optional
+            Limits for the y-axis (distance from center). Default is ``None``.
 
         fig_size : tuple[float, float], optional
-            Figure size for the plot. Default is (10, 5).
+            Figure size for the plot. Default is ``(10, 5)``.
 
         save_figure : bool, optional
-            If True, saves the figure. Default is False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            Base name for the saved figure. Default is 'map'.
+            Base name for the file if `save_figure` is ``True``. Default is ``'space_time'``.
 
         save_extension : str, optional
-            File extension for the saved figure. Default is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
+
+        Returns
+        -------
+        None
+            This function generates a space-time plot.        
         """
         self.bp.set_style(styling.DEFAULT)
 
@@ -697,30 +740,32 @@ class CatalogPlotter:
             self,
             fig_size: tuple[float, float] = (10, 5), 
             save_figure: bool = False,
-            save_name: str = 'map', 
+            save_name: str = 'event_timeline', 
             save_extension: str = 'jpg'
     ) -> None:
         """
         Plots a timeline of seismic events to visualize the cumulative 
-        number of events over time.
-        
-        Parameters
-        ----------
-        fig_size : tuple[float, float], optional
-            Figure size for the plot. Default is (10, 5).
+        number of events over time.  
 
+        Parameters
+        ----------  
+        fig_size : tuple[float, float], optional
+            Figure size for the plot. Default is ``(10, 5)``.
+            
         save_figure : bool, optional
-            If set to True, the function saves the generated plots using 
-            the provided base name and file extension. The default is False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            The base name used for saving figures when `save_figure` is 
-            True. It serves as the prefix for file names. The default base 
-            name is 'section'.
+            Base name for the file if `save_figure` is ``True``. Default is ``'event_timeline'``.
 
         save_extension : str, optional
-            The file extension to use when saving figures, such as 'jpg', 
-            'png', etc. The default extension is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
+
+        Returns
+        -------
+        None
+            This function generates the event timeline plot.
         """
         self.bp.set_style(styling.DEFAULT)
         
@@ -759,21 +804,21 @@ class CatalogPlotter:
         
         Parameters
         ----------
-        fig_size : tuple[float, float], optional
-            Figure size for the plot. Default is (10, 6).
-
         save_figure : bool, optional
-            If set to True, the function saves the generated plots using 
-            the provided base name and file extension. The default is False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            The base name used for saving figures when `save_figure` is 
-            True. It serves as the prefix for file names. The default base 
-            name is 'map'.
+            Base name for the file if `save_figure` is ``True``. Default is ``'attribute_distributions'``.
 
         save_extension : str, optional
-            The file extension to use when saving figures, such as 'jpg', 
-            'png', etc. The default extension is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
+
+        Returns
+        -------
+        None
+            This function shows the distribution of the main attributes of the 
+            catalog.
         """
         self.bp.set_style(styling.DEFAULT)
 

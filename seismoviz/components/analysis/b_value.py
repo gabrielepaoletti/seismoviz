@@ -29,29 +29,31 @@ class BValueCalculator:
             The size of each magnitude bin.
 
         plot : bool, optional
-            If True, plots the FMD. Default is False.
+            If ``True``, plots the FMD. Default is ``True``.
 
         return_values : bool, optional
-            If True, returns the calculated FMD values (bins, events_per_bin, 
-            cumulative_events). Default is False.
+            If ``True``, returns the calculated FMD values. Default is ``False``.
 
         save_figure : bool, optional
-            If True, saves the figure when `plot` is True. Default is False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            The base name for saving the figure if `save_figure` is True. Default is 'fmd'.
+            Base name for the file if `save_figure` is ``True``. Default is ``'fmd'``.
 
         save_extension : str, optional
-            The file extension for the saved figure. Default is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
 
         Returns
         -------
+        If ``return_value`` is ``True``:
+
         tuple[np.ndarray, np.ndarray, np.ndarray]
-            - bins : np.ndarray
+            - ``bins`` : np.ndarray
                 Array of magnitude bin edges.
-            - events_per_bin : np.ndarray
+            - ``events_per_bin`` : np.ndarray
                 Array with the number of events in each magnitude bin.
-            - cumulative_events : np.ndarray
+            - ``cumulative_events`` : np.ndarray
                 Array with the cumulative number of events for magnitudes greater than 
                 or equal to each bin.
 
@@ -103,13 +105,13 @@ class BValueCalculator:
                 mc: str | float,
                 plot: bool = True,
                 plot_uncertainty: str = 'shi_bolt',
+                return_values: bool = True,
                 save_figure: bool = False,
                 save_name: str = 'b-value',
                 save_extension: str = 'jpg'
         ) -> tuple[float, float, float, float]:
         """
-        Estimates the b-value for seismic events, a measure of earthquake 
-        frequency-magnitude distribution, and calculates the associated uncertainties.
+        Estimates the b-value for seismic events, and calculates the associated uncertainties.
 
         Parameters
         ----------
@@ -122,34 +124,45 @@ class BValueCalculator:
             estimation is considered valid.
 
         plot : bool, optional
-            If True, plots the frequency-magnitude distribution with the 
-            calculated b-value curve. Default is True.
+            If ``True``, plots the frequency-magnitude distribution with the 
+            calculated b-value curve. Default is ``True``.
 
         plot_uncertainty : str, optional
-            Type of uncertainty to display in the plot. Options are 'shi_bolt' 
-            for Shi and Bolt uncertainty and 'aki' for Aki uncertainty. Default is 'shi_bolt'.
+            Type of uncertainty to display in the plot. Options are ``'shi_bolt'`` 
+            for Shi and Bolt uncertainty and ``'aki'`` for Aki uncertainty. Default is ``'shi_bolt'``.
+
+        return_values : bool, optional
+            If ``True``, returns the calculated values. Default is ``False``.
 
         save_figure : bool, optional
-            If True, saves the plot. Default is False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            Base name for the saved figure, if `save_figure` is True. Default is 'b-value'.
+            Base name for the file if `save_figure` is ``True``. Default is ``'b-value'``.
 
         save_extension : str, optional
-            File extension for the saved figure. Default is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
 
         Returns
         -------
+        If ``return_value`` is ``True``:
+
         tuple[float, float, float, float]
-            - a_value : float
+            - ``a_value`` : float
                 The a-value, representing the logarithmic scale of the seismicity rate.
-            - b_value : float
+            - ``b_value`` : float
                 The b-value, indicating the relative occurrence of large and small 
                 earthquakes.
-            - aki_uncertainty : float
+            - ``aki_uncertainty`` : float
                 The Aki uncertainty in the b-value estimation.
-            - shi_bolt_uncertainty : float
+            - ``shi_bolt_uncertainty`` : float
                 The Shi and Bolt uncertainty in the b-value estimation.
+        
+        Raise
+        -----
+        ValueError
+            If the selected Mc type or value is not valid.
         """
         def count_decimals(number):
             decimal_str = str(number).split(".")[1] if "." in str(number) else ""
@@ -256,7 +269,8 @@ class BValueCalculator:
             plt.show()
             self.bp.reset_style()
 
-        return a_value, b_value, aki_uncertainty, shi_bolt_uncertainty
+        if return_values:
+            return a_value, b_value, aki_uncertainty, shi_bolt_uncertainty
 
     def _maxc(self, bin_size: float) -> float:
         """
