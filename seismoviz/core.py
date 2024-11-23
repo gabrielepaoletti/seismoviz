@@ -21,15 +21,15 @@ def read_catalog(path: str, **kwargs) -> Catalog:
         The path to the CSV file containing the seismic catalog.
 
     **kwargs
-        Additional keyword arguments to pass to `pandas.read_csv`.
+        Additional keyword arguments to pass to ``pandas.read_csv()``.
     
     Returns
     -------
     Catalog
         An instance of the ``Catalog`` class with the data loaded.
 
-    Example
-    -------
+    Examples
+    --------
 
     Basic usage:
     
