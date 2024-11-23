@@ -12,7 +12,7 @@ config = {
     'author_email': 'gabriele.paoletti@uniroma1.it',
     'version': '0.0.1',
     'python_requires': '>=3.11',
-    'install_requires': ['cartopy', 'holoview', 'jupyter_bokeh', 'matplotlib', 'numpy', 'pandas', 'panel', 'pyproj', 'scipy', 'srtm'],
+    'install_requires': ['cartopy', 'holoviews', 'jupyter_bokeh', 'matplotlib', 'numpy', 'pandas', 'panel', 'pyproj', 'scipy', 'srtm.py'],
     'packages': find_packages(),
     'name': 'seismoviz',
     'license': 'MIT',
