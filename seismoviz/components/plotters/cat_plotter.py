@@ -345,7 +345,7 @@ class CatalogPlotter:
             size_legend_loc: str = 'upper right',
             fig_size: tuple[float, float] = (10, 5),
             save_figure: bool = False,
-            save_name: str = 'map', 
+            save_name: str = 'magnitude_time', 
             save_extension: str = 'jpg'
     ) -> None:
         """

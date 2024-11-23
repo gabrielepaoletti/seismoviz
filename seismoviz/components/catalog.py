@@ -328,7 +328,7 @@ class Catalog(DunderMethodMixin):
         --------
         An example of a seismic map generated using this function:
 
-        .. figure:: docs/global_seismicity_catalog.jpg
+        .. figure:: docs/images/global_seismicity_catalog.jpg
             :alt: Global seismicity map plot example with seismic events color-
             coded by depth.
             
@@ -336,74 +336,6 @@ class Catalog(DunderMethodMixin):
         map, refer to the tutorials page in the documentation.
         """
         self._plotter.plot_map(**kwargs)
-
-    @sync_signature('_plotter', 'plot_magnitude_time')
-    def plot_magnitude_time(self, **kwargs) -> None:
-        """
-        Plots seismic event magnitudes over time.
-
-        Parameters
-        ----------
-        save_figure : bool, optional
-            If set to True, the function saves the generated plots using 
-            the provided base name and file extension. The default is False.
-
-        save_name : str, optional
-            The base name used for saving figures when `save_figure` is True. 
-            It serves as the prefix for file names. The default base name 
-            is 'section'.
-
-        save_extension : str, optional
-            The file extension to use when saving figures, such as 'jpg', 
-            'png', etc. The default extension is 'jpg'.
-        """
-        self._plotter.plot_magnitude_time(**kwargs)
-
-    @sync_signature('_plotter', 'plot_event_timeline')
-    def plot_event_timeline(self, **kwargs) -> None:
-        """
-        Plots a timeline of seismic events to visualize the cumulative 
-        number of events over time.
-        
-        Parameters
-        ----------
-        save_figure : bool, optional
-            If set to True, the function saves the generated plots using 
-            the provided base name and file extension. The default is False.
-
-        save_name : str, optional
-            The base name used for saving figures when `save_figure` is True. 
-            It serves as the prefix for file names. The default base name 
-            is 'section'.
-
-        save_extension : str, optional
-            The file extension to use when saving figures, such as 'jpg', 
-            'png', etc. The default extension is 'jpg'.
-        """
-        self.plotter.plot_event_timeline(**kwargs)
-
-    @sync_signature('_plotter', 'plot_attribute_distributions')
-    def plot_attribute_distributions(self, **kwargs) -> None:
-        """
-        Visualizes the distribution of key attributes in the seismic event 
-        catalog.
-        
-        Parameters
-        ----------
-        save_figure : bool, optional
-            If set to True, the function saves the generated plots using 
-            the provided base name and file extension. The default is False.
-
-        save_name : str, optional
-            The base name used for saving figures when `save_figure` is True. 
-            It serves as the prefix for file names. The default base name 
-            is 'map'.
-
-        save_extension : str, optional
-            The file extension to use when saving figures, such as 'jpg', 
-            'png', etc. The default extension is 'jpg'.
-        """
-        self._plotter.plot_attribute_distributions(**kwargs)
 
     @sync_signature('_plotter', 'plot_space_time')
     def plot_space_time(self, **kwargs) -> None:
@@ -489,6 +421,116 @@ class Catalog(DunderMethodMixin):
             File extension for the saved figure. Default is 'jpg'.
         """
         self._plotter.plot_space_time(**kwargs)
+
+    @sync_signature('_plotter', 'plot_magnitude_time')
+    def plot_magnitude_time(self, **kwargs) -> None:
+        """
+        Plots seismic event magnitudes over time.
+
+        Parameters
+        ----------            
+        color_by : str, optional
+            Specifies the column in the DataFrame used to color the 
+            seismic events. Default is ``None``, which applies a single color to 
+            all points.
+
+        cmap : str, optional
+            The colormap to use for coloring events if ``color_by`` is specified. 
+            Default is ``'jet'``.
+
+        size : float or str, optional
+            The size of the markers representing seismic events. If a string 
+            is provided, it should refer to a column in the DataFrame to scale 
+            point sizes proportionally. Default is 10.
+
+        size_scale_factor : tuple[float, float], optional
+            A tuple to scale marker sizes when ``size`` is based on a DataFrame 
+            column. The first element scales the values, and the second element 
+            raises them to a power. Default is (1, 3).
+
+        color : str, optional
+            Default color for event markers when ``color_by`` is ``None``. 
+            Default is ``'grey'``.
+
+        edgecolor : str, optional
+            Edge color for event markers. Default is ``'black'``.
+
+        alpha : float, optional
+            Transparency level for markers, ranging from 0 (transparent) to 1 
+            (opaque). Default is 0.75.
+
+        size_legend : bool, optional
+            If ``True``, displays a legend that explains marker sizes. Default is ``False``.
+            
+        size_legend_loc : str, optional
+            Location of the size legend when ``size_legend`` is ``True``. Default is 
+            ``'upper right'``. 
+
+        fig_size : tuple[float, float], optional
+            Figure size for the plot. Default is ``(10, 5)``.
+            
+        save_figure : bool, optional
+            If ``True``, saves the plot to a file. Default is ``False``.
+
+        save_name : str, optional
+            Base name for the file if `save_figure` is ``True``. Default is ``'magnitude_time'``.
+
+        save_extension : str, optional
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
+
+        Returns
+        -------
+        None
+            This function generates a magnitude-time plot.
+        """
+        self._plotter.plot_magnitude_time(**kwargs)
+
+    @sync_signature('_plotter', 'plot_event_timeline')
+    def plot_event_timeline(self, **kwargs) -> None:
+        """
+        Plots a timeline of seismic events to visualize the cumulative 
+        number of events over time.
+        
+        Parameters
+        ----------
+        save_figure : bool, optional
+            If set to True, the function saves the generated plots using 
+            the provided base name and file extension. The default is False.
+
+        save_name : str, optional
+            The base name used for saving figures when `save_figure` is True. 
+            It serves as the prefix for file names. The default base name 
+            is 'section'.
+
+        save_extension : str, optional
+            The file extension to use when saving figures, such as 'jpg', 
+            'png', etc. The default extension is 'jpg'.
+        """
+        self.plotter.plot_event_timeline(**kwargs)
+
+    @sync_signature('_plotter', 'plot_attribute_distributions')
+    def plot_attribute_distributions(self, **kwargs) -> None:
+        """
+        Visualizes the distribution of key attributes in the seismic event 
+        catalog.
+        
+        Parameters
+        ----------
+        save_figure : bool, optional
+            If set to True, the function saves the generated plots using 
+            the provided base name and file extension. The default is False.
+
+        save_name : str, optional
+            The base name used for saving figures when `save_figure` is True. 
+            It serves as the prefix for file names. The default base name 
+            is 'map'.
+
+        save_extension : str, optional
+            The file extension to use when saving figures, such as 'jpg', 
+            'png', etc. The default extension is 'jpg'.
+        """
+        self._plotter.plot_attribute_distributions(**kwargs)
     
     @sync_signature('_bvc', 'fmd')
     def plot_fmd(self, **kwargs):
