@@ -4,16 +4,89 @@
 
 # SeismoViz
 
-An open-source, user-friendly Python library for streamlined analysis, manipulation and visualization of seismic catalogs.
-
-Through a clean and efficient interface, it reduces complex analysis workflows to just a few lines of code. Users can create publication-ready visualizations, perform spatial and temporal analysis, and handle large seismic datasets with minimal effort.
+SeismoViz is an open-source Python library designed to simplify the analysis, manipulation, and visualization of seismic catalogs. With its intuitive and efficient interface, it reduces complex workflows into just a few lines of code, empowering users to explore seismic data effortlessly.
 
 ## ✨ Features
 
-- 🎯 **Smart filtering:** Easily filter seismic events by magnitude, time, location, and depth with intuitive methods.
-- 🗺️ **Visualization:** Create publication-ready maps, cross-sections and plots with just a few lines of code.
-- 📊 **Statistical tools:** Analyze seismic sequences, calculate magnitude distributions, and perform more complex statistical analyses.
-- 🔍 **Interactive selection:** Subset events by drawing polygons directly on maps or cross-section for detailed analysis.
+### Catalog refinement
+Easily clean and organize your seismic catalog. With SeismoViz, you can remove duplicates, filter data based on your needs, and sort events with just a few simple commands.
+
+```python
+import pandas as pd
+import seismoviz as sv
+
+# Read the catalog from a file
+catalog = sv.read_catalog(path='global_seismic_catalog.csv')
+
+# Remove duplicates
+catalog.deduplicate_events()
+
+# Apply filters
+fc = catalog.filter(
+    mag=('greater', 4),
+    depth=('between', [50, 100]),
+    time=('lower', '2019-12-28')
+)
+
+# Apply sorting
+fc.sort(by='time', ascending=True)
+
+# Save the refined catalog
+fc.data.to_csv('global_seismic_catalog_filtered.csv', index=False)
+```
+
+### Advanced visualization
+SeismoViz provides tools to quickly create clear and publication-ready visualizations of seismic data. From plotting earthquake distributions on a map to generating cross-sections, you can easily represent your catalog in a variety of ways.
+
+```python
+import seismoviz as sv
+
+# Read the catalog from a file
+catalog = sv.read_catalog(path='global_seismic_catalog.csv')
+
+# Create a map showing earthquake locations
+catalog.plot_map(
+    title='Global seismicity (M > 4.0)',
+    color_by='depth',
+    cmap='YlOrRd',
+    size='mag',
+    projection=ccrs.Robinson()
+)
+```
+
+![Global catalog](seismoviz/docs/source/_images/global_seismicity_catalog.jpg)
+
+```python
+import seismoviz as sv
+
+# Read the catalog from a file
+catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+# Create cross section object
+cs = sv.create_cross_section(
+    catalog=catalog,        
+    center=(13.12, 42.83),  
+    num_sections=(0,0),     
+    thickness=2,            
+    strike=155,             
+    map_length=40,          
+    depth_range=(0, 10)     
+)
+
+# Visualize the cross-section
+cs.plot_sections(
+    color_by='time',        
+    cmap='Blues',           
+    size='mag',             
+    edgecolor='black'   
+)     
+```
+![Cross section](seismoviz/docs/source/_images/cross_section.jpg)
+
+### Statistical analysis
+SeismoViz simplifies seismic data analysis with built-in tools for exploring catalog distributions, plotting magnitude histograms, and calculating the b-value directly from your catalog. These features enable quick and straightforward statistical analysis of your seismic data.
+
+
 
 ## 📋 Documentation
 
