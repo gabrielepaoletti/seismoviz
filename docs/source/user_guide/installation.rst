@@ -5,7 +5,7 @@ This document provides detailed instructions for installing the SeismoViz packag
 
 Prerequisites
 -------------
-Before proceeding with the installation, ensure that you have a compatible Python environment. SeismoViz requires Python >= 3.9. 
+Before proceeding with the installation, ensure that you have a compatible Python environment. SeismoViz requires Python >= 3.11. 
 
 It's strongly recommended creating a virtual environment to maintain a clean workspace and avoid dependency conflicts. Tools such as ``conda`` or ``venv`` are suitable for creating isolated Python environments.
 
