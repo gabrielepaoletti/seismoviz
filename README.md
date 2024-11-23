@@ -54,7 +54,7 @@ catalog.plot_map(
 )
 ```
 
-![Global catalog](seismoviz/docs/source/_images/global_seismicity_catalog.jpg)
+![Global catalog](docs/source/_images/global_seismicity_catalog.jpg)
 
 ```python
 import seismoviz as sv
@@ -81,7 +81,7 @@ cs.plot_sections(
     edgecolor='black'   
 )     
 ```
-![Cross section](seismoviz/docs/source/_images/cross_section.jpg)
+![Cross section](docs/source/_images/cross_section.jpg)
 
 ### Statistical analysis
 SeismoViz simplifies seismic data analysis with built-in tools for exploring catalog distributions, plotting magnitude histograms, and calculating the b-value directly from your catalog. These features enable quick and straightforward statistical analysis of your seismic data.
