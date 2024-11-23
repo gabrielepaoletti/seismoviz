@@ -79,5 +79,17 @@ html_theme_options = {
    'logo': {
       'image_light': '_static/logos/seismoviz_logo_dark.png',
       'image_dark': '_static/logos/seismoviz_logo_light.png',
-   }
+   },
+   'navbar_start': ['navbar-logo', 'navbar-project'],
+   'navbar-center': ['navbar-nav'],
+   'navbar_end': ['theme-switcher', 'navbar-icon-links'],
+   'primary_sidebar_end': [],
+   'icon_links': [
+       {
+         'name': 'GitHub',
+         'url': 'https://github.com/gabrielepaoletti/seismoviz',
+         'icon': 'fab fa-github fa-lg',
+         'type': 'fontawesome',   
+       }
+   ]
 }
