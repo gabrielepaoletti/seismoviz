@@ -29,8 +29,6 @@ def read_catalog(path: str, **kwargs) -> Catalog:
     Basic usage:
     
     .. code-block:: python
-        import seismovis as sv    
-
         # Reading a catalog with default settings
         catalog = sv.read_catalog(
             path='seismic_data.csv'
@@ -39,13 +37,11 @@ def read_catalog(path: str, **kwargs) -> Catalog:
     For a more customized behavior, you can pass ``pd.read_csv()`` arguments:
 
     .. code-block:: python
-        import seismovis as sv
-
         # Reading a catalog with a custom delimiter and selected columns
         catalog = sv.read_catalog(
             path='seismic_data.csv', 
             delimiter=';', 
-            usecols=['id', 'lon', 'lat', 'time', 'mag']
+            usecols=['id', 'lon', 'lat', 'depth', 'time', 'mag']
         )
     
     .. warning::
@@ -112,16 +108,16 @@ def create_cross_section(
     Examples
     --------
     .. code-block:: python
-    cs = sv.create_cross_section(
-        catalog=catalog,        # Select the source catalog
-        center=(13.12, 42.83),  # Center coordinates (lon, lat)
-        num_sections=(2,2),     # Number of parallel sections (total=5 in this case)
-        thickness=1,            # Width of the section in km (from each side)
-        strike=155,             # Strike angle in degrees (section perpendicular to strike)
-        map_length=40,          # Lenght of the section in km
-        depth_range=(0, 10)     # Depth range in km
-        section_distance=2      # Distance between adjacent sections
-    )
+        cs = sv.create_cross_section(
+            catalog=catalog,        # Select the source catalog
+            center=(13.12, 42.83),  # Center coordinates (lon, lat)
+            num_sections=(2,2),     # Number of parallel sections (total=5 in this case)
+            thickness=1,            # Width of the section in km (from each side)
+            strike=155,             # Strike angle in degrees (section perpendicular to strike)
+            map_length=40,          # Lenght of the section in km
+            depth_range=(0, 10)     # Depth range in km
+            section_distance=2      # Distance between adjacent sections
+        )
 
     The output will be a ``CrossSection`` object. To access the data, you can use the ``cs.data`` attribute, which is a DataFrame containing all the events within the sections. Each event is labeled with a ``section_id``, allowing you to easily identify which section it belongs to.
     """
