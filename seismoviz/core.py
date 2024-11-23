@@ -29,6 +29,7 @@ def read_catalog(path: str, **kwargs) -> Catalog:
     Basic usage:
     
     .. code-block:: python
+
         # Reading a catalog with default settings
         catalog = sv.read_catalog(
             path='seismic_data.csv'
@@ -37,6 +38,7 @@ def read_catalog(path: str, **kwargs) -> Catalog:
     For a more customized behavior, you can pass ``pd.read_csv()`` arguments:
 
     .. code-block:: python
+
         # Reading a catalog with a custom delimiter and selected columns
         catalog = sv.read_catalog(
             path='seismic_data.csv', 
@@ -108,6 +110,7 @@ def create_cross_section(
     Examples
     --------
     .. code-block:: python
+    
         cs = sv.create_cross_section(
             catalog=catalog,        # Select the source catalog
             center=(13.12, 42.83),  # Center coordinates (lon, lat)
