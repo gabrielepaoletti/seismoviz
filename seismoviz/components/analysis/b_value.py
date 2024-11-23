@@ -46,7 +46,9 @@ class BValueCalculator:
 
         Returns
         -------
-        If ``return_value`` is ``True``:
+        .. warning::
+            Values are returned only if ``return_values`` argument is set to 
+            ``True``
 
         tuple[np.ndarray, np.ndarray, np.ndarray]
             - ``bins`` : np.ndarray
@@ -146,8 +148,10 @@ class BValueCalculator:
 
         Returns
         -------
-        If ``return_value`` is ``True``:
-
+        .. warning::
+            Values are returned only if ``return_values`` argument is set to 
+            ``True``
+            
         tuple[float, float, float, float]
             - ``a_value`` : float
                 The a-value, representing the logarithmic scale of the seismicity rate.
