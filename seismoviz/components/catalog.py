@@ -7,6 +7,32 @@ from seismoviz.components.plotters.cat_plotter import CatalogPlotter, SubCatalog
 
 
 class Catalog(DunderMethodMixin):
+    """
+    Represents a seismic event catalog.
+
+    Attributes
+    ----------
+    data : pandas.DataFrame
+        A DataFrame containing the seismic event data.
+        
+        .. warning::
+            The input CSV file must contain the following columns: 
+            ``lon``, ``lat``, ``time``, ``depth``, ``mag``, and ``id``.
+            If any of these columns are missing, an error will be raised.
+
+    _plotter : CatalogPlotter
+        An internal object responsible for generating plots and visualizations 
+        of the catalog.
+
+    _bvc : BValueCalculator
+        An internal object used for calculating the b-value and related seismic 
+        analysis metrics.
+
+    Raises
+    ------
+    ValueError
+        If the input DataFrame is missing required columns during initialization.
+    """
     def __init__(self, data: pd.DataFrame) -> None:
         missing = {'lon', 'lat', 'depth', 'time', 'mag'} - set(data.columns)
         if missing:

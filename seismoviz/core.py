@@ -8,12 +8,7 @@ from seismoviz.internal.selector import CatalogSelector, CrossSectionSelector
 
 def read_catalog(path: str, **kwargs) -> Catalog:
     """
-    Reads a CSV file and returns a Catalog object.
-
-    .. warning::
-        The input CSV file must contain the following columns: 
-        ``lon``, ``lat``, ``time``, ``depth``, ``mag``, and ``id``.
-        If any of these columns are missing, an error will be raised.
+    Reads a CSV file and returns a ``Catalog`` object.
 
     Parameters
     ----------
@@ -34,22 +29,29 @@ def read_catalog(path: str, **kwargs) -> Catalog:
     Basic usage:
     
     .. code-block:: python
+        import seismovis as sv    
 
         # Reading a catalog with default settings
-        catalog = read_catalog(
+        catalog = sv.read_catalog(
             path='seismic_data.csv'
         )
 
     For a more customized behavior, you can pass ``pd.read_csv()`` arguments:
 
     .. code-block:: python
+        import seismovis as sv
 
         # Reading a catalog with a custom delimiter and selected columns
-        catalog = read_catalog(
+        catalog = sv.read_catalog(
             path='seismic_data.csv', 
             delimiter=';', 
             usecols=['id', 'lon', 'lat', 'time', 'mag']
         )
+    
+    .. warning::
+        The input CSV file must contain the following columns: 
+        ``lon``, ``lat``, ``time``, ``depth``, ``mag``, and ``id``.
+        If any of these columns are missing, an error will be raised.
     """
     data = pd.read_csv(path, parse_dates=['time'], **kwargs)
     return Catalog(data)
@@ -66,12 +68,12 @@ def create_cross_section(
     section_distance: float = 1.0
 ) -> CrossSection:
     """
-    Creates a seismic cross-section from a given seismic catalog.
+    Creates a seismic cross-section from a given ``Catalog``.
 
     Parameters
     ----------
     catalog : Catalog
-        An instance of the `Catalog` class containing seismic event data.
+        An instance of the ``Catalog`` class containing seismic event data.
     
     center : tuple[float, float]
         A tuple representing the geographical coordinates (longitude, latitude) 
@@ -104,8 +106,24 @@ def create_cross_section(
     Returns
     -------
     CrossSection
-        An instance of the CrossSection class with the seismic events that fit 
+        An instance of the ``CrossSection`` class with the seismic events that fit 
         the specified parameters.
+
+    Examples
+    --------
+    .. code-block:: python
+    cs = sv.create_cross_section(
+        catalog=catalog,        # Select the source catalog
+        center=(13.12, 42.83),  # Center coordinates (lon, lat)
+        num_sections=(2,2),     # Number of parallel sections (total=5 in this case)
+        thickness=1,            # Width of the section in km (from each side)
+        strike=155,             # Strike angle in degrees (section perpendicular to strike)
+        map_length=40,          # Lenght of the section in km
+        depth_range=(0, 10)     # Depth range in km
+        section_distance=2      # Distance between adjacent sections
+    )
+
+    The output will be a ``CrossSection`` object. To access the data, you can use the ``cs.data`` attribute, which is a DataFrame containing all the events within the sections. Each event is labeled with a ``section_id``, allowing you to easily identify which section it belongs to.
     """
     return CrossSection(
         catalog, center, num_sections, thickness, strike, 

@@ -5,7 +5,7 @@ Catalog
    :undoc-members:
    :show-inheritance:
 
-Basic methods:
+Basic methods
 --------
 .. automethod:: seismoviz.components.catalog.Catalog.filter
 .. automethod:: seismoviz.components.catalog.Catalog.sort
