@@ -328,7 +328,7 @@ class Catalog(DunderMethodMixin):
         --------
         An example of a seismic map generated using this function:
 
-        .. image:: https://postimg.cc/Cn4c3Qgw
+        .. image:: https://imgur.com/0d6OA1L.jpg
             :align: center
             
         For detailed examples and step-by-step instructions on how to plot this 
