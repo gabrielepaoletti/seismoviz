@@ -14,11 +14,6 @@ class Catalog(DunderMethodMixin):
     ----------
     data : pandas.DataFrame
         A DataFrame containing the seismic event data.
-        
-        .. warning::
-            The input CSV file must contain the following columns: 
-            ``lon``, ``lat``, ``time``, ``depth``, ``mag``, and ``id``.
-            If any of these columns are missing, an error will be raised.
 
     _plotter : CatalogPlotter
         An internal object responsible for generating plots and visualizations 
@@ -32,6 +27,10 @@ class Catalog(DunderMethodMixin):
     ------
     ValueError
         If the input DataFrame is missing required columns during initialization.
+
+        .. warning::
+            The input CSV file must contain the following columns: 
+            ``lon``, ``lat``, ``time``, ``depth``, ``mag``, and ``id``.
     """
     def __init__(self, data: pd.DataFrame) -> None:
         missing = {'lon', 'lat', 'depth', 'time', 'mag'} - set(data.columns)
@@ -55,8 +54,8 @@ class Catalog(DunderMethodMixin):
 
         .. note::
             Each keyword argument should be in the form 
-            `attribute=('criteria', value)` or 
-            `attribute=('criteria', [value1, value2])` for range criteria. 
+            ``attribute=('criteria', value)`` or 
+            ``attribute=('criteria', [value1, value2])`` for range criteria. 
             This allows for intuitive and flexible filtering based on the 
             attributes of seismic events.
 
@@ -64,30 +63,30 @@ class Catalog(DunderMethodMixin):
         ----------
         **kwargs : dict
             Arbitrary keyword arguments representing the filtering 
-            conditions. Each key is an attribute name of the seismic events 
-            (e.g., 'mag', 'lat'), and the value is a tuple specifying the 
-            criteria ('greater', 'lower', 'between', 'outside') and the 
-            comparison value(s).
+            conditions. Each key is an attribute name of the seismic events, 
+            and the value is a tuple specifying the criteria (``'greater'``, ``'lower'``, 
+            ``'between'``, ``'outside'``) and the comparison value(s).
 
         Returns
         -------
         Catalog
-            A new instance of Catalog containing the filtered subset of 
+            A new instance of ``Catalog`` containing the filtered subset of 
             seismic events.
 
         Examples
         --------
-        To filter the catalog for events with magnitude greater than 4.5 
-        and depth between the range [10, 50]:
+        To filter the catalog for events with magnitude greater than 4.5, depth 
+        between the range 10-50 km and occured before October 30, 2016:
 
         .. code-block:: python
 
             filtered_catalog = catalog.filter(
                 mag=('greater', 4.5),
-                depth=('between', [10, 50])
+                depth=('between', [10, 50]),
+                time=('lower', '2016-10-30')
             )
 
-        This would return a new `Catalog` instance containing only the 
+        This would return a new ``Catalog`` instance containing only the 
         events that match the specified criteria.
 
         Raises
@@ -98,8 +97,8 @@ class Catalog(DunderMethodMixin):
 
         .. note::
             The filtering operation is cumulative for multiple conditions. 
-            For example, specifying conditions for both 'magnitude' and 
-            'depth' will filter events that satisfy both conditions 
+            For example, specifying conditions for both ``'magnitude'`` and 
+            ``'depth'`` will filter events that satisfy both conditions 
             simultaneously.
         """
         filtered_data = self.data
@@ -145,30 +144,49 @@ class Catalog(DunderMethodMixin):
         Parameters
         ----------
         by : str
-            The attribute of the seismic events to sort by (e.g., 'time', 
-            'magnitude').
+            The attribute of the seismic events to sort by.
 
         ascending : bool, optional
-            Determines the sorting order. If True (default), sorts in 
-            ascending order; if False, in descending order.
+            Determines the sorting order. If ``True`` (default), sorts in 
+            ascending order; if ``False``, in descending order.
 
         Returns
         -------
         Catalog
-            The Catalog instance itself, modified to reflect the sorted 
+            The ``Catalog`` instance itself, modified to reflect the sorted 
             order.
+
+        Examples
+        --------
+        To sort the catalog by time in ascending order:
+
+        .. code-block:: python
+
+        sorted_catalog = catalog.sort(
+            by='time',
+            ascending=True
+        )
+
         """
         return self.data.sort_values(by=by, ascending=ascending)
 
     def deduplicate_events(self) -> 'Catalog':
         """
-        Removes duplicate seismic events based on longitude, latitude, 
-        depth, and time, returning a new Catalog instance.
+        Removes duplicate seismic events.
 
         Returns
         -------
         Catalog
-            A new Catalog instance without duplicate events.
+            A new ``Catalog`` instance without duplicate entries.
+
+        Examples:
+        ---------
+        To remove duplicates inside the catalog:
+
+        .. code-block:: python
+
+        deduplicated_catalog = catalog.deduplicate_events()
+        
         """
         return self.data.drop_duplicates(subset=['lon', 'lat', 'depth', 'time'])
 

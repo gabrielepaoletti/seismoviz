@@ -3,10 +3,10 @@ Catalog
 
 .. autoclass:: seismoviz.components.catalog.Catalog
    :undoc-members:
-   :show-inheritance:
+   :member-order: bysource
 
 Basic methods
---------
+-------------
 .. automethod:: seismoviz.components.catalog.Catalog.filter
 .. automethod:: seismoviz.components.catalog.Catalog.sort
 .. automethod:: seismoviz.components.catalog.Catalog.deduplicate_events
