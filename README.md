@@ -1,3 +1,9 @@
+<picture align="center">
+  <source media="(prefers-color-scheme: dark)" srcset="https://seismoviz.readthedocs.io/en/latest/_static/seismoviz_banner_dark.jpg">
+  <img alt="SeismoViz Logo" src="https://seismoviz.readthedocs.io/en/latest/_static/seismoviz_banner_light.jpg">
+</picture>
+
+
 # SeismoViz
 
 An open-source, user-friendly Python library for streamlined analysis, manipulation and visualization of seismic catalogs.

@@ -158,6 +158,7 @@ cython_debug/
 playground.ipynb
 global_seismic_catalog.csv
 local_seismic_catalog.csv
+branding
 
 # PyCharm
 #  JetBrains specific template is maintained in a separate JetBrains.gitignore that can
