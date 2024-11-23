@@ -1,7 +1,5 @@
-<picture align="center">
-  <source media="(prefers-color-scheme: dark)" srcset="https://seismoviz.readthedocs.io/en/latest/_static/seismoviz_banner_dark.jpg">
-  <img alt="SeismoViz Logo" src="https://seismoviz.readthedocs.io/en/latest/_static/seismoviz_banner_light.jpg">
-</picture>
+![SeismoViz Logo](docs/source/_static/logos/seismoviz_banner_light.jpg#gh-light-mode-only)
+![SeismoViz Logo](docs/source/_static/logos/seismoviz_banner_dark.jpg#gh-dark-mode-only)
 
 
 # SeismoViz
