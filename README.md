@@ -7,11 +7,7 @@
   </strong>
 </p>
 
-<h1 align="center">
-  Welcome to SesimoViz!
-</h1>
-
-An open-source Python library designed to simplify the analysis, manipulation, and visualization of seismic catalogs. With its intuitive and efficient interface, it reduces complex workflows into just a few lines of code, empowering users to explore seismic data effortlessly.
+SeismoViz is open-source Python library designed to simplify the analysis, manipulation, and visualization of seismic catalogs. With its intuitive and efficient interface, it reduces complex workflows into just a few lines of code, empowering users to explore seismic data effortlessly.
 
 ## 🚀 Getting started
 
