@@ -1,4 +1,4 @@
-.wy-side-nav-search .logo img {
-    max-width: 150px; /* Adjust this value to your desired size */
-    height: auto; /* Maintains the aspect ratio */
+.navbar-brand img {
+    max-width: 275px;
+    height: auto;
 }
