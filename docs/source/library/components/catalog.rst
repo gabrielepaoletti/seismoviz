@@ -1,7 +1,9 @@
 Catalog
 =======
 
-.. automethod:: seismoviz.components.catalog.Catalog.__init__
+.. autoclass:: seismoviz.components.catalog.Catalog
+   :undoc-members:
+   :show-inheritance:
 
 Basic methods
 --------
