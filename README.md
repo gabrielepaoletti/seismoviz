@@ -1,12 +1,19 @@
 ![SeismoViz Logo](docs/source/_static/logos/seismoviz_banner_light.jpg#gh-light-mode-only)
 ![SeismoViz Logo](docs/source/_static/logos/seismoviz_banner_dark.jpg#gh-dark-mode-only)
 
+<p align="center">
+  <strong>
+    <a href="https://seismoviz.readthedocs.io/en/latest/index.html">Documentation</a>
+  </strong>
+</p>
 
-# SeismoViz
+<h1 align="center">
+  Welcome to SesimoViz!
+</h1>
 
-SeismoViz is an open-source Python library designed to simplify the analysis, manipulation, and visualization of seismic catalogs. With its intuitive and efficient interface, it reduces complex workflows into just a few lines of code, empowering users to explore seismic data effortlessly.
+An open-source Python library designed to simplify the analysis, manipulation, and visualization of seismic catalogs. With its intuitive and efficient interface, it reduces complex workflows into just a few lines of code, empowering users to explore seismic data effortlessly.
 
-## ✨ Features
+## 🚀 Getting started
 
 ### Catalog refinement
 Easily clean and organize your seismic catalog. With SeismoViz, you can remove duplicates, filter data based on your needs, and sort events with just a few simple commands.
@@ -117,9 +124,23 @@ catalog.estimate_b_value(
 ```
 ![b-value](docs/source/_images/b-value.jpg)
 
-## 📋 Documentation
+### Interactive selections
+SeismoViz allows you to interactively explore your seismic catalog, enabling you to visually select subsets of data directly from your plots.
 
-For a comprehensive guide on how to install, configure, and use this library, please refer to the [SeismoViz official documentation](https://seismoviz.readthedocs.io/en/latest/index.html). It provides detailed instructions on setting up the library, as well as examples and best practices to help you get the most out of your experience.
+```python
+import seismoviz as sv
+
+selector = sv.select_on_section(
+    cross_section=cs
+)
+```
+![Interactive selection](docs/source/_images/interactive_selection.gif)
+
+```python
+selection = selector.confirm_selection()
+```
+
+These are just a few examples of what you can do with SeismoViz. There's so much more to explore! Check out the [documentation](https://seismoviz.readthedocs.io/en/latest/index.html) to discover all its features and capabilities.
 
 ## 🤝 Contributing
 
