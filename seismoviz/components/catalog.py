@@ -162,10 +162,10 @@ class Catalog(DunderMethodMixin):
 
         .. code-block:: python
 
-        sorted_catalog = catalog.sort(
-            by='time',
-            ascending=True
-        )
+            sorted_catalog = catalog.sort(
+                by='time',
+                ascending=True
+            )
 
         """
         return self.data.sort_values(by=by, ascending=ascending)
@@ -179,13 +179,13 @@ class Catalog(DunderMethodMixin):
         Catalog
             A new ``Catalog`` instance without duplicate entries.
 
-        Examples:
-        ---------
+        Examples
+        --------
         To remove duplicates inside the catalog:
 
         .. code-block:: python
 
-        deduplicated_catalog = catalog.deduplicate_events()
+            deduplicated_catalog = catalog.deduplicate_events()
         
         """
         return self.data.drop_duplicates(subset=['lon', 'lat', 'depth', 'time'])
