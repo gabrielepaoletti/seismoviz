@@ -1,0 +1,7 @@
+pydata-sphinx-theme
+numpydoc
+sphinx-design
+sphinx-copybutton
+sphinx-tabs
+sphinxcontrib-autoprogram
+sphinx-argparse

@@ -2,6 +2,7 @@ import inspect
 from functools import wraps
 from collections.abc import Callable
 
+
 def sync_signature(attribute_name: str, method_name: str) -> Callable:
     """
     A decorator that synchronizes the signature of a method with a target 

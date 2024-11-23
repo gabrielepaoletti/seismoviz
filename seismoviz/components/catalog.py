@@ -1,8 +1,8 @@
 import pandas as pd
 
 from seismoviz.internal.mixins import DunderMethodMixin
-from seismoviz.internal.decorators import sync_signature
 from seismoviz.components.analysis.b_value import BValueCalculator
+from seismoviz.internal.decorators import sync_signature
 from seismoviz.components.plotters.cat_plotter import CatalogPlotter, SubCatalogPlotter
 
 
@@ -446,7 +446,11 @@ class Catalog(DunderMethodMixin):
             The size of each magnitude bin.
 
         plot : bool, optional
-            If True, plots the FMD. Default is True.
+            If True, plots the FMD. Default is False.
+
+        return_values : bool, optional
+            If True, returns the calculated FMD values (bins, events_per_bin, 
+            cumulative_events). Default is False.
 
         save_figure : bool, optional
             If True, saves the figure when `plot` is True. Default is False.
@@ -469,7 +473,7 @@ class Catalog(DunderMethodMixin):
                 or equal to each bin.
 
         """
-        self._bvc.fmd(**kwargs, plot=True)
+        self._bvc.fmd(**kwargs)
     
     def estimate_b_value(self, bin_size: float, mc: str | float, **kwargs):
         """

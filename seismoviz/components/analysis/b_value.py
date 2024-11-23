@@ -1,5 +1,4 @@
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 
 from seismoviz.components.common import styling
@@ -14,7 +13,8 @@ class BValueCalculator:
     def fmd(
         self,
         bin_size: float,
-        plot: bool = False,
+        plot: bool = True,
+        return_values: bool = False,
         save_figure: bool = False,
         save_name: str = 'fmd',
         save_extension: str = 'jpg'
@@ -30,6 +30,10 @@ class BValueCalculator:
 
         plot : bool, optional
             If True, plots the FMD. Default is False.
+
+        return_values : bool, optional
+            If True, returns the calculated FMD values (bins, events_per_bin, 
+            cumulative_events). Default is False.
 
         save_figure : bool, optional
             If True, saves the figure when `plot` is True. Default is False.
@@ -90,7 +94,8 @@ class BValueCalculator:
             plt.show()
             self.bp.reset_style()
 
-        return bins, events_per_bin, cumulative_events
+        if return_values:
+            return bins, events_per_bin, cumulative_events
 
     def estimate_b_value(
                 self,
@@ -173,7 +178,11 @@ class BValueCalculator:
 
         if plot:
             self.bp.set_style(styling.DEFAULT)
-            bins, events_per_bin, cumulative_events = self.fmd(bin_size=bin_size)
+            bins, events_per_bin, cumulative_events = self.fmd(
+                bin_size=bin_size,
+                plot=False,
+                return_values=True
+            )
             bins = np.round(bins, decimals)
 
             fig, ax = plt.subplots(figsize=(10, 5))
@@ -264,7 +273,11 @@ class BValueCalculator:
         float
             The magnitude of completeness (Mc), rounded to the nearest 0.1.
         """
-        bins, events_per_bin, _ = self.fmd(bin_size)
+        bins, events_per_bin, _ = self.fmd(
+            bin_size=bin_size,
+            plot=False,
+            return_values=True
+        )
         max_event_count_bin = bins[np.argmax(events_per_bin)]
         mc = round(max_event_count_bin, 1)
         
