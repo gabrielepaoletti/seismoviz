@@ -8,6 +8,7 @@ Getting Started
 
    user_guide/installation
    user_guide/tutorials
+   user_guide/faq
 
 Welcome to SeismoViz! Start here to explore the capabilities of this tool and learn how to effectively use it for your seismic research and analysis needs.
 
@@ -23,7 +24,7 @@ This section provides a comprehensive overview of key features and functionaliti
 
    Follow step-by-step instructions to easily set up the toolkit on your system and get started.
 
-.. card:: :material-regular:`draw;1.7em` Getting started
+.. card:: :material-regular:`draw;1.7em` Tutorials
    :link: user_guide/tutorials
    :link-type: doc
 

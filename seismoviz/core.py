@@ -9,16 +9,47 @@ from seismoviz.internal.selector import CatalogSelector, CrossSectionSelector
 def read_catalog(path: str, **kwargs) -> Catalog:
     """
     Reads a CSV file and returns a Catalog object.
-    
+
+    .. warning::
+        The input CSV file must contain the following columns: 
+        ``lon``, ``lat``, ``time``, ``depth``, ``mag``, and ``id``.
+        If any of these columns are missing, an error will be raised.
+
     Parameters
     ----------
     path : str
         The path to the CSV file containing the seismic catalog.
+
+    **kwargs
+        Additional keyword arguments to pass to `pandas.read_csv`.
     
     Returns
     -------
     Catalog
-        An instance of the Catalog class with the data loaded.
+        An instance of the ``Catalog`` class with the data loaded.
+
+    Example
+    -------
+
+    Basic usage:
+    
+    .. code-block:: python
+
+        # Reading a catalog with default settings
+        catalog = read_catalog(
+            path='seismic_data.csv'
+        )
+
+    For a more customized behavior, you can pass ``pd.read_csv()`` arguments:
+
+    .. code-block:: python
+
+        # Reading a catalog with a custom delimiter and selected columns
+        catalog = read_catalog(
+            path='seismic_data.csv', 
+            delimiter=';', 
+            usecols=['id', 'lon', 'lat', 'time', 'mag']
+        )
     """
     data = pd.read_csv(path, parse_dates=['time'], **kwargs)
     return Catalog(data)

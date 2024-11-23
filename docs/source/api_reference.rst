@@ -6,6 +6,7 @@ API Reference
    :hidden:
    :caption: Components
    
+   library/core
    library/components/catalog
    library/components/cross_section
 
@@ -17,7 +18,7 @@ Core
 The primary interface for interacting with seismic catalog, providing essential functions for data import and basic management.
 
 .. card:: :material-outlined:`hub;1.7em` Core
-   :link: lib/core
+   :link: library/core
    :link-type: doc
 
    Provides essential functions for importing and managing seismic catalogs.
@@ -32,7 +33,7 @@ Defines the core objects of the library. These objects are foundational for hand
 
    Encapsulates a seismic catalog, including events and relevant metadata.
 
-.. card:: :material-outlined:`hide_source;1.7em` CrossSection
+.. card:: :material-outlined:`hide_source;1.7em` Cross sections
    :link: library/components/cross_section
    :link-type: doc
 
