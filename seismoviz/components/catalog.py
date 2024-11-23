@@ -328,7 +328,7 @@ class Catalog(DunderMethodMixin):
         --------
         An example of a seismic map generated using this function:
 
-        .. image:: _static/images/global_seismicity_catalog.jpg
+        .. image:: https://i.postimg.cc/HnqF7qv8/global-seismicity-catalog.jpg
             :alt: Global seismicity map plot example with seismic events color-
             coded by depth.
             
