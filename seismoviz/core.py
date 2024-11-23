@@ -110,7 +110,7 @@ def create_cross_section(
     Examples
     --------
     .. code-block:: python
-    
+
         cs = sv.create_cross_section(
             catalog=catalog,        # Select the source catalog
             center=(13.12, 42.83),  # Center coordinates (lon, lat)
@@ -122,7 +122,10 @@ def create_cross_section(
             section_distance=2      # Distance between adjacent sections
         )
 
-    The output will be a ``CrossSection`` object. To access the data, you can use the ``cs.data`` attribute, which is a DataFrame containing all the events within the sections. Each event is labeled with a ``section_id``, allowing you to easily identify which section it belongs to.
+    The output will be a ``CrossSection`` object. To access the data, you can 
+    use the ``cs.data`` attribute, which is a DataFrame containing all the events 
+    within the sections. Each event is labeled with a ``section_id``, allowing 
+    you to easily identify which section it belongs to.
     """
     return CrossSection(
         catalog, center, num_sections, thickness, strike, 

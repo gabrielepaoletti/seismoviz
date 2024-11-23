@@ -64,8 +64,8 @@ class Catalog(DunderMethodMixin):
         **kwargs : dict
             Arbitrary keyword arguments representing the filtering 
             conditions. Each key is an attribute name of the seismic events, 
-            and the value is a tuple specifying the criteria (``'greater'``, ``'lower'``, 
-            ``'between'``, ``'outside'``) and the comparison value(s).
+            and the value is a tuple specifying the criteria (``'greater'``, 
+            ``'lower'``, ``'between'``, ``'outside'``) and the comparison value(s).
 
         Returns
         -------
