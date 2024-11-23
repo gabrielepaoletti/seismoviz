@@ -84,9 +84,38 @@ cs.plot_sections(
 ![Cross section](docs/source/_images/cross_section.jpg)
 
 ### Statistical analysis
-SeismoViz simplifies seismic data analysis with built-in tools for exploring catalog distributions, plotting magnitude histograms, and calculating the b-value directly from your catalog. These features enable quick and straightforward statistical analysis of your seismic data.
+SeismoViz simplifies seismic data analysis with built-in tools for exploring catalog distributions, plotting event timelines, and calculating the b-value directly from your catalog. These features enable quick and straightforward statistical analysis of your seismic data.
 
+```python
+import seismoviz as sv
 
+# Read the catalog from a file
+catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+# Plot magnitude-time distribution
+catalog.plot_magnitude_time(
+    color_by='depth',
+    size='depth',
+    cmap='YlOrRd',
+)
+```
+![Magnitude-time](docs/source/_images/magnitude-time.jpg)
+
+```python
+import seismoviz as sv
+
+# Read the catalog from a file
+catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+# Estimate b-value and plot it
+catalog.estimate_b_value(
+    bin_size=0.1,
+    mc='maxc',
+    plot=True,
+    return_values=False
+)
+```
+![b-value](docs/source/_images/b-value.jpg)
 
 ## 📋 Documentation
 

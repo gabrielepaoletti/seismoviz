@@ -93,7 +93,7 @@ class BValueCalculator:
             ax.grid(True, alpha=0.25, axis='x', linestyle=':')
 
             if save_figure:
-                self.save_figure(fig, save_name, save_extension)
+                self.bp.save_figure(fig, save_name, save_extension)
 
             plt.show()
             self.bp.reset_style()
@@ -102,15 +102,15 @@ class BValueCalculator:
             return bins, events_per_bin, cumulative_events
 
     def estimate_b_value(
-                self,
-                bin_size: float,
-                mc: str | float,
-                plot: bool = True,
-                plot_uncertainty: str = 'shi_bolt',
-                return_values: bool = True,
-                save_figure: bool = False,
-                save_name: str = 'b-value',
-                save_extension: str = 'jpg'
+            self,
+            bin_size: float,
+            mc: str | float,
+            plot: bool = True,
+            plot_uncertainty: str = 'shi_bolt',
+            return_values: bool = False,
+            save_figure: bool = False,
+            save_name: str = 'b-value',
+            save_extension: str = 'jpg'
         ) -> tuple[float, float, float, float]:
         """
         Estimates the b-value for seismic events, and calculates the associated uncertainties.
@@ -268,7 +268,7 @@ class BValueCalculator:
             ax.grid(True, alpha=0.25, axis='x', linestyle=':')
 
             if save_figure:
-                self.save_figure(fig, save_name, save_extension)
+                self.bp.save_figure(save_name, save_extension)
 
             plt.show()
             self.bp.reset_style()
