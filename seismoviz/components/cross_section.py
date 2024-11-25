@@ -587,6 +587,7 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
                 depth_range=(0, 10)     
             )
 
+            # Plot section traces on a map
             cs.plot_section_lines(
                 title='Section lines',
                 size='mag',
