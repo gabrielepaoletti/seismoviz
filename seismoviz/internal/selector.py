@@ -18,24 +18,6 @@ class CatalogSelector:
         self.sd = None
         hv.extension('bokeh', logo=False)
 
-    def select(self, size: float = 1, color: str = 'black') -> None:
-        """
-        Set up the cross-section plot and initialize the selection stream.
-
-        Parameters
-        ----------
-        size : float, optional
-            The size of the scatter plot points. Default is 1.
-
-        color : str, optional
-            The color of the points in the scatter plot. Default is 'black'.
-        """
-        scatter = self._plot_map(size=size, color=color)
-        selection = streams.Selection1D(source=scatter)
-        selection.add_subscriber(self._selection_callback)
-
-        hv.output(scatter)
-
     def _set_bounds(self, plot, element) -> None:
         """
         Set the x and y range bounds for the cross-section plot.
@@ -104,6 +86,24 @@ class CatalogSelector:
         if index:
             self.sd = self.ct.data.iloc[index]
 
+    def select(self, size: float = 1, color: str = 'black') -> None:
+        """
+        Set up the cross-section plot and initialize the selection stream.
+
+        Parameters
+        ----------
+        size : float, optional
+            The size of the scatter plot points. Default is 1.
+
+        color : str, optional
+            The color of the points in the scatter plot. Default is 'black'.
+        """
+        scatter = self._plot_map(size=size, color=color)
+        selection = streams.Selection1D(source=scatter)
+        selection.add_subscriber(self._selection_callback)
+
+        hv.output(scatter)
+
 
 class CrossSectionSelector:
     """
@@ -120,24 +120,6 @@ class CrossSectionSelector:
         self.cs = cross_section
         self.sd = None
         hv.extension('bokeh', logo=False)
-
-    def select(self, size: float = 1, color: str = 'black') -> None:
-        """
-        Set up the cross-section plot and initialize the selection stream.
-
-        Parameters
-        ----------
-        size : float, optional
-            The size of the scatter plot points. Default is 1.
-
-        color : str, optional
-            The color of the points in the scatter plot. Default is 'black'.
-        """
-        scatter = self._plot_section(size=size, color=color)
-        selection = streams.Selection1D(source=scatter)
-        selection.add_subscriber(self._selection_callback)
-
-        hv.output(scatter)
 
     def _set_bounds(self, plot, element) -> None:
         """
@@ -207,3 +189,21 @@ class CrossSectionSelector:
         """
         if index:
             self.sd = self.cs.data.iloc[index]
+
+    def select(self, size: float = 1, color: str = 'black') -> None:
+        """
+        Set up the cross-section plot and initialize the selection stream.
+
+        Parameters
+        ----------
+        size : float, optional
+            The size of the scatter plot points. Default is 1.
+
+        color : str, optional
+            The color of the points in the scatter plot. Default is 'black'.
+        """
+        scatter = self._plot_section(size=size, color=color)
+        selection = streams.Selection1D(source=scatter)
+        selection.add_subscriber(self._selection_callback)
+
+        hv.output(scatter)
