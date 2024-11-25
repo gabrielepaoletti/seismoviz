@@ -2,3 +2,21 @@
     max-width: 200px;
     height: auto;
 }
+
+.theme-light {
+    display: block;
+}
+
+.theme-dark {
+    display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+    .theme-light {
+        display: none;
+    }
+
+    .theme-dark {
+        display: block;
+    }
+}
