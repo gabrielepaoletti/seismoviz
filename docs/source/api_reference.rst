@@ -10,6 +10,7 @@
    :hidden:
    :caption: Components
    
+   library/core
    library/components/catalog
    library/components/cross_section
 
