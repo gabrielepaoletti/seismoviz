@@ -5,15 +5,16 @@
 
 --------------------
 
+Cross Sections
+==============
 
 .. autoclass:: seismoviz.components.cross_section.CrossSection
    :undoc-members:
    :member-order: bysource
    :exclude-members: inherited_method, inherited_property
 
-.. raw:: html
-
-    <h2 style="font-size: 1.2em;">Visualization methods</h2>
+Visualization methods
+---------------------
 
 .. automethod:: seismoviz.components.cross_section.CrossSection.plot_sections
 
