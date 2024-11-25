@@ -14,30 +14,16 @@
    library/components/cross_section
 
 
-This reference manual offers detailed explanations of the functions, modules, and objects contained within SeismoViz, outlining their purposes and functionalities.
-
-Core
-----
-The primary interface for interacting with seismic catalog, providing essential functions for data import and basic management.
-
-.. card:: :material-outlined:`hub;1.7em` Core
-   :link: library/core
-   :link-type: doc
-
-   Provides essential functions for importing and managing seismic catalogs.
+This reference manual provides an in-depth overview of the SeismoViz library, detailing its modules, functions, and core components. It is designed to assist users in managing seismic data effectively and implementing advanced analytical workflows.
 
 Components
-----------
-Defines the core objects of the library. These objects are foundational for handling and analyzing seismic catalogs in a structured and efficient way.
+^^^^^^^^^^
 
-.. card:: :material-outlined:`description;1.7em` Catalog
-   :link: library/components/catalog
-   :link-type: doc
+`Core <library/core>`_
+    Contains essential functions for high-level operations.
+   
+`Catalog <library/components/catalog>`_
+    Contains methods for visualization and analysis of seismic catalogs.
 
-   Encapsulates a seismic catalog, including events and relevant metadata.
-
-.. card:: :material-outlined:`hide_source;1.7em` Cross sections
-   :link: library/components/cross_section
-   :link-type: doc
-
-   Provides methods to compute cross sections and visualize them.
+`Cross Sections <library/components/cross_section>`_
+    Provides tools to compute and visualize seismic cross-sections. 
