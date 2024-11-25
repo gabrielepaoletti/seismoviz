@@ -239,7 +239,7 @@ class CatalogPlotter:
         Returns
         -------
         None
-            This function generates a map with seismic events.
+            A map with seismic events.
         
         Examples
         --------
@@ -418,7 +418,7 @@ class CatalogPlotter:
         Returns
         -------
         None
-            This function generates a magnitude-time plot.
+            A magnitude-time plot.
         """
         self.bp.set_style(styling.DEFAULT)
 
@@ -624,7 +624,7 @@ class CatalogPlotter:
         Returns
         -------
         None
-            This function generates a space-time plot.        
+            A space-time plot.        
         """
         self.bp.set_style(styling.DEFAULT)
 
@@ -765,7 +765,7 @@ class CatalogPlotter:
         Returns
         -------
         None
-            This function generates the event timeline plot.
+            A event timeline plot.
         """
         self.bp.set_style(styling.DEFAULT)
         
@@ -817,7 +817,7 @@ class CatalogPlotter:
         Returns
         -------
         None
-            This function shows the distribution of the main attributes of the 
+            A plot showing the distribution of the main attributes of the 
             catalog.
         """
         self.bp.set_style(styling.DEFAULT)

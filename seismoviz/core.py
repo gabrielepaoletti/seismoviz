@@ -136,19 +136,19 @@ def create_cross_section(
 class select_on_map:
     """
     Simulates a function for selecting data from a map, using 
-    a CatalogSelector to interact with seismic data.
+    a ``CatalogSelector`` to interact with seismic data.
 
     Parameters
     ----------
     catalog : Catalog
-        The Catalog object containing seismic data and plotting 
+        The ``Catalog`` object containing seismic data and plotting 
         configurations.
 
     size : float, optional
         The size of the points in the scatter plot. Default is 1.
 
     color : str, optional
-        The color of the points in the scatter plot. Default is 'black'.
+        The color of the points in the scatter plot. Default is ``'black'``.
     """
 
     def __init__(
@@ -162,12 +162,12 @@ class select_on_map:
 
     def confirm_selection(self) -> SubCatalog:
         """
-        Confirms the selection and returns a SubCatalog of the selected data.
+        Confirms the selection and returns a ``SubCatalog`` of the selected data.
 
         Returns
         -------
         SubCatalog
-            A SubCatalog object containing the selected data from the 
+            A ``SubCatalog`` object containing the selected data from the 
             cross-section.
         """
         return SubCatalog(
@@ -179,19 +179,19 @@ class select_on_map:
 class select_on_section:
     """
     Simulates a function for selecting data from a cross-section, using 
-    a CrossSectionSelector to interact with seismic data.
+    a ``CrossSectionSelector`` to interact with seismic data.
 
     Parameters
     ----------
     cross_section : CrossSection
-        The CrossSection object containing seismic data and plotting 
+        The ``CrossSection`` object containing seismic data and plotting 
         configurations.
 
     size : float, optional
         The size of the points in the scatter plot. Default is 1.
 
     color : str, optional
-        The color of the points in the scatter plot. Default is 'black'.
+        The color of the points in the scatter plot. Default is ``'black'``.
     """
 
     def __init__(
@@ -205,12 +205,12 @@ class select_on_section:
 
     def confirm_selection(self) -> SubCatalog:
         """
-        Confirms the selection and returns a SubCatalog of the selected data.
+        Confirms the selection and returns a ``SubCatalog`` of the selected data.
 
         Returns
         -------
         SubCatalog
-            A SubCatalog object containing the selected data from the 
+            A ``SubCatalog`` object containing the selected data from the 
             cross-section.
         """
         return SubCatalog(

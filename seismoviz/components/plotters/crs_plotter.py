@@ -1,17 +1,14 @@
 import srtm
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 import matplotlib.colors as mcolors
-import matplotlib.patches as patches
+import matplotlib.font_manager as fm
+from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
 from seismoviz.utils import convert_to_geographical
 from seismoviz.components.common import styling
 from seismoviz.components.common.map_plotter import MapPlotter
 from seismoviz.components.common.base_plotter import BasePlotter
-
-from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
-import matplotlib.font_manager as fm
 
 
 class CrossSectionPlotter:
@@ -120,107 +117,125 @@ class CrossSectionPlotter:
         Parameters
         ----------
         color_by : str, optional
-            Column name from the DataFrame to color seismic events (e.g., 
-            'magnitude', 'depth'). Default is None, using a uniform color.
+            Specifies the column in the DataFrame used to color the 
+            seismic events. Default is ``None``, which applies a single color to 
+            all points.
 
         cmap : str, optional
-            Colormap to use when `color_by` is specified. Default is 'jet'.
+            The colormap to use for coloring events if ``color_by`` is specified. 
+            Default is ``'jet'``.
 
         title : str, optional
-            Title of the plot. Default is 'Section'.
+            Title of the map. If ``None``, no title is displayed. Default is 
+            ``Section``.
 
-        hl_ms : float, optional
-            If specified, highlights seismic events with a magnitude greater 
-            than this value using special markers. Default is None.
+        hl_ms : int, optional
+            If specified, highlights seismic events with a magnitude 
+            greater than this value using different markers. Default is ``None``.
 
         hl_size : float, optional
-            Size of the markers used for highlighting seismic events (when 
-            `hl_ms` is specified). Default is 200.
+            Size of the markers used for highlighted seismic events (if ``hl_ms`` 
+            is specified). Default is 200.
 
         hl_marker : str, optional
-            Marker style for highlighted events. Default is '*'.
+            Marker style for highlighted events. Default is ``'*'``.
 
         hl_color : str, optional
-            Color for highlighted seismic event markers. Default is 'red'.
+            Color of the highlighted event markers. Default is ``'red'``.
 
         hl_edgecolor : str, optional
-            Edge color for highlighted event markers. Default is 'darkred'.
-
-        color : str, optional
-            Default color for seismic event markers. Default is 'black'.
-
-        edgecolor : str, optional
-            Edge color for event markers. If None, the default edge color is 
-            not applied. Default is None.
+            Edge color for highlighted event markers. Default is ``'darkred'``.
 
         size : float or str, optional
-            Size of markers representing seismic events. If a string is 
-            provided, it should refer to a column from the DataFrame (e.g., 
-            'magnitude') to scale marker sizes proportionally. Default is 5.
+            The size of the markers representing seismic events. If a string 
+            is provided, it should refer to a column in the DataFrame to scale 
+            point sizes proportionally. Default is 10.
 
         size_scale_factor : tuple[float, float], optional
-            Tuple for scaling marker sizes when `size` is based on a column 
-            in the DataFrame. The first element scales values, and the second 
-            raises them to a power. Default is (1, 2).
+            A tuple to scale marker sizes when ``size`` is based on a DataFrame 
+            column. The first element scales the values, and the second element 
+            raises them to a power. Default is ``(1, 3)``.            
+
+        color : str, optional
+            Default color for event markers when ``color_by`` is ``None``. 
+            Default is ``'grey'``.
+
+        edgecolor : str, optional
+            Edge color for event markers. Default is ``'black'``.
 
         alpha : float, optional
-            Transparency level for markers, where 0 is fully transparent and 
-            1 is fully opaque. Default is 0.5.
+            Transparency level for markers, ranging from 0 (transparent) to 1 
+            (opaque). Default is 0.50.
 
         legend : str, optional
-            Label for the legend describing the seismic events. Default is None.
+            Text for the legend describing the seismic events. If ``None``, 
+            no legend is displayed. Default is ``None``.
 
         legend_loc : str, optional
-            Location of the main legend on the plot. Default is 'lower left'.
+            Location of the legend for the seismic event markers. 
+            Default is ``'lower left'``.
 
         size_legend : bool, optional
-            If True, displays a legend that explains marker sizes. Default is True.
-
+            If ``True``, displays a legend that explains marker sizes. Default 
+            is ``False``.
+            
         size_legend_loc : str, optional
-            Location of the size legend if it is shown. Default is 'upper right'.
+            Location of the size legend when ``size_legend`` is ``True``. Default 
+            is ``'lower right'``.
 
         scale_legend: bool, optional
-            If True, displays a scale bar on the plot to indicate real-world distances.
-            Default is True.
+            If ``True``, displays a legend that shows a scale bar on the plot to 
+            indicate real-world distances. Default is ``False``.
 
         scale_legend_loc : str, optional
-                Location of the scale legend (e.g., size scaling). If False, the 
-                scale legend is not displayed. Default is 'lower right'.
+              Location of the size legend when ``scale_legend`` is ``True``. 
+              Default is ``'lower right'``.
 
         ylabel : str, optional
-            Label for the y-axis (typically indicating depth). Default is 'Depth [km]'.
+            Label for the y-axis. Default is ``'Depth [km]'``.
 
         xlim : tuple[float, float], optional
-            Horizontal extent (limits) of the plot (x-axis). If None, limits 
-            are set automatically. Default is None.
+            Distance from center limits for the map's horizontal extent. If 
+            ``None``, the limits are determined automatically based on the 
+            ``map_length`` attribute. Default is ``None``.
 
         ylim : tuple[float, float], optional
-            Vertical extent (limits) of the plot (y-axis). If None, limits 
-            are set automatically. Default is None.
+            Depth limits for the map's vertical extent. If ``None``, 
+            the limits are determined automatically based on the ``depth_range``
+            attribute. Default is ``None``.
 
         fig_size : tuple[float, float], optional
-            Figure size for the plot. Default is (12, 6).
+            Figure size for the plot. Default is ``(12, 6)``.
 
         facecolor : tuple[str, str], optional
             Tuple specifying the background colors of the plot, with two 
-            values for gradient-like effects. Default is ('#F0F0F0', '#FFFFFF').
+            values for gradient-like effects. Default is ``('#F0F0F0', '#FFFFFF')``.
 
         save_figure : bool, optional
-            If True, saves the plot to a file. Default is False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            Base name of the file to save when `save_figure` is True. 
-            Default is 'cross_section'.
+            Base name for the file if `save_figure` is ``True``. Default is 
+            ``'cross_section'``.
 
         save_extension : str, optional
-            File format to use when saving the plot (e.g., 'jpg', 'png'). 
-            Default is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). 
+            Default is ``'jpg'``.
 
         Returns
         -------
         None
-            This function generates a cross-section plot but does not return 
-            any data.
+            A cross-section plot.
+        
+        Examples
+        --------
+        An example of a seismic map generated using this method:
+
+        .. image:: https://imgur.com/a/bOEbe7Y.jpg
+            :align: center
+
+        For detailed examples and step-by-step instructions on how to plot this 
+        cross section, refer to the tutorials page in the documentation.
         """
         elev_profiles = self._get_elevation_profiles()
 
@@ -354,7 +369,7 @@ class CrossSectionPlotter:
                     ax.add_artist(leg2)
 
             if save_figure:
-                self.bp.save_figure(save_name, save_extension)
+                self.bp.save_figure(f'{save_name}_{section}', save_extension)
 
             plt.show()
             self.bp.reset_style()

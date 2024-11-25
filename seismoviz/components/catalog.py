@@ -322,11 +322,11 @@ class Catalog(DunderMethodMixin):
         Returns
         -------
         None
-            This function generates a map with seismic events.
+            A map with seismic events.
         
         Examples
         --------
-        An example of a seismic map generated using this function:
+        An example of a seismic map generated using this method:
 
         .. image:: https://imgur.com/0d6OA1L.jpg
             :align: center
@@ -439,7 +439,7 @@ class Catalog(DunderMethodMixin):
         Returns
         -------
         None
-            This function generates a space-time plot.        
+            A space-time plot.        
         """
         self._plotter.plot_space_time(**kwargs)
 
@@ -503,7 +503,7 @@ class Catalog(DunderMethodMixin):
         Returns
         -------
         None
-            This function generates a magnitude-time plot.
+            A magnitude-time plot.
         """
         self._plotter.plot_magnitude_time(**kwargs)
 
@@ -531,7 +531,7 @@ class Catalog(DunderMethodMixin):
         Returns
         -------
         None
-            This function generates the event timeline plot.
+            A event timeline plot.
         """
         self.plotter.plot_event_timeline(**kwargs)
 
@@ -556,7 +556,7 @@ class Catalog(DunderMethodMixin):
         Returns
         -------
         None
-            This function shows the distribution of the main attributes of the 
+            A plot showing the distribution of the main attributes of the 
             catalog.
         """
         self._plotter.plot_attribute_distributions(**kwargs)
@@ -602,7 +602,6 @@ class Catalog(DunderMethodMixin):
             - ``cumulative_events`` : np.ndarray
                 Array with the cumulative number of events for magnitudes greater than 
                 or equal to each bin.
-
         """
         self._bvc.fmd(**kwargs)
     
