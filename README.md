@@ -129,13 +129,13 @@ SeismoViz allows you to interactively explore your seismic catalog, enabling you
 ```python
 import seismoviz as sv
 
-selector = sv.select_on_section(
-    cross_section=cs
-)
+# Initialize selector object to open the interactive GUI
+selector = sv.select_on_section(cross_section=cs)
 ```
 ![Interactive selection](docs/source/_images/interactive_selection.gif)
 
 ```python
+# After selecting the events, confirm the selection
 selection = selector.confirm_selection()
 ```
 
