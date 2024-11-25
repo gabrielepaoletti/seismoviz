@@ -6,7 +6,7 @@
 --------------------
 
 .. toctree::
-   :maxdepth: 0
+   :maxdepth: 100
    :hidden:
    :caption: Components
    

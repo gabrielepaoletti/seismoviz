@@ -5,6 +5,9 @@
 
 --------------------
 
+Core
+====
+
 .. autofunction:: seismoviz.core.read_catalog
 
 .. autofunction:: seismoviz.core.create_cross_section
