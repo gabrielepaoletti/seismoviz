@@ -70,7 +70,8 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
             section_distance: int = 0
     ) -> None:
         if isinstance(data, Catalog):
-            self.data = data.data
+            self.catalog = data
+            self.data = self.catalog.data
         else:
             raise ValueError('The input must be a Catalog object.')
 
@@ -388,6 +389,7 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
                 cmap='Blues',           
                 size='mag',             
                 edgecolor='black',
+                hl_ms=5,
                 legend='Seismicity',
                 legend_loc='upper left',
                 scale_legend_loc='upper right'  

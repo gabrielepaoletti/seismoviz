@@ -580,14 +580,14 @@ class CrossSectionPlotter:
         if isinstance(size, (int, float)):
             plt_size = size
         elif isinstance(size, str):
-            plt_size = (self.cs.catalog[size]*size_scale_factor[0]) ** size_scale_factor[1]
+            plt_size = (self.cs.catalog.data[size]*size_scale_factor[0]) ** size_scale_factor[1]
         else:
             raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
         import pandas as pd
         if color_by:
             self.mp.fig.set_figheight(10)
             self.mp.plot_with_colorbar(
-                data=self.cs.catalog,
+                data=self.cs.catalog.data,
                 x='lon',
                 y='lat',
                 color_by=color_by,
@@ -599,16 +599,16 @@ class CrossSectionPlotter:
             )
         else:
             self.mp.scatter(
-                x=self.cs.catalog.lon, y=self.cs.catalog.lat, c=color, s=plt_size, 
+                x=self.cs.catalog.data.lon, y=self.cs.catalog.data.lat, c=color, s=plt_size, 
                 edgecolor=edgecolor, linewidth=0.25, alpha=alpha, label=legend
             )
-        main_extent = self.mp.extent(self.cs.catalog, xlim=xlim, ylim=ylim)
+        main_extent = self.mp.extent(self.cs.catalog.data, xlim=xlim, ylim=ylim)
 
         if title:
             self.mp.ax.set_title(title, fontweight='bold')
 
         if hl_ms is not None:
-            large_quakes = self.cs.catalog[self.cs.catalog['mag'] > hl_ms]
+            large_quakes = self.cs.catalog.data[self.cs.catalog.data['mag'] > hl_ms]
             self.mp.scatter(
                 x=large_quakes.lon, y=large_quakes.lat, c=hl_color, s=hl_size, marker=hl_marker, 
                 edgecolor=hl_edgecolor, linewidth=0.75, label=f'Events M > {hl_ms}'
