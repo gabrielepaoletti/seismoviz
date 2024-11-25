@@ -1,5 +1,6 @@
 import srtm
 import numpy as np
+import cartopy.crs as ccrs
 import matplotlib.pyplot as plt
 import matplotlib.colors as mcolors
 import matplotlib.font_manager as fm
@@ -376,90 +377,182 @@ class CrossSectionPlotter:
     
     def plot_section_lines(
             self,
-            title: str = None,
+            color_by: str = None, 
+            cmap: str = 'jet', 
+            title: str = None, 
             hl_ms: int = None,
-            hl_size: int = 300,
+            hl_size: float = 200,
             hl_marker: str = '*',
             hl_color: str = 'red',
             hl_edgecolor: str = 'darkred',
             size: float = 10,
+            size_scale_factor: tuple[int, int] = (1, 3),
             color: str = 'grey',
-            edgecolor: str = None, 
+            edgecolor: str = 'black', 
             alpha: float = 0.75, 
             legend: str = None,
             legend_loc: str = 'lower left',
-            inset: bool = True, 
+            size_legend: bool = False,
+            size_legend_loc: str = 'lower right',
+            sl_color: str = 'black',
+            sl_linewidth: float = 1.5,
+            sl_text_size: float = 10,
+            sl_text_color: str = 'white',
+            sl_text_weight: str = 'bold',
+            sl_box_style: str = 'circle',
+            sl_box_color: str = 'black',
+            sl_box_edgecolor: str = 'black',
+            sl_box_pad: float = 0.3,
+            terrain_style: str = 'satellite',
+            terrain_cmap: str = 'gray_r',
+            terrain_alpha: str = 0.35,
+            inset: bool = False, 
             xlim: tuple[float, float] = None,
             ylim: tuple[float, float] = None, 
             inset_buffer: float = 3, 
             bounds_res: str = '50m', 
-            bmap_res: int = 12, 
+            bmap_res: int = 5,
+            projection = ccrs.Mercator(),
+            transform = ccrs.PlateCarree(),
             save_figure: bool = False,
             save_name: str = 'map', 
             save_extension: str = 'jpg'
-    ) -> None:
+) -> None:
         """
         Visualizes section lines on a map.
 
         Parameters
         ----------
+        color_by : str, optional
+            Specifies the column in the DataFrame used to color the 
+            seismic events. Default is ``None``, which applies a single color to 
+            all points.
+
+        cmap : str, optional
+            The colormap to use for coloring events if ``color_by`` is specified. 
+            Default is ``'jet'``.
+
         title : str, optional
-            Title of the map. If None, no title is displayed. Default is None.
+            Title of the map. If ``None``, no title is displayed. Default is ``None``.
 
         hl_ms : int, optional
             If specified, highlights seismic events with a magnitude 
-            greater than this value using different markers. Default is None.
+            greater than this value using different markers. Default is ``None``.
 
         hl_size : float, optional
-            Size of the markers used for highlighting seismic events (when 
-            `hl_ms` is specified). Default is 200.
+            Size of the markers used for highlighted seismic events (if ``hl_ms`` 
+            is specified). Default is 200.
 
         hl_marker : str, optional
-            Marker style for highlighted events. Default is '*'.
+            Marker style for highlighted events. Default is ``'*'``.
 
         hl_color : str, optional
-            Color for highlighted seismic event markers. Default is 'red'.
+            Color of the highlighted event markers. Default is ``'red'``.
 
         hl_edgecolor : str, optional
-            Edge color for highlighted event markers. Default is 'darkred'.
+            Edge color for highlighted event markers. Default is ``'darkred'``.
 
         size : float or str, optional
             The size of the markers representing seismic events. If a string 
-            is provided, it should refer to a column in the DataFrame (e.g., 
-            'magnitude') to scale point sizes proportionally. Default is 10.
+            is provided, it should refer to a column in the DataFrame to scale 
+            point sizes proportionally. Default is 10.
+
+        size_scale_factor : tuple[float, float], optional
+            A tuple to scale marker sizes when ``size`` is based on a DataFrame 
+            column. The first element scales the values, and the second element 
+            raises them to a power. Default is ``(1, 3)``.
 
         color : str, optional
-            Default color for event markers when `color_by` is None. 
-            Default is 'grey'.
+            Default color for event markers when ``color_by`` is ``None``. 
+            Default is ``'grey'``.
 
         edgecolor : str, optional
-            Edge color for event markers. Default is None.
+            Edge color for event markers. Default is ``'black'``.
 
         alpha : float, optional
             Transparency level for markers, ranging from 0 (transparent) to 1 
             (opaque). Default is 0.75.
 
+        sl_color : str, optional
+            Line color for section lines. Default is ``'blue'``.
+
+        sl_linewidth : float, optional
+            Line width for section lines. Default is 1.5.
+
+        sl_text_size : float, optional
+            Font size for section line labels. Default is 10.
+
+        sl_text_color : str, optional
+            Text color for section line labels. Default is ``'white'``.
+
+        sl_text_weight : str, optional
+            Text weight for section line labels. Default is ``'bold'``.
+
+        sl_box_style : str, optional
+            Style for the bounding box around section line labels. Default is
+            ``'circle'``.
+
+        sl_box_color : str, optional
+            Fill color for the bounding box around section line labels. Default 
+            is ``'black'``.
+
+        sl_box_edgecolor : str, optional
+            Edge color for the bounding box around section line labels. Default 
+            is ``'black'``.
+
+        sl_box_pad : float, optional
+            Padding inside the bounding box for section line labels. Default is 
+            0.3.
+
         legend : str, optional
-            Text for the legend describing the seismic events. If None, 
-            no legend is displayed. Default is None.
+            Text for the legend describing the seismic events. If ``None``, 
+            no legend is displayed. Default is ``None``.
 
         legend_loc : str, optional
             Location of the legend for the seismic event markers. 
-            Default is 'lower left'.
+            Default is ``'lower left'``.
+
+        size_legend : bool, optional
+            If ``True``, displays a legend that explains marker sizes. Default is 
+            ``False``.
+            
+        size_legend_loc : str, optional
+            Location of the size legend when ``size_legend`` is ``True``. Default 
+            is ``'lower right'``.            
 
         xlim : tuple[float, float], optional
-            Longitude limits for the map's horizontal extent. If None, 
+            Longitude limits for the map's horizontal extent. If ``None``, 
             the limits are determined automatically based on the data. 
-            Default is None.
+            Default is ``None``.
 
         ylim : tuple[float, float], optional
-            Latitude limits for the map's vertical extent. If None, 
+            Latitude limits for the map's vertical extent. If ``None``, 
             the limits are determined automatically based on the data. 
-            Default is None.
+            Default is ``None``.
+
+        terrain_cmap : str, optional
+            The colormap to be applied to the terrain layer. Defaults to ``'gray_r'``.            
+
+        terrain_style : str, optional
+            The style of the terrain background for the map. Common values 
+            include ``'satellite'``, ``'terrain'`` or ``'street'``.Defaults to 
+            ``'satellite'``.
+
+        terrain_alpha : float, optional
+            The transparency level for the terrain layer, where 0 is fully 
+            transparent and 1 is fully opaque. Defaults to 0.35.     
+
+        projection : cartopy.crs projection, optional
+            The map projection used to display the map. Defaults to 
+            ``ccrs.Mercator()``.
+
+        transform : cartopy.crs projection, optional
+            The coordinate reference system of the data to be plotted. 
+            Defaults to ``ccrs.PlateCarree()``.
 
         inset : bool, optional
-            If True, adds an inset map for broader geographic context. 
-            Default is True.
+            If ``True``, adds an inset map for broader geographic context. 
+            Default is ``False``.
 
         inset_buffer : float, optional
             Scaling factor for the area surrounding the selection shape 
@@ -467,33 +560,59 @@ class CrossSectionPlotter:
 
         bounds_res : str, optional
             Resolution of geographical boundaries (coastlines, borders) 
-            on the map. Options are '10m', '50m', and '110m', where '10m' 
-            is the highest resolution and '110m' the lowest. Default is '50m'.
+            on the map. Options are ``'10m'`` (highest resolution), ``'50m'``, 
+            and ``'110m'`` (lowest resolution). Default is '50m'.
 
         bmap_res : int, optional
             Resolution level for the base map image (e.g., satellite or 
             terrain). Higher values provide more detail. Default is 12.
 
         save_figure : bool, optional
-            If True, saves the plot to a file. Default is False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            Base name for the file if `save_figure` is True. Default is 'map'.
+            Base name for the file if `save_figure` is ``True``. Default is ``'map'``.
 
         save_extension : str, optional
-            File format for the saved figure (e.g., 'jpg', 'png'). Default is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
         """
-        self.mp.fig, self.mp.ax = self.mp.create_base_map(bounds_res, bmap_res)
+        self.mp.transform, self.mp.projection = transform, projection
 
-        lon, lat = convert_to_geographical(
-            utmx=self.cs._utmx, utmy=self.cs._utmy, zone=self.cs.zone,
-            northern=True if self.cs.hemisphere == 'north' else False,
-            units='km'
+        self.mp.fig, self.mp.ax = self.mp.create_base_map(
+            terrain_style=terrain_style,
+            terrain_cmap=terrain_cmap,
+            terrain_alpha=terrain_alpha,
+            bounds_res=bounds_res, 
+            bmap_res=bmap_res
         )
-        self.mp.scatter(
-            x=lon, y=lat, c=color, s=size, edgecolor=edgecolor,
-            linewidth=0.25, alpha=alpha, label=legend
-        )
+
+        if isinstance(size, (int, float)):
+            plt_size = size
+        elif isinstance(size, str):
+            plt_size = (self.cs.catalog[size]*size_scale_factor[0]) ** size_scale_factor[1]
+        else:
+            raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
+        import pandas as pd
+        if color_by:
+            self.mp.fig.set_figheight(10)
+            self.mp.plot_with_colorbar(
+                data=self.cs.catalog,
+                x='lon',
+                y='lat',
+                color_by=color_by,
+                cmap=cmap,
+                edgecolor=edgecolor,
+                size=plt_size,
+                alpha=alpha,
+                legend=legend
+            )
+        else:
+            self.mp.scatter(
+                x=self.cs.catalog.lon, y=self.cs.catalog.lat, c=color, s=plt_size, 
+                edgecolor=edgecolor, linewidth=0.25, alpha=alpha, label=legend
+            )
+        main_extent = self.mp.extent(self.cs.catalog, xlim=xlim, ylim=ylim)
 
         if title:
             self.mp.ax.set_title(title, fontweight='bold')
@@ -501,36 +620,63 @@ class CrossSectionPlotter:
         if hl_ms is not None:
             large_quakes = self.cs.data[self.cs.data['mag'] > hl_ms]
             self.mp.scatter(
-                x=large_quakes.lon, y=large_quakes.lat, c=hl_color, s=hl_size,
-                marker=hl_marker, edgecolor=hl_edgecolor, linewidth=0.75,
-                label=f'Events M > {hl_ms}'
+                x=large_quakes.lon, y=large_quakes.lat, c=hl_color, s=hl_size, marker=hl_marker, 
+                edgecolor=hl_edgecolor, linewidth=0.75, label=f'Events M > {hl_ms}'
             )
 
         for idx, (lons, lats) in enumerate(self._get_section_lines()):
-            self.mp.plot(lons, lats, color='black', linewidth=1)
+            self.mp.plot(lons, lats, color=sl_color, linewidth=sl_linewidth)
             self.mp.annotate(
                 text=str(idx + 1),
                 xy=(lons[1], lats[1]),
                 ha='center',
                 va='center',
-                fontsize=10,
-                color='white',
-                weight='bold',
+                fontsize=sl_text_size,
+                color=sl_text_color,
+                weight=sl_text_weight,
                 bbox=dict(
-                    boxstyle='circle',
-                    facecolor='black',
-                    edgecolor='black',
-                    pad=0.2)
+                    boxstyle=sl_box_style,
+                    facecolor=sl_box_color,
+                    edgecolor=sl_box_edgecolor,
+                    pad=sl_box_pad)
             )
 
-        main_extent = self.mp.extent({'lon': lon, 'lat': lat}, xlim=xlim, ylim=ylim)
-
         if legend:
-            leg = plt.legend(loc=legend_loc, fancybox=False, edgecolor='black')
+            leg = plt.legend(
+                loc=legend_loc,
+                fancybox=False,
+                edgecolor='black'
+            )
             leg.legend_handles[0].set_sizes([50])
             
             if hl_ms is not None:
                 leg.legend_handles[1].set_sizes([90])
+            
+            self.mp.ax.add_artist(leg)
+            
+            if isinstance(size, str) and size_legend:
+                min_size = np.floor(min(self.cs.data[size]))
+                max_size = np.ceil(max(self.cs.data[size]))
+                size_values = [min_size, (min_size + max_size)/2, max_size]
+                size_legend_labels = [
+                    f"{'M' if size == 'mag' else 'D' if size == 'depth' else size} {v}" for v in size_values
+                ]
+                
+                size_handles = [
+                    plt.scatter([], [], s=(v*size_scale_factor[0]) ** size_scale_factor[1], 
+                                facecolor='white', edgecolor='black', alpha=alpha, label=label)
+                    for v, label in zip(size_values, size_legend_labels)
+                ]
+                
+                leg2 = plt.legend(
+                    handles=size_handles,
+                    loc=size_legend_loc,
+                    fancybox=False,
+                    edgecolor='black',
+                    ncol=len(size_values)
+                )
+                
+                self.mp.ax.add_artist(leg2)
 
         if inset:
             self.mp.inset(main_extent, buffer=inset_buffer, bounds_res=bounds_res)

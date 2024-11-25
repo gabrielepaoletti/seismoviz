@@ -118,7 +118,7 @@ def create_cross_section(
             thickness=1,            # Width of the section in km (from each side)
             strike=155,             # Strike angle in degrees (section perpendicular to strike)
             map_length=40,          # Lenght of the section in km
-            depth_range=(0, 10)     # Depth range in km
+            depth_range=(0, 10),    # Depth range in km
             section_distance=2      # Distance between adjacent sections
         )
 

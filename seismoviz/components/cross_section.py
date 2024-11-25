@@ -13,7 +13,7 @@ from numpy.typing import ArrayLike
 class CrossSection(GeospatialMixin, DunderMethodMixin):
     def __init__(
             self, 
-            data: Catalog, 
+            catalog: Catalog, 
             center: tuple[float, float], 
             num_sections: tuple[int, int], 
             tickness: int, 
@@ -22,8 +22,8 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
             depth_range: tuple[float, float], 
             section_distance: int = 0
     ) -> None:
-        if isinstance(data, Catalog):
-            self.data = data.data
+        if isinstance(catalog, Catalog):
+            self.catalog = catalog.data
         else:
             raise ValueError('The input must be a Catalog object.')
 
@@ -135,10 +135,10 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
             - The ``'section_id'`` column, indicating the cross-sectional 
               slice each event belongs to.
         """
-        self.data.depth = np.abs(self.data.depth)
+        self.catalog.depth = np.abs(self.catalog.depth)
 
         self._utmx, self._utmy = convert_to_utm(
-            self.data.lon, self.data.lat, zone=self.zone, units='km', 
+            self.catalog.lon, self.catalog.lat, zone=self.zone, units='km', 
             ellps='WGS84', datum='WGS84'
         )
         center_utmx, center_utmy = convert_to_utm(
@@ -167,12 +167,12 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
 
         for section in range(len(centers_distro)):
             dist = self._distance_point_from_plane(
-                self._utmx, self._utmy, -self.data['depth'], normal_ref, 
+                self._utmx, self._utmy, -self.catalog['depth'], normal_ref, 
                 self._center_coords[section]
             )
             in_depth_range = (
-                (self.data['depth'] >= self.depth_range[0]) & 
-                (self.data['depth'] <= self.depth_range[1])
+                (self.catalog['depth'] >= self.depth_range[0]) & 
+                (self.catalog['depth'] <= self.depth_range[1])
             )
             on_section_coords = (
                 (self._utmy - self._center_coords[section][1]) * normal_ref[0] - 
@@ -184,7 +184,7 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
                 (np.abs(on_section_coords) < self.map_length / 2)
             )
 
-            section_df = self.data.iloc[close_and_in_depth].copy()
+            section_df = self.catalog.iloc[close_and_in_depth].copy()
             section_df['on_section_coords'] = on_section_coords[close_and_in_depth]
             section_df['section_id'] = section
             section_dataframes.append(section_df)
@@ -334,79 +334,158 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
 
         Parameters
         ----------
-        highligt_mag : float, optional
-            If specified, highlights all seismic events (that are present 
-            in your sections) with a magnitude greater than this value by 
-            plotting them as stars.
-            
-        title : str, optional
-            The title to be displayed above the map. If not provided, the 
-            map will have no title.
+        color_by : str, optional
+            Specifies the column in the DataFrame used to color the 
+            seismic events. Default is ``None``, which applies a single color to 
+            all points.
 
-        size : float, optional
-            The size of the markers used to represent seismic events on 
-            the map. Default is 0.5.
+        cmap : str, optional
+            The colormap to use for coloring events if ``color_by`` is specified. 
+            Default is ``'jet'``.
+
+        title : str, optional
+            Title of the map. If ``None``, no title is displayed. Default is ``None``.
+
+        hl_ms : int, optional
+            If specified, highlights seismic events with a magnitude 
+            greater than this value using different markers. Default is ``None``.
+
+        hl_size : float, optional
+            Size of the markers used for highlighted seismic events (if ``hl_ms`` 
+            is specified). Default is 200.
+
+        hl_marker : str, optional
+            Marker style for highlighted events. Default is ``'*'``.
+
+        hl_color : str, optional
+            Color of the highlighted event markers. Default is ``'red'``.
+
+        hl_edgecolor : str, optional
+            Edge color for highlighted event markers. Default is ``'darkred'``.
+
+        size : float or str, optional
+            The size of the markers representing seismic events. If a string 
+            is provided, it should refer to a column in the DataFrame to scale 
+            point sizes proportionally. Default is 10.
+
+        size_scale_factor : tuple[float, float], optional
+            A tuple to scale marker sizes when ``size`` is based on a DataFrame 
+            column. The first element scales the values, and the second element 
+            raises them to a power. Default is ``(1, 3)``.
 
         color : str, optional
-            The color used to fill the seismic event markers. Default is 
-            'lightgrey'.
+            Default color for event markers when ``color_by`` is ``None``. 
+            Default is ``'grey'``.
 
         edgecolor : str, optional
-            The color used for the edges of the seismic event markers. 
-            Default is 'grey'.
+            Edge color for event markers. Default is ``'black'``.
 
         alpha : float, optional
-            The transparency level of the markers. A value between 0 and 
-            1, where 1 is fully opaque and 0 is fully transparent. 
-            Default is 0.5.
+            Transparency level for markers, ranging from 0 (transparent) to 1 
+            (opaque). Default is 0.75.
+
+        sl_color : str, optional
+            Line color for section lines. Default is ``'blue'``.
+
+        sl_linewidth : float, optional
+            Line width for section lines. Default is 1.5.
+
+        sl_text_size : float, optional
+            Font size for section line labels. Default is 10.
+
+        sl_text_color : str, optional
+            Text color for section line labels. Default is ``'white'``.
+
+        sl_text_weight : str, optional
+            Text weight for section line labels. Default is ``'bold'``.
+
+        sl_box_style : str, optional
+            Style for the bounding box around section line labels. Default is
+            ``'circle'``.
+
+        sl_box_color : str, optional
+            Fill color for the bounding box around section line labels. Default 
+            is ``'black'``.
+
+        sl_box_edgecolor : str, optional
+            Edge color for the bounding box around section line labels. Default 
+            is ``'black'``.
+
+        sl_box_pad : float, optional
+            Padding inside the bounding box for section line labels. Default is 
+            0.3.
 
         legend : str, optional
-            Text for the legend describing the plotted seismic events. If 
-            None, no legend is displayed.
+            Text for the legend describing the seismic events. If ``None``, 
+            no legend is displayed. Default is ``None``.
 
-        xlim : Tuple[float, float], optional
-            A tuple specifying the minimum and maximum longitude values 
-            to set the map extent horizontally. If not provided, the 
-            extent will be set automatically based on the data.
+        legend_loc : str, optional
+            Location of the legend for the seismic event markers. 
+            Default is ``'lower left'``.
 
-        ylim : Tuple[float, float], optional
-            A tuple specifying the minimum and maximum latitude values 
-            to set the map extent vertically. If not provided, the extent 
-            will be set automatically based on the data.
+        size_legend : bool, optional
+            If ``True``, displays a legend that explains marker sizes. Default is 
+            ``False``.
+            
+        size_legend_loc : str, optional
+            Location of the size legend when ``size_legend`` is ``True``. Default 
+            is ``'lower right'``.            
+
+        xlim : tuple[float, float], optional
+            Longitude limits for the map's horizontal extent. If ``None``, 
+            the limits are determined automatically based on the data. 
+            Default is ``None``.
+
+        ylim : tuple[float, float], optional
+            Latitude limits for the map's vertical extent. If ``None``, 
+            the limits are determined automatically based on the data. 
+            Default is ``None``.
+
+        terrain_cmap : str, optional
+            The colormap to be applied to the terrain layer. Defaults to ``'gray_r'``.            
+
+        terrain_style : str, optional
+            The style of the terrain background for the map. Common values 
+            include ``'satellite'``, ``'terrain'`` or ``'street'``.Defaults to 
+            ``'satellite'``.
+
+        terrain_alpha : float, optional
+            The transparency level for the terrain layer, where 0 is fully 
+            transparent and 1 is fully opaque. Defaults to 0.35.     
+
+        projection : cartopy.crs projection, optional
+            The map projection used to display the map. Defaults to 
+            ``ccrs.Mercator()``.
+
+        transform : cartopy.crs projection, optional
+            The coordinate reference system of the data to be plotted. 
+            Defaults to ``ccrs.PlateCarree()``.
 
         inset : bool, optional
-            Determines whether to include an inset map showing a broader 
-            geographic context. Defaults to True.
+            If ``True``, adds an inset map for broader geographic context. 
+            Default is ``False``.
 
         inset_buffer : float, optional
-            A factor that enlarges the buffer area around the selection 
-            shape in the inset, enhancing visibility and context. The 
-            default value is 3.
+            Scaling factor for the area surrounding the selection shape 
+            in the inset map. Default is 3.
 
         bounds_res : str, optional
-            The resolution for the geographical boundaries (such as 
-            coastlines and borders) on the map. Common values are '10m', 
-            '50m', or '110m', with '10m' being the most detailed and 
-            '110m' the least.
+            Resolution of geographical boundaries (coastlines, borders) 
+            on the map. Options are ``'10m'`` (highest resolution), ``'50m'``, 
+            and ``'110m'`` (lowest resolution). Default is '50m'.
 
         bmap_res : int, optional
-            The zoom level or resolution for the underlying map image 
-            (e.g., satellite or terrain map). A higher value provides a 
-            more detailed map image, with typical values ranging from 1 
-            (very coarse) to 12 (very detailed).
+            Resolution level for the base map image (e.g., satellite or 
+            terrain). Higher values provide more detail. Default is 12.
 
         save_figure : bool, optional
-            If set to True, the function saves the generated plots using 
-            the provided base name and file extension. The default is 
-            False.
+            If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            The base name used for saving figures when `save_figure` is 
-            True. It serves as the prefix for file names. The default 
-            base name is 'section'.
+            Base name for the file if `save_figure` is ``True``. Default is ``'map'``.
 
         save_extension : str, optional
-            The file extension to use when saving figures, such as 'jpg', 
-            'png', etc... The default extension is 'jpg'.
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
         """
         self._plotter.plot_section_lines(**kwargs)

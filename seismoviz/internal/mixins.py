@@ -18,7 +18,7 @@ class GeospatialMixin:
             The most common UTM zone number among the seismic events' longitude 
             values.
         """
-        utm_zones = np.int_((np.array(self.data.lon) + 180) / 6) + 1
+        utm_zones = np.int_((np.array(self.catalog.lon) + 180) / 6) + 1
         zones, counts = np.unique(utm_zones, return_counts=True)
         utm_zone = zones[np.argmax(counts)]
         return utm_zone.item()
@@ -34,8 +34,8 @@ class GeospatialMixin:
             A string indicating the predominant hemisphere where the seismic 
             events are located.
         """
-        norths = np.sum(np.array(self.data.lat) >= 0)
-        souths = len(self.data.lat) - norths
+        norths = np.sum(np.array(self.catalog.lat) >= 0)
+        souths = len(self.catalog.lat) - norths
         return 'north' if norths >= souths else 'south'
 
 
