@@ -1,11 +1,7 @@
 .. image:: _static/banners/api_light.jpg
-   :class: theme-light
    :align: center
 
-
-.. image:: _static/banners/api_dark.jpg
-   :class: theme-light
-   :align: center
+--------------------
 
 .. toctree::
    :maxdepth: 1

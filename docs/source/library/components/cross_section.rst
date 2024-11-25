@@ -1,5 +1,8 @@
-CrossSection
-============
+.. image:: _static/banners/cs_light.jpg
+   :align: center
+
+--------------------
+
 
 .. autoclass:: seismoviz.components.cross_section.CrossSection
    :undoc-members:

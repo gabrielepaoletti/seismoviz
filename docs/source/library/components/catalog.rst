@@ -1,5 +1,8 @@
-Catalog
-=======
+.. image:: _static/banners/catalog_light.jpg
+   :align: center
+
+--------------------
+
 
 .. autoclass:: seismoviz.components.catalog.Catalog
    :undoc-members:
