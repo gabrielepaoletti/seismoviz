@@ -580,11 +580,12 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
             cs = sv.create_cross_section(
                 catalog=catalog,        
                 center=(13.12, 42.83),  
-                num_sections=(0,0),     
+                num_sections=(2, 2),     
                 thickness=2,            
                 strike=155,             
                 map_length=40,          
-                depth_range=(0, 10)     
+                depth_range=(0, 10),
+                section_distance=8    
             )
 
             # Plot section traces on a map
