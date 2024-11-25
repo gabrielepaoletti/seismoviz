@@ -16,8 +16,15 @@
 
 This reference manual provides an in-depth overview of the SeismoViz library, detailing its modules, functions, and core components. It is designed to assist users in managing seismic data effectively and implementing advanced analytical workflows.
 
-Components
-^^^^^^^^^^
+.. note::
+   While Python allows access to private modules and methods, such usage is discouraged. Breaking changes may occur in future releases if private components are used.
+
+### Importing guidelines
+
+
+.. raw:: html
+
+    <h3 style="font-size: 1.2em;">Components</h3>
 
 `Core <library/core>`_
     Contains essential functions for high-level operations.
