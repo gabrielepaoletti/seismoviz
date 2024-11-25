@@ -81,7 +81,10 @@ cs.plot_sections(
     color_by='time',        
     cmap='Blues',           
     size='mag',             
-    edgecolor='black'   
+    edgecolor='black',
+    legend='Seismicity',
+    legend_loc='upper left',
+    scale_legend_loc='upper right'  
 )     
 ```
 ![Cross section](docs/source/_images/cross_section.jpg)
