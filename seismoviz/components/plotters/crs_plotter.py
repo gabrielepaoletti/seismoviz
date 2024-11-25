@@ -618,7 +618,7 @@ class CrossSectionPlotter:
             self.mp.ax.set_title(title, fontweight='bold')
 
         if hl_ms is not None:
-            large_quakes = self.cs.data[self.cs.data['mag'] > hl_ms]
+            large_quakes = self.cs.catalog[self.cs.catalog['mag'] > hl_ms]
             self.mp.scatter(
                 x=large_quakes.lon, y=large_quakes.lat, c=hl_color, s=hl_size, marker=hl_marker, 
                 edgecolor=hl_edgecolor, linewidth=0.75, label=f'Events M > {hl_ms}'
