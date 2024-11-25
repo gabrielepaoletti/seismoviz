@@ -587,19 +587,19 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
                 depth_range=(0, 10)     
             )
 
-        cs.plot_section_lines(
-            title='Section lines',
-            size='mag',
-            color='lightgrey',
-            hl_ms=5,
-            hl_size=300,
-            sl_box_style='square',
-            sl_box_color='white',
-            sl_text_color='black',
-            legend='Tan et al. 2021',
-            inset=True,
-            bmap_res=12
-        )
+            cs.plot_section_lines(
+                title='Section lines',
+                size='mag',
+                color='lightgrey',
+                hl_ms=5,
+                hl_size=300,
+                sl_box_style='square',
+                sl_box_color='white',
+                sl_text_color='black',
+                legend='Tan et al. 2021',
+                inset=True,
+                bmap_res=12
+            )
 
         .. image:: https://imgur.com/7n4ZAFL.jpg
             :align: center
