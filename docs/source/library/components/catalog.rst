@@ -1,4 +1,4 @@
-.. image:: _static/banners/catalog_light.jpg
+.. image:: ../../_static/banners/catalog_light.jpg
    :align: center
 
 --------------------
