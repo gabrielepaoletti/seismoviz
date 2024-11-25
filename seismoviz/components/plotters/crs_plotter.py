@@ -405,7 +405,7 @@ class CrossSectionPlotter:
             projection = ccrs.Mercator(),
             transform = ccrs.PlateCarree(),
             save_figure: bool = False,
-            save_name: str = 'map', 
+            save_name: str = 'section_lines', 
             save_extension: str = 'jpg'
 ) -> None:
         """
@@ -561,7 +561,8 @@ class CrossSectionPlotter:
             If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            Base name for the file if `save_figure` is ``True``. Default is ``'map'``.
+            Base name for the file if `save_figure` is ``True``. Default is 
+            ``'section_lines'``.
 
         save_extension : str, optional
             File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
