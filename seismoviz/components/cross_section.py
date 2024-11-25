@@ -60,7 +60,7 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
     """
     def __init__(
             self, 
-            catalog: Catalog, 
+            data: Catalog, 
             center: tuple[float, float], 
             num_sections: tuple[int, int], 
             tickness: int, 
@@ -69,8 +69,8 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
             depth_range: tuple[float, float], 
             section_distance: int = 0
     ) -> None:
-        if isinstance(catalog, Catalog):
-            self.catalog = catalog.data
+        if isinstance(data, Catalog):
+            self.data = data.data
         else:
             raise ValueError('The input must be a Catalog object.')
 
@@ -182,10 +182,10 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
             - The ``'section_id'`` column, indicating the cross-sectional 
               slice each event belongs to.
         """
-        self.catalog.depth = np.abs(self.catalog.depth)
+        self.data.depth = np.abs(self.data.depth)
 
         self._utmx, self._utmy = convert_to_utm(
-            self.catalog.lon, self.catalog.lat, zone=self.zone, units='km', 
+            self.data.lon, self.data.lat, zone=self.zone, units='km', 
             ellps='WGS84', datum='WGS84'
         )
         center_utmx, center_utmy = convert_to_utm(
@@ -214,12 +214,12 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
 
         for section in range(len(centers_distro)):
             dist = self._distance_point_from_plane(
-                self._utmx, self._utmy, -self.catalog['depth'], normal_ref, 
+                self._utmx, self._utmy, -self.data['depth'], normal_ref, 
                 self._center_coords[section]
             )
             in_depth_range = (
-                (self.catalog['depth'] >= self.depth_range[0]) & 
-                (self.catalog['depth'] <= self.depth_range[1])
+                (self.data['depth'] >= self.depth_range[0]) & 
+                (self.data['depth'] <= self.depth_range[1])
             )
             on_section_coords = (
                 (self._utmy - self._center_coords[section][1]) * normal_ref[0] - 
@@ -231,7 +231,7 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
                 (np.abs(on_section_coords) < self.map_length / 2)
             )
 
-            section_df = self.catalog.iloc[close_and_in_depth].copy()
+            section_df = self.data.iloc[close_and_in_depth].copy()
             section_df['on_section_coords'] = on_section_coords[close_and_in_depth]
             section_df['section_id'] = section
             section_dataframes.append(section_df)
@@ -364,7 +364,34 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
         
         Examples
         --------
-        An example of a seismic map generated using this method:
+        .. code-block:: python
+        
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+            # Create cross section object
+            cs = sv.create_cross_section(
+                catalog=catalog,        
+                center=(13.12, 42.83),  
+                num_sections=(0,0),     
+                thickness=2,            
+                strike=155,             
+                map_length=40,          
+                depth_range=(0, 10)     
+            )
+
+            # Visualize the cross-section
+            cs.plot_sections(
+                color_by='time',        
+                cmap='Blues',           
+                size='mag',             
+                edgecolor='black',
+                legend='Seismicity',
+                legend_loc='upper left',
+                scale_legend_loc='upper right'  
+            )  
 
         .. image:: https://imgur.com/a/bOEbe7Y.jpg
             :align: center

@@ -240,17 +240,6 @@ class CatalogPlotter:
         -------
         None
             A map with seismic events.
-        
-        Examples
-        --------
-        An example of a seismic map generated using this function:
-
-        .. figure:: images/global_seismicity_catalog.jpg
-            :alt: Global seismicity map plot example with seismic events color-
-            coded by depth.
-            
-        For detailed examples and step-by-step instructions on how to plot this 
-        map, refer to the tutorials page in the documentation.
         """
         self.mp.transform, self.mp.projection = transform, projection
 
@@ -545,9 +534,6 @@ class CatalogPlotter:
             The colormap to use for coloring events if ``color_by`` is specified. 
             Default is ``'jet'``.
 
-        title : str, optional
-            Title of the map. If ``None``, no title is displayed. Default is ``None``.
-
         hl_ms : int, optional
             If specified, highlights seismic events with a magnitude 
             greater than this value using different markers. Default is ``None``.
@@ -795,7 +781,7 @@ class CatalogPlotter:
             self,
             fig_size: tuple[float, float] = (10, 6),
             save_figure: bool = False,
-            save_name: str = 'map', 
+            save_name: str = 'attribute_distributions', 
             save_extension: str = 'jpg'
     ) -> None:
         """
@@ -808,7 +794,8 @@ class CatalogPlotter:
             If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            Base name for the file if `save_figure` is ``True``. Default is ``'attribute_distributions'``.
+            Base name for the file if `save_figure` is ``True``. Default is 
+            ``'attribute_distributions'``.
 
         save_extension : str, optional
             File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 

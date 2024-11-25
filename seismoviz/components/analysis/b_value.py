@@ -93,7 +93,7 @@ class BValueCalculator:
             ax.grid(True, alpha=0.25, axis='x', linestyle=':')
 
             if save_figure:
-                self.bp.save_figure(fig, save_name, save_extension)
+                self.bp.save_figure(save_name, save_extension)
 
             plt.show()
             self.bp.reset_style()

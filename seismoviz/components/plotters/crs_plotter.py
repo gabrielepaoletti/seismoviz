@@ -227,16 +227,6 @@ class CrossSectionPlotter:
         -------
         None
             A cross-section plot.
-        
-        Examples
-        --------
-        An example of a seismic map generated using this method:
-
-        .. image:: https://imgur.com/a/bOEbe7Y.jpg
-            :align: center
-
-        For detailed examples and step-by-step instructions on how to plot this 
-        cross section, refer to the tutorials page in the documentation.
         """
         elev_profiles = self._get_elevation_profiles()
 

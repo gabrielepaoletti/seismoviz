@@ -1,12 +1,12 @@
 import pandas as pd
 
-from seismoviz.internal.mixins import DunderMethodMixin
-from seismoviz.components.analysis.b_value import BValueCalculator
 from seismoviz.internal.decorators import sync_signature
+from seismoviz.components.analysis.b_value import BValueCalculator
+from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 from seismoviz.components.plotters.cat_plotter import CatalogPlotter, SubCatalogPlotter
 
 
-class Catalog(DunderMethodMixin):
+class Catalog(GeospatialMixin, DunderMethodMixin):
     """
     Represents a seismic event catalog.
 
@@ -326,7 +326,21 @@ class Catalog(DunderMethodMixin):
         
         Examples
         --------
-        An example of a seismic map generated using this method:
+        .. code-block:: python
+
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='global_seismic_catalog.csv')
+
+            # Create a map showing earthquake locations
+            catalog.plot_map(
+                title='Global seismicity (M > 4.0)',
+                color_by='depth',
+                cmap='YlOrRd',
+                size='mag',
+                projection=ccrs.Robinson()
+            )
 
         .. image:: https://imgur.com/0d6OA1L.jpg
             :align: center
@@ -359,9 +373,6 @@ class Catalog(DunderMethodMixin):
         cmap : str, optional
             The colormap to use for coloring events if ``color_by`` is specified. 
             Default is ``'jet'``.
-
-        title : str, optional
-            Title of the map. If ``None``, no title is displayed. Default is ``None``.
 
         hl_ms : int, optional
             If specified, highlights seismic events with a magnitude 
@@ -439,7 +450,32 @@ class Catalog(DunderMethodMixin):
         Returns
         -------
         None
-            A space-time plot.        
+            A space-time plot.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+            # Plot space-time distribution
+            catalog.plot_space_time(
+                center=(13.12, 42.83),
+                strike=155,
+                hl_ms=5,
+                size=0.5,
+                color='black',
+                alpha=0.25,
+            )
+
+        .. image:: https://imgur.com/a/WYjFPnY.jpg
+            :align: center
+            
+        For detailed examples and step-by-step instructions on how to plot this 
+        map, refer to the tutorials page in the documentation.       
         """
         self._plotter.plot_space_time(**kwargs)
 
@@ -504,6 +540,28 @@ class Catalog(DunderMethodMixin):
         -------
         None
             A magnitude-time plot.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+            # Plot magnitude-time distribution
+            catalog.plot_magnitude_time(
+                color_by='depth',
+                size='depth',
+                cmap='YlOrRd',
+            )
+        
+        .. image:: https://imgur.com/a/ZFIICkt.jpg
+            :align: center
+            
+        For detailed examples and step-by-step instructions on how to plot this 
+        map, refer to the tutorials page in the documentation.
         """
         self._plotter.plot_magnitude_time(**kwargs)
 
@@ -532,6 +590,24 @@ class Catalog(DunderMethodMixin):
         -------
         None
             A event timeline plot.
+        
+        Examples
+        --------
+        .. code-block:: python
+
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+            # Plot the event timeline
+            catalog.plot_event_timeline()
+        
+        .. image:: https://imgur.com/a/YfnGzIQ.jpg
+            :align: center
+            
+        For detailed examples and step-by-step instructions on how to plot this 
+        map, refer to the tutorials page in the documentation.
         """
         self.plotter.plot_event_timeline(**kwargs)
 
@@ -558,6 +634,24 @@ class Catalog(DunderMethodMixin):
         None
             A plot showing the distribution of the main attributes of the 
             catalog.
+        
+        Examples
+        --------
+        .. code-block:: python
+
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+            # Plot attribute distributions
+            catalog.plot_attribute_distributions()
+        
+        .. image:: https://imgur.com/a/yrw1koP.jpg
+            :align: center
+            
+        For detailed examples and step-by-step instructions on how to plot this 
+        map, refer to the tutorials page in the documentation.
         """
         self._plotter.plot_attribute_distributions(**kwargs)
     
@@ -602,6 +696,24 @@ class Catalog(DunderMethodMixin):
             - ``cumulative_events`` : np.ndarray
                 Array with the cumulative number of events for magnitudes greater than 
                 or equal to each bin.
+        
+        Examples
+        --------
+        .. code-block:: python
+
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+            # Plot frequency-magnitude distributions
+            catalog.plot_fmd(bin_size=0.1)
+        
+        .. image:: https://imgur.com/OWT7Pa5.jpg
+            :align: center
+            
+        For detailed examples and step-by-step instructions on how to plot this 
+        map, refer to the tutorials page in the documentation.
         """
         self._bvc.fmd(**kwargs)
     
@@ -661,6 +773,29 @@ class Catalog(DunderMethodMixin):
         -----
         ValueError
             If the selected Mc type or value is not valid.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+            # Estimate b-value and plot it
+            catalog.estimate_b_value(
+                bin_size=0.1,
+                mc='maxc',
+                plot=True,
+                return_values=False
+            )
+        
+        .. image:: https://imgur.com/a/nAgOGUN.jpg
+            :align: center
+            
+        For detailed examples and step-by-step instructions on how to plot this 
+        map, refer to the tutorials page in the documentation.
         """
         if mc == 'maxc':
             mc_maxc = self._bvc._maxc(bin_size=bin_size)
