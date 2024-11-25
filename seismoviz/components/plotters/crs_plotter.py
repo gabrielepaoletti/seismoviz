@@ -18,70 +18,6 @@ class CrossSectionPlotter:
         self.mp = MapPlotter()
         self.bp = BasePlotter()
 
-    def _get_section_lines(self) -> list[tuple[list[float], list[float]]]:
-        """
-        Calculates and returns the geographical coordinates (latitude and longitude) 
-        for each section line.
-
-        Returns
-        -------
-        list[tuple[list[float], list[float]]]
-            List of section lines, where each line contains two lists: one for 
-            longitudes and one for latitudes.
-        """
-        angle = np.radians(90 - (self.cs.strike - 90))
-
-        delta_x = self.cs.map_length / 2 * np.cos(angle)
-        delta_y = self.cs.map_length / 2 * np.sin(angle)
-
-        section_lines = []
-
-        for center in self.cs._center_coords:
-            center_x, center_y, _ = center
-
-            point1_x, point1_y = center_x - delta_x, center_y - delta_y
-            point2_x, point2_y = center_x + delta_x, center_y + delta_y
-
-            lons, lats = convert_to_geographical(
-                utmx=[point1_x, point2_x],
-                utmy=[point1_y, point2_y],
-                zone=self.cs.zone,
-                northern=True if self.cs.hemisphere == 'north' else False,
-                units='km'
-            )
-
-            section_lines.append((lons, lats))
-
-        return section_lines
-
-    def _get_elevation_profiles(self) -> list[list[float]]:
-        """
-        Calculates the elevation profiles for all section lines.
-
-        Returns
-        -------
-        list[list[float]]
-            A list of lists, where each inner list contains the elevation profile 
-            for a specific section line.
-        """
-        elevation_data = srtm.get_data()
-
-        all_elevations = []
-        for lons, lats in self._get_section_lines():
-            lons_resampled = np.linspace(lons[0], lons[-1], 250)
-            lats_resampled = np.linspace(lats[0], lats[-1], 250)
-
-            elevations = []
-            for lon, lat in zip(lons_resampled, lats_resampled):
-                elevation = elevation_data.get_elevation(lat, lon)
-                if elevation is None:
-                    elevation = elevations[-1] if elevations else 0
-                elevations.append(elevation)
-
-            all_elevations.append(elevations)
-
-        return all_elevations
-
     def plot_sections(
             self,
             color_by: str = None,
@@ -675,3 +611,67 @@ class CrossSectionPlotter:
             self.bp.save_figure(save_name, save_extension)
 
         plt.show()
+
+    def _get_section_lines(self) -> list[tuple[list[float], list[float]]]:
+        """
+        Calculates and returns the geographical coordinates (latitude and longitude) 
+        for each section line.
+
+        Returns
+        -------
+        list[tuple[list[float], list[float]]]
+            List of section lines, where each line contains two lists: one for 
+            longitudes and one for latitudes.
+        """
+        angle = np.radians(90 - (self.cs.strike - 90))
+
+        delta_x = self.cs.map_length / 2 * np.cos(angle)
+        delta_y = self.cs.map_length / 2 * np.sin(angle)
+
+        section_lines = []
+
+        for center in self.cs._center_coords:
+            center_x, center_y, _ = center
+
+            point1_x, point1_y = center_x - delta_x, center_y - delta_y
+            point2_x, point2_y = center_x + delta_x, center_y + delta_y
+
+            lons, lats = convert_to_geographical(
+                utmx=[point1_x, point2_x],
+                utmy=[point1_y, point2_y],
+                zone=self.cs.zone,
+                northern=True if self.cs.hemisphere == 'north' else False,
+                units='km'
+            )
+
+            section_lines.append((lons, lats))
+
+        return section_lines
+
+    def _get_elevation_profiles(self) -> list[list[float]]:
+        """
+        Calculates the elevation profiles for all section lines.
+
+        Returns
+        -------
+        list[list[float]]
+            A list of lists, where each inner list contains the elevation profile 
+            for a specific section line.
+        """
+        elevation_data = srtm.get_data()
+
+        all_elevations = []
+        for lons, lats in self._get_section_lines():
+            lons_resampled = np.linspace(lons[0], lons[-1], 250)
+            lats_resampled = np.linspace(lats[0], lats[-1], 250)
+
+            elevations = []
+            for lon, lat in zip(lons_resampled, lats_resampled):
+                elevation = elevation_data.get_elevation(lat, lon)
+                if elevation is None:
+                    elevation = elevations[-1] if elevations else 0
+                elevations.append(elevation)
+
+            all_elevations.append(elevations)
+
+        return all_elevations

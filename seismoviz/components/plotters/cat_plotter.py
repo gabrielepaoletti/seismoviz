@@ -26,55 +26,6 @@ class CatalogPlotter:
         )
         self.bp = BasePlotter()
 
-    def _get_distance_from_center(
-            self,
-            center: tuple[float, float],
-            strike: int
-    ) -> pd.DataFrame:
-        """
-        Calculates the distance of each seismic event from a specified center 
-        point along a defined strike direction.
-
-        Parameters
-        ----------
-        center : tuple[float, float]
-            The (longitude, latitude) coordinates of the center point in degrees.
-
-        strike : int
-            The strike angle in degrees, measured clockwise from north. Defines 
-            the direction along which distances are calculated.
-
-        Returns
-        -------
-        pd.DataFrame
-            A DataFrame containing the seismic events, with an additional column 
-            `'distance'` representing the calculated distance of each event from 
-            the center along the strike direction.
-        """
-        self._utmx, self._utmy = convert_to_utm(
-            self.ct.data.lon, self.ct.data.lat, zone=self.ct.zone, units='km', 
-            ellps='WGS84', datum='WGS84'
-        )
-        center_utmx, center_utmy = convert_to_utm(
-            center[0], center[1], 
-            zone=self.ct.zone, units='km', ellps='WGS84', datum='WGS84'
-        )
-
-        normal_ref = [
-            np.cos(np.radians(strike)), 
-            -np.sin(np.radians(strike)), 0
-        ]
-
-        distance_from_center = (
-            (self._utmy - center_utmy) * normal_ref[0] - 
-            (self._utmx - center_utmx) * normal_ref[1]
-        )
-
-        df_copy = self.ct.data.copy()
-        df_copy['distance'] = -distance_from_center
-
-        return df_copy
-
     def plot_map(
             self,
             color_by: str = None, 
@@ -472,11 +423,7 @@ class CatalogPlotter:
                     ncol=len(size_values),
                 )
 
-        ax.set_ylabel('Magnitude')
-        ax.xaxis.set_major_locator(mdates.MonthLocator())
-        ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
-        plt.xticks(rotation=30, ha='right')
-
+        self._format_x_axis_time(ax)
         ax.grid(True, alpha=0.25, axis='y', linestyle=':')
 
         if save_figure:
@@ -710,9 +657,7 @@ class CatalogPlotter:
             ax.set_ylim(*ylim)
 
         ax.set_ylabel('Distance from center [km]')
-        ax.xaxis.set_major_locator(mdates.MonthLocator())
-        ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
-        plt.xticks(rotation=30, ha='right')
+        self._format_x_axis_time(ax)
 
         ax.grid(True, alpha=0.25, axis='y', linestyle=':')
 
@@ -758,19 +703,17 @@ class CatalogPlotter:
         events_sorted = self.ct.data.sort_values('time')
         time_data = pd.to_datetime(events_sorted['time'])
 
-        fig = plt.figure(figsize=fig_size)
-        plt.title('Event timeline', fontweight='bold')
-        plt.plot(time_data, np.arange(len(events_sorted)), color='black')
+        fig, ax = plt.subplots(figsize=fig_size)
+        ax.set_title('Event timeline', fontweight='bold')
+        ax.plot(time_data, np.arange(len(events_sorted)), color='black')
 
-        plt.gca().xaxis.set_major_locator(mdates.MonthLocator())
-        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
-        plt.xticks(rotation=30, ha='right')
+        self._format_x_axis_time(ax)
 
-        plt.ylabel('Cumulative no. of events')
-        plt.ylim(0)
-        plt.grid(True, axis='x', linestyle=':', linewidth=0.25)
-        plt.tight_layout()
+        ax.set_ylabel('Cumulative no. of events')
+        ax.set_ylim(0)
+        ax.grid(True, axis='x', linestyle=':', linewidth=0.25)
         
+        plt.tight_layout()
         if save_figure:
             self.bp.save_figure(save_name, save_extension)
         
@@ -825,10 +768,10 @@ class CatalogPlotter:
             ax[row, col].set_ylabel('Number of events' if col == 0 else '')
             ax[row, col].grid(True, alpha=0.25, axis='y', linestyle=':')
 
+        plt.tight_layout()
         if save_figure:
             self.bp.save_figure(save_name, save_extension)
         
-        plt.tight_layout()
         plt.show()
         self.bp.reset_style()
 
@@ -978,3 +921,84 @@ class SubCatalogPlotter:
         
         plt.show()
         self.bp.reset_style()
+
+    @staticmethod
+    def _format_x_axis_time(ax) -> None:
+        """
+        Format the x-axis based on the displayed range of the axis.
+
+        Parameters
+        ----------
+        ax : matplotlib axis
+            The axis to format.
+        """
+        x_min, x_max = mdates.num2date(ax.get_xlim())
+        time_range = x_max - x_min
+        
+        if time_range.days > 3650:
+            ax.xaxis.set_major_locator(mdates.YearLocator())
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+            ax.xaxis.set_minor_locator(mdates.MonthLocator(bymonth=[4, 7, 10]))        
+        elif time_range.days > 730:
+            ax.xaxis.set_major_locator(mdates.YearLocator())
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%Y'))
+            ax.xaxis.set_minor_locator(mdates.MonthLocator())
+        elif time_range.days > 60:
+            ax.xaxis.set_major_locator(mdates.MonthLocator())
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %Y'))
+            ax.xaxis.set_minor_locator(mdates.DayLocator(bymonthday=[15]))
+        else:
+            ax.xaxis.set_major_locator(mdates.WeekdayLocator())
+            ax.xaxis.set_major_formatter(mdates.DateFormatter('%b %d'))
+            ax.xaxis.set_minor_locator(mdates.DayLocator())
+
+        plt.xticks(rotation=30, ha='right')
+
+    def _get_distance_from_center(
+            self,
+            center: tuple[float, float],
+            strike: int
+    ) -> pd.DataFrame:
+        """
+        Calculates the distance of each seismic event from a specified center 
+        point along a defined strike direction.
+
+        Parameters
+        ----------
+        center : tuple[float, float]
+            The (longitude, latitude) coordinates of the center point in degrees.
+
+        strike : int
+            The strike angle in degrees, measured clockwise from north. Defines 
+            the direction along which distances are calculated.
+
+        Returns
+        -------
+        pd.DataFrame
+            A DataFrame containing the seismic events, with an additional column 
+            `'distance'` representing the calculated distance of each event from 
+            the center along the strike direction.
+        """
+        self._utmx, self._utmy = convert_to_utm(
+            self.ct.data.lon, self.ct.data.lat, zone=self.ct.zone, units='km', 
+            ellps='WGS84', datum='WGS84'
+        )
+        center_utmx, center_utmy = convert_to_utm(
+            center[0], center[1], 
+            zone=self.ct.zone, units='km', ellps='WGS84', datum='WGS84'
+        )
+
+        normal_ref = [
+            np.cos(np.radians(strike)), 
+            -np.sin(np.radians(strike)), 0
+        ]
+
+        distance_from_center = (
+            (self._utmy - center_utmy) * normal_ref[0] - 
+            (self._utmx - center_utmx) * normal_ref[1]
+        )
+
+        df_copy = self.ct.data.copy()
+        df_copy['distance'] = -distance_from_center
+
+        return df_copy

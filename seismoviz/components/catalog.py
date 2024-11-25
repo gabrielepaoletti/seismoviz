@@ -344,9 +344,6 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
 
         .. image:: https://imgur.com/0d6OA1L.jpg
             :align: center
-            
-        For detailed examples and step-by-step instructions on how to plot this 
-        map, refer to the tutorials page in the documentation.
         """
         self._plotter.plot_map(**kwargs)
 
@@ -472,10 +469,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
             )
 
         .. image:: https://imgur.com/AgrhmOt.jpg
-            :align: center
-            
-        For detailed examples and step-by-step instructions on how to plot this 
-        map, refer to the tutorials page in the documentation.       
+            :align: center     
         """
         self._plotter.plot_space_time(**kwargs)
 
@@ -559,9 +553,6 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         
         .. image:: https://imgur.com/qYguHD1.jpg
             :align: center
-            
-        For detailed examples and step-by-step instructions on how to plot this 
-        map, refer to the tutorials page in the documentation.
         """
         self._plotter.plot_magnitude_time(**kwargs)
 
@@ -605,9 +596,6 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         
         .. image:: https://imgur.com/FNnTzAV.jpg
             :align: center
-            
-        For detailed examples and step-by-step instructions on how to plot this 
-        map, refer to the tutorials page in the documentation.
         """
         self.plotter.plot_event_timeline(**kwargs)
 
@@ -647,11 +635,8 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
             # Plot attribute distributions
             catalog.plot_attribute_distributions()
         
-        .. image:: https://imgur.com/VD99dPS.jpg
+        .. image:: https://imgur.com/UfucKab.jpg
             :align: center
-            
-        For detailed examples and step-by-step instructions on how to plot this 
-        map, refer to the tutorials page in the documentation.
         """
         self._plotter.plot_attribute_distributions(**kwargs)
     
@@ -711,9 +696,6 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         
         .. image:: https://imgur.com/OWT7Pa5.jpg
             :align: center
-            
-        For detailed examples and step-by-step instructions on how to plot this 
-        map, refer to the tutorials page in the documentation.
         """
         self._bvc.fmd(**kwargs)
     
@@ -793,9 +775,6 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         
         .. image:: https://imgur.com/7vLgHh3.jpg
             :align: center
-            
-        For detailed examples and step-by-step instructions on how to plot this 
-        map, refer to the tutorials page in the documentation.
         """
         if mc == 'maxc':
             mc_maxc = self._bvc._maxc(bin_size=bin_size)

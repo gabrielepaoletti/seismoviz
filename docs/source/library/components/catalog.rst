@@ -4,6 +4,7 @@ Catalog
 .. autoclass:: seismoviz.components.catalog.Catalog
    :undoc-members:
    :member-order: bysource
+   :exclude-members: inherited_method, inherited_property
 
 Basic methods
 -------------
