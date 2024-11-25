@@ -1,3 +1,5 @@
+.. title:: Core
+
 .. image:: ../_static/banners/core_light.jpg
    :align: center
 

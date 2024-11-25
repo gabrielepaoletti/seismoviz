@@ -1,3 +1,5 @@
+.. title:: CorssSection
+
 .. image:: ../../_static/banners/cs_light.jpg
    :align: center
 

@@ -1,3 +1,5 @@
+.. title:: API Reference
+
 .. image:: _static/banners/api_light.jpg
    :align: center
 
