@@ -79,7 +79,7 @@ def create_cross_section(
 
     num_sections : tuple[int, int]
         A tuple specifying the number of sections to create to the left and 
-        right of the center (e.g., (2, 2) will create 2 sections on each side 
+        right of the center (e.g., ``(2, 2)`` will create 2 sections on each side 
         of the center).
     
     thickness : int
