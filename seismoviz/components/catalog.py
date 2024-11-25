@@ -471,7 +471,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
                 alpha=0.25,
             )
 
-        .. image:: https://imgur.com/a/WYjFPnY.jpg
+        .. image:: https://imgur.com/AgrhmOt.jpg
             :align: center
             
         For detailed examples and step-by-step instructions on how to plot this 
@@ -557,7 +557,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
                 cmap='YlOrRd',
             )
         
-        .. image:: https://imgur.com/a/ZFIICkt.jpg
+        .. image:: https://imgur.com/qYguHD1.jpg
             :align: center
             
         For detailed examples and step-by-step instructions on how to plot this 
@@ -603,7 +603,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
             # Plot the event timeline
             catalog.plot_event_timeline()
         
-        .. image:: https://imgur.com/a/YfnGzIQ.jpg
+        .. image:: https://imgur.com/FNnTzAV.jpg
             :align: center
             
         For detailed examples and step-by-step instructions on how to plot this 
@@ -647,7 +647,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
             # Plot attribute distributions
             catalog.plot_attribute_distributions()
         
-        .. image:: https://imgur.com/a/yrw1koP.jpg
+        .. image:: https://imgur.com/VD99dPS.jpg
             :align: center
             
         For detailed examples and step-by-step instructions on how to plot this 
@@ -791,7 +791,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
                 return_values=False
             )
         
-        .. image:: https://imgur.com/a/nAgOGUN.jpg
+        .. image:: https://imgur.com/7vLgHh3.jpg
             :align: center
             
         For detailed examples and step-by-step instructions on how to plot this 
