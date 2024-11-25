@@ -6,7 +6,7 @@
 --------------------
 
 .. toctree::
-   :maxdepth: 100
+   :maxdepth: 0
    :hidden:
    :caption: Components
    
@@ -20,8 +20,8 @@ API Reference
 This reference manual provides an in-depth overview of the SeismoViz library, detailing its modules, functions, and core components. It is designed to assist users in managing seismic data effectively and implementing advanced analytical workflows.
 
 
-Guidelines for importing SeismoViz
------------------------------------
+Guidelines for importing
+------------------------
 
 The recommended way to import SeismoViz is by using the shorthand alias ``sv``:
 
