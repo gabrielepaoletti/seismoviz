@@ -1,7 +1,7 @@
 :html_theme.sidebar_secondary.remove:
 
 Welcome to SeismoViz!
---------------------
+---------------------
 
 .. toctree::
    :maxdepth: 1

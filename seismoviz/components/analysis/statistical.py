@@ -29,9 +29,7 @@ class StatisticalAnalyzer:
         valid_units = {'sec': 1, 'min': 60, 'hour': 3600, 'day': 86400}
         if unit not in valid_units:
             raise ValueError(
-                f"Unit '{unit}' not supported. Choose from {
-                    list(valid_units.keys())
-                }."
+                f"Unit '{unit}' not supported. Choose from {list(valid_units.keys())}."
             )
         
         self.ct.data.sort_values(by='time', ascending=True)
