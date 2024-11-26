@@ -1087,7 +1087,7 @@ class CatalogPlotter:
             # Read the catalog from a file
             catalog = sv.read_catalog(path='local_seismic_catalog.csv')
 
-            # Plot attribute distributions
+            # Plot inter-event time distribution
             catalog.plot_interevent_time(
                 plot_vs='time',
                 plot_event_timeline=True,
