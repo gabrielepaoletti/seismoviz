@@ -61,19 +61,19 @@ This design emphasizes object-oriented workflows, enabling intuitive chaining of
 API Definition
 --------------
 
-.. card:: Core
+.. card:: :material-regular:`control_camera;1.7em` Core
    :link: library/core
    :link-type: doc
 
    Contains essential functions for high-level operations.
 
-.. card:: Catalog
+.. card:: :material-regular:`database;1.7em` Catalog
    :link: library/components/catalog
    :link-type: doc
 
    Contains methods for visualization and analysis of seismic catalogs.
 
-.. card:: Cross Sections
+.. card:: :material-regular:`database_off;1.7em` Cross Sections
    :link: library/components/cross_section
    :link-type: doc
 
