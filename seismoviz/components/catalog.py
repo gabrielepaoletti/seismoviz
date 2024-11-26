@@ -74,11 +74,15 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
 
     @sync_metadata(CatalogPlotter, 'plot_event_timeline')
     def plot_event_timeline(self, **kwargs) -> None:
-        self.plotter.plot_event_timeline(**kwargs)
+        self._plotter.plot_event_timeline(**kwargs)
 
     @sync_metadata(CatalogPlotter, 'plot_attribute_distributions')
     def plot_attribute_distributions(self, **kwargs) -> None:
         self._plotter.plot_attribute_distributions(**kwargs)
+
+    @sync_metadata(CatalogPlotter, 'plot_interevent_time')
+    def plot_interevent_time(self, **kwargs) -> None:
+        self._plotter.plot_interevent_time(**kwargs)
     
     @sync_metadata(MagnitudeAnalyzer, 'fmd')
     def fmd(self, **kwargs):

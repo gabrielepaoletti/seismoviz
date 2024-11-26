@@ -10,6 +10,7 @@ from seismoviz.utils import convert_to_utm
 from seismoviz.components.common import styling
 from seismoviz.components.common.map_plotter import MapPlotter
 from seismoviz.components.common.base_plotter import BasePlotter
+from seismoviz.components.analysis.statistical import StatisticalAnalyzer
 
 
 class CatalogPlotter:
@@ -25,6 +26,7 @@ class CatalogPlotter:
             transform=transform
         )
         self.bp = BasePlotter()
+        self.sa = StatisticalAnalyzer(catalog)
 
     @staticmethod
     def _format_x_axis_time(ax) -> None:
@@ -156,7 +158,8 @@ class CatalogPlotter:
             Default is ``'jet'``.
 
         title : str, optional
-            Title of the map. If ``None``, no title is displayed. Default is ``None``.
+            Title of the map. If ``None``, no title is displayed. Default is 
+            ``None``.
 
         hl_ms : int, optional
             If specified, highlights seismic events with a magnitude 
@@ -205,7 +208,8 @@ class CatalogPlotter:
             Default is ``'lower left'``.
 
         size_legend : bool, optional
-            If ``True``, displays a legend that explains marker sizes. Default is ``False``.
+            If ``True``, displays a legend that explains marker sizes. Default 
+            is ``False``.
             
         size_legend_loc : str, optional
             Location of the size legend when ``size_legend`` is ``True``. Default is 
@@ -310,7 +314,9 @@ class CatalogPlotter:
         elif isinstance(size, str):
             plt_size = (self.ct.data[size]*size_scale_factor[0]) ** size_scale_factor[1]
         else:
-            raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
+            raise ValueError(
+                "The 'size' parameter must be a scalar or a column from your data."
+            )
 
         if color_by:
             self.mp.fig.set_figheight(10)
@@ -337,8 +343,9 @@ class CatalogPlotter:
         if hl_ms is not None:
             large_quakes = self.ct.data[self.ct.data['mag'] > hl_ms]
             self.mp.scatter(
-                x=large_quakes.lon, y=large_quakes.lat, c=hl_color, s=hl_size, marker=hl_marker, 
-                edgecolor=hl_edgecolor, linewidth=0.75, label=f'Events M > {hl_ms}'
+                x=large_quakes.lon, y=large_quakes.lat, c=hl_color, s=hl_size, 
+                marker=hl_marker, edgecolor=hl_edgecolor, linewidth=0.75, 
+                label=f'Events M > {hl_ms}'
             )
 
         if legend:
@@ -359,12 +366,15 @@ class CatalogPlotter:
                 max_size = np.ceil(max(self.ct.data[size]))
                 size_values = [min_size, (min_size + max_size)/2, max_size]
                 size_legend_labels = [
-                    f"{'M' if size == 'mag' else 'D' if size == 'depth' else size} {v}" for v in size_values
+                    f"{'M' if size == 'mag' else 'D' if size == 'depth' else size} {v}" 
+                    for v in size_values
                 ]
+
                 
                 size_handles = [
-                    plt.scatter([], [], s=(v*size_scale_factor[0]) ** size_scale_factor[1], 
-                                facecolor='white', edgecolor='black', alpha=alpha, label=label)
+                    plt.scatter(
+                        [], [], s=(v*size_scale_factor[0]) ** size_scale_factor[1], 
+                        facecolor='white', edgecolor='black', alpha=alpha, label=label)
                     for v, label in zip(size_values, size_legend_labels)
                 ]
                 
@@ -385,173 +395,6 @@ class CatalogPlotter:
             self.bp.save_figure(save_name, save_extension)
 
         plt.show()
-
-    def plot_magnitude_time(
-            self,
-            color_by: str = None,
-            cmap: str = 'jet',
-            size: float | str = 10,
-            size_scale_factor: tuple[float, float] = (1, 2),
-            color: str = 'grey',
-            edgecolor: str = 'black',
-            alpha: float = 0.75,
-            size_legend: bool = False,
-            size_legend_loc: str = 'upper right',
-            fig_size: tuple[float, float] = (10, 5),
-            save_figure: bool = False,
-            save_name: str = 'magnitude_time', 
-            save_extension: str = 'jpg'
-    ) -> None:
-        """
-        Plots seismic event magnitudes over time.
-
-        Parameters
-        ----------            
-        color_by : str, optional
-            Specifies the column in the DataFrame used to color the 
-            seismic events. Default is ``None``, which applies a single color to 
-            all points.
-
-        cmap : str, optional
-            The colormap to use for coloring events if ``color_by`` is specified. 
-            Default is ``'jet'``.
-
-        size : float or str, optional
-            The size of the markers representing seismic events. If a string 
-            is provided, it should refer to a column in the DataFrame to scale 
-            point sizes proportionally. Default is 10.
-
-        size_scale_factor : tuple[float, float], optional
-            A tuple to scale marker sizes when ``size`` is based on a DataFrame 
-            column. The first element scales the values, and the second element 
-            raises them to a power. Default is (1, 3).
-
-        color : str, optional
-            Default color for event markers when ``color_by`` is ``None``. 
-            Default is ``'grey'``.
-
-        edgecolor : str, optional
-            Edge color for event markers. Default is ``'black'``.
-
-        alpha : float, optional
-            Transparency level for markers, ranging from 0 (transparent) to 1 
-            (opaque). Default is 0.75.
-
-        size_legend : bool, optional
-            If ``True``, displays a legend that explains marker sizes. Default is ``False``.
-            
-        size_legend_loc : str, optional
-            Location of the size legend when ``size_legend`` is ``True``. Default is 
-            ``'upper right'``. 
-
-        fig_size : tuple[float, float], optional
-            Figure size for the plot. Default is ``(10, 5)``.
-            
-        save_figure : bool, optional
-            If ``True``, saves the plot to a file. Default is ``False``.
-
-        save_name : str, optional
-            Base name for the file if `save_figure` is ``True``. Default is ``'magnitude_time'``.
-
-        save_extension : str, optional
-            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
-            is ``'jpg'``.
-
-        Returns
-        -------
-        None
-            A magnitude-time plot.
-
-        Examples
-        --------
-        .. code-block:: python
-
-            import seismoviz as sv
-
-            # Read the catalog from a file
-            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
-
-            # Plot magnitude-time distribution
-            catalog.plot_magnitude_time(
-                color_by='depth',
-                size='depth',
-                cmap='YlOrRd',
-            )
-        
-        .. image:: https://imgur.com/qYguHD1.jpg
-            :align: center
-        """
-        self.bp.set_style(styling.DEFAULT)
-
-        fig, ax = plt.subplots(figsize=fig_size)
-        ax.set_title('Magnitude-time distribution', fontweight='bold')
-        
-        if isinstance(size, (int, float)):
-            plt_size = size
-        elif isinstance(size, str):
-            plt_size = (self.ct.data[size]*size_scale_factor[0]) ** size_scale_factor[1]
-        else:
-            raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
-
-        if color_by:
-            fig.set_figwidth(fig_size[0] + 2)
-            self.bp.plot_with_colorbar(
-                ax=ax,
-                data=self.ct.data,
-                x='time',
-                y='mag',
-                color_by=color_by,
-                cmap=cmap,
-                size=plt_size,
-                edgecolor=edgecolor,
-                alpha=alpha,
-                cbar_orientation='vertical',
-                cbar_shrink=1,
-                cbar_aspect=30,
-                cbar_pad=0.03
-            )
-        else:
-            ax.scatter(
-                x=self.ct.data.time,
-                y=self.ct.data.mag,
-                c=color,
-                s=plt_size,
-                edgecolor=edgecolor,
-                alpha=alpha,
-                lw=0.25
-            )
-
-        if size_legend:   
-            if isinstance(size, str):
-                min_size = np.floor(min(self.ct.data[size]))
-                max_size = np.ceil(max(self.ct.data[size]))
-                size_values = [min_size, (min_size + max_size)/2, max_size]
-                size_legend_labels = [
-                    f"{'M' if size == 'mag' else 'D' if size == 'depth' else size} {v}" for v in size_values
-                ]
-                
-                size_handles = [
-                    plt.scatter([], [], s=(v*size_scale_factor[0]) ** size_scale_factor[1], 
-                                facecolor='white', edgecolor='black', alpha=alpha, label=label)
-                    for v, label in zip(size_values, size_legend_labels)
-                ]
-                
-                plt.legend(
-                    handles=size_handles,
-                    loc=size_legend_loc,
-                    fancybox=False,
-                    edgecolor='black',
-                    ncol=len(size_values),
-                )
-
-        self._format_x_axis_time(ax)
-        ax.grid(True, alpha=0.25, axis='y', linestyle=':')
-
-        if save_figure:
-            self.bp.save_figure(save_name, save_extension)
-        
-        plt.show()
-        self.bp.reset_style()
 
     def plot_space_time(
             self,
@@ -775,8 +618,10 @@ class CatalogPlotter:
                 ]
 
                 size_handles = [
-                    plt.scatter([], [], s=(v * size_scale_factor[0]) ** size_scale_factor[1], 
-                                facecolor='white', edgecolor='black', alpha=alpha, label=label)
+                    plt.scatter(
+                        [], [], s=(v * size_scale_factor[0]) ** size_scale_factor[1], 
+                        facecolor='white', edgecolor='black', alpha=alpha, label=label
+                    )
                     for v, label in zip(size_values, size_legend_labels)
                 ]
 
@@ -810,6 +655,180 @@ class CatalogPlotter:
         plt.show()
         self.bp.reset_style()
 
+    def plot_magnitude_time(
+            self,
+            color_by: str = None,
+            cmap: str = 'jet',
+            size: float | str = 10,
+            size_scale_factor: tuple[float, float] = (1, 2),
+            color: str = 'grey',
+            edgecolor: str = 'black',
+            alpha: float = 0.75,
+            size_legend: bool = False,
+            size_legend_loc: str = 'upper right',
+            fig_size: tuple[float, float] = (10, 5),
+            save_figure: bool = False,
+            save_name: str = 'magnitude_time', 
+            save_extension: str = 'jpg'
+    ) -> None:
+        """
+        Plots seismic event magnitudes over time.
+
+        Parameters
+        ----------            
+        color_by : str, optional
+            Specifies the column in the DataFrame used to color the 
+            seismic events. Default is ``None``, which applies a single color to 
+            all points.
+
+        cmap : str, optional
+            The colormap to use for coloring events if ``color_by`` is specified. 
+            Default is ``'jet'``.
+
+        size : float or str, optional
+            The size of the markers representing seismic events. If a string 
+            is provided, it should refer to a column in the DataFrame to scale 
+            point sizes proportionally. Default is 10.
+
+        size_scale_factor : tuple[float, float], optional
+            A tuple to scale marker sizes when ``size`` is based on a DataFrame 
+            column. The first element scales the values, and the second element 
+            raises them to a power. Default is (1, 2).
+
+        color : str, optional
+            Default color for event markers when ``color_by`` is ``None``. 
+            Default is ``'grey'``.
+
+        edgecolor : str, optional
+            Edge color for event markers. Default is ``'black'``.
+
+        alpha : float, optional
+            Transparency level for markers, ranging from 0 (transparent) to 1 
+            (opaque). Default is 0.75.
+
+        size_legend : bool, optional
+            If ``True``, displays a legend that explains marker sizes. Default is 
+            ``False``.
+            
+        size_legend_loc : str, optional
+            Location of the size legend when ``size_legend`` is ``True``. Default 
+            is ``'upper right'``. 
+
+        fig_size : tuple[float, float], optional
+            Figure size for the plot. Default is ``(10, 5)``.
+            
+        save_figure : bool, optional
+            If ``True``, saves the plot to a file. Default is ``False``.
+
+        save_name : str, optional
+            Base name for the file if `save_figure` is ``True``. Default is 
+            ``'magnitude_time'``.
+
+        save_extension : str, optional
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
+
+        Returns
+        -------
+        None
+            A magnitude-time plot.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+            # Plot magnitude-time distribution
+            catalog.plot_magnitude_time(
+                color_by='depth',
+                size='depth',
+                cmap='YlOrRd',
+            )
+        
+        .. image:: https://imgur.com/qYguHD1.jpg
+            :align: center
+        """
+        self.bp.set_style(styling.DEFAULT)
+
+        fig, ax = plt.subplots(figsize=fig_size)
+        ax.set_title('Magnitude-time distribution', fontweight='bold')
+        
+        if isinstance(size, (int, float)):
+            plt_size = size
+        elif isinstance(size, str):
+            plt_size = (self.ct.data[size]*size_scale_factor[0]) ** size_scale_factor[1]
+        else:
+            raise ValueError(
+                "The 'size' parameter must be a scalar or a column from your data."
+            )
+
+        if color_by:
+            fig.set_figwidth(fig_size[0] + 2)
+            self.bp.plot_with_colorbar(
+                ax=ax,
+                data=self.ct.data,
+                x='time',
+                y='mag',
+                color_by=color_by,
+                cmap=cmap,
+                size=plt_size,
+                edgecolor=edgecolor,
+                alpha=alpha,
+                cbar_orientation='vertical',
+                cbar_shrink=1,
+                cbar_aspect=30,
+                cbar_pad=0.03
+            )
+        else:
+            ax.scatter(
+                x=self.ct.data.time,
+                y=self.ct.data.mag,
+                c=color,
+                s=plt_size,
+                edgecolor=edgecolor,
+                alpha=alpha,
+                lw=0.25
+            )
+
+        if size_legend:   
+            if isinstance(size, str):
+                min_size = np.floor(min(self.ct.data[size]))
+                max_size = np.ceil(max(self.ct.data[size]))
+                size_values = [min_size, (min_size + max_size)/2, max_size]
+                size_legend_labels = [
+                    f"{'M' if size == 'mag' else 'D' if size == 'depth' else size} {v}" 
+                    for v in size_values
+                ]
+
+                size_handles = [
+                    plt.scatter(
+                        [], [], s=(v*size_scale_factor[0]) ** size_scale_factor[1], 
+                        facecolor='white', edgecolor='black', alpha=alpha, label=label
+                    )
+                    for v, label in zip(size_values, size_legend_labels)
+                ]
+                
+                plt.legend(
+                    handles=size_handles,
+                    loc=size_legend_loc,
+                    fancybox=False,
+                    edgecolor='black',
+                    ncol=len(size_values),
+                )
+
+        self._format_x_axis_time(ax)
+        ax.grid(True, alpha=0.25, axis='y', linestyle=':')
+
+        if save_figure:
+            self.bp.save_figure(save_name, save_extension)
+        
+        plt.show()
+        self.bp.reset_style()
+
     def plot_event_timeline(
             self,
             fig_size: tuple[float, float] = (10, 5), 
@@ -830,7 +849,8 @@ class CatalogPlotter:
             If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            Base name for the file if `save_figure` is ``True``. Default is ``'event_timeline'``.
+            Base name for the file if `save_figure` is ``True``. Default is 
+            ``'event_timeline'``.
 
         save_extension : str, optional
             File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
@@ -948,6 +968,245 @@ class CatalogPlotter:
         plt.show()
         self.bp.reset_style()
 
+    def plot_interevent_time(
+            self,
+            plot_vs: str = 'time',
+            plot_event_timeline: bool = True,
+            et_axis_color: str = 'red',
+            et_line_color: str = 'red',
+            color_by: str = None,
+            cmap: str = 'jet',
+            size: float | str = 10,
+            size_scale_factor: tuple[float, float] = (1, 2),
+            yscale: str = 'log',
+            color: str = 'grey',
+            edgecolor: str = 'black',
+            alpha: float = 0.75,
+            size_legend: bool = False,
+            size_legend_loc: str = 'upper right',
+            fig_size: tuple[float, float] = (10, 5),
+            save_figure: bool = False,
+            save_name: str = 'interevent_time',
+            save_extension: str = 'jpg'
+    ) -> None:
+        """
+        Plots inter-event times against any specified attribute.
+
+        .. note::
+            After executing this method, a new column named ``interevent_time`` 
+            will be created in the ``catalog.data`` DataFrame. This column will 
+            contain the calculated inter-event times, making the data accessible 
+            for further analysis or visualization.
+
+        Parameters
+        ----------
+        plot_vs : str, optional
+            Specifies the column to plot inter-event times against. Default is 
+            ``'time'``.        
+
+        plot_event_timeline : bool, optional
+            If ``True`` and ``plot_vs='time'``, adds a secondary y-axis (``twiny``) 
+            to plot a cumulative event timeline. The timeline represents the cumulative 
+            number of events over time. Default is ``True``.
+
+        et_axis_color : str, optional
+            Specifies the color of the secondary y-axis (event timeline axis), 
+            including the ticks, labels, and axis line. Default is ``'red'``.
+
+        et_line_color : str, optional
+            Specifies the color of the line representing the cumulative number 
+            of events on the secondary y-axis. Default is ``'red'``.
+            
+        color_by : str, optional
+            Specifies the column in the DataFrame used to color the 
+            seismic events. Default is ``None``, which applies a single color to 
+            all points.
+
+        cmap : str, optional
+            The colormap to use for coloring events if ``color_by`` is specified. 
+            Default is ``'jet'``.
+
+        size : float or str, optional
+            The size of the markers representing seismic events. If a string 
+            is provided, it should refer to a column in the DataFrame to scale 
+            point sizes proportionally. Default is 10.
+
+        size_scale_factor : tuple[float, float], optional
+            A tuple to scale marker sizes when ``size`` is based on a DataFrame 
+            column. The first element scales the values, and the second element 
+            raises them to a power. Default is (1, 2).
+
+        yscale : str, optional
+            Specifies the scale of the y-axis. Common options include ``'linear'``, 
+            ``'log'``, ``'symlog'``, and ``'logit'``. Default is ``'linear'``.
+
+        color : str, optional
+            Default color for event markers when ``color_by`` is ``None``. 
+            Default is ``'grey'``.
+
+        edgecolor : str, optional
+            Edge color for event markers. Default is ``'black'``.
+
+        alpha : float, optional
+            Transparency level for markers, ranging from 0 (transparent) to 1 
+            (opaque). Default is 0.75.
+
+        size_legend : bool, optional
+            If ``True``, displays a legend that explains marker sizes. Default is 
+            ``False``.
+            
+        size_legend_loc : str, optional
+            Location of the size legend when ``size_legend`` is ``True``.
+            Default is ``'upper right'``. 
+
+        fig_size : tuple[float, float], optional
+            Figure size for the plot. Default is ``(10, 5)``.
+            
+        save_figure : bool, optional
+            If ``True``, saves the plot to a file. Default is ``False``.
+
+        save_name : str, optional
+            Base name for the file if `save_figure` is ``True``. Default is 
+            ``'interevent_time'``.
+
+        save_extension : str, optional
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            is ``'jpg'``.
+
+        Returns
+        -------
+        None
+            A plot of inter-event times.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+            # Plot attribute distributions
+            catalog.plot_interevent_time(
+                plot_vs='time',
+                plot_event_timeline=True,
+                size=5
+            )
+        
+        .. image:: https://imgur.com/Nx79ICZ.jpg
+            :align: center
+        """
+        self.sa.calculate_interevent_time(unit='sec')
+
+        self.bp.set_style(styling.DEFAULT)
+        fig, ax = plt.subplots(figsize=fig_size)
+        ax.set_title('Inter-event time distribution')
+
+        if isinstance(size, (int, float)):
+            plt_size = size
+        elif isinstance(size, str):
+            plt_size = (self.ct.data[size] * size_scale_factor[0]) ** size_scale_factor[1]
+        else:
+            raise ValueError(
+                "The 'size' parameter must be a scalar or a column from your data."
+            )
+
+        if color_by:
+            fig.set_figwidth(fig_size[0] + 2)
+            self.bp.plot_with_colorbar(
+                ax=ax,
+                data=self.ct.data,
+                x=plot_vs,
+                y='interevent_time',
+                color_by=color_by,
+                cmap=cmap,
+                size=plt_size,
+                edgecolor=edgecolor,
+                alpha=alpha,
+                cbar_orientation='vertical',
+                cbar_shrink=1,
+                cbar_aspect=30,
+                cbar_pad=0.115 if plot_event_timeline else 0.03
+            )
+        else:
+            ax.scatter(
+                x=self.ct.data[plot_vs],
+                y=self.ct.data['interevent_time'],
+                c=color,
+                s=plt_size,
+                edgecolor=edgecolor,
+                alpha=alpha,
+                lw=0.25
+            )
+
+        if size_legend:
+            if isinstance(size, str):
+                min_size = np.floor(min(self.ct.data[size]))
+                max_size = np.ceil(max(self.ct.data[size]))
+                size_values = [min_size, (min_size + max_size) / 2, max_size]
+                size_legend_labels = [
+                    f"{'M' if size == 'mag' else 'D' if size == 'depth' else size} {v}" 
+                    for v in size_values
+                ]
+
+
+                size_handles = [
+                    plt.scatter(
+                        [], [], s=(v * size_scale_factor[0]) ** size_scale_factor[1],
+                        facecolor='white', edgecolor='black', alpha=alpha, label=label
+                    )
+                    for v, label in zip(size_values, size_legend_labels)
+                ]
+
+                plt.legend(
+                    handles=size_handles,
+                    loc=size_legend_loc,
+                    fancybox=False,
+                    edgecolor='black',
+                    ncol=len(size_values),
+                )
+
+        if plot_vs == 'time':
+            self._format_x_axis_time(ax)
+
+            if plot_event_timeline:
+                self.bp.set_style(styling.CROSS_SECTION)
+                
+                ax_twin = ax.twinx()
+                twin_axis_color = f'tab:{et_axis_color}'
+                ax_twin.spines['right'].set_color(twin_axis_color)
+                ax_twin.set_ylabel(
+                    'Cumulative no. of events', color=twin_axis_color
+                )
+                ax_twin.tick_params(
+                    axis='y', color=twin_axis_color, labelcolor=twin_axis_color
+                )
+
+                timeline = self.ct.data['time']
+                cumulative_events = range(1, len(timeline) + 1)
+                ax_twin.plot(timeline, cumulative_events, color=et_line_color)
+
+        ax.grid(True, alpha=0.25, axis='y', linestyle=':')
+    
+        xlabel_map = {
+            'time': None,
+            'mag': 'Magnitude',
+            'lat': 'Latitude [°]',
+            'lon': 'Longitude [°]',
+            'depth': 'Depth [Km]'
+        }
+
+        ax.set_yscale(yscale)
+        ax.set_ylabel('Interevent Time [s]')
+        ax.set_xlabel(xlabel_map[plot_vs])
+
+        if save_figure:
+            self.bp.save_figure(save_name, save_extension)
+
+        plt.show()
+        self.bp.reset_style()
+
 
 class SubCatalogPlotter:
     def __init__(self, sub_catalog: type) -> None:
@@ -993,7 +1252,9 @@ class SubCatalogPlotter:
         elif isinstance(size, str):
             plt_size = (self.sc.data[size] * size_scale_factor[0]) ** size_scale_factor[1]
         else:
-            raise ValueError("The 'size' parameter must be a scalar or a column from your data.")
+            raise ValueError(
+                "The 'size' parameter must be a scalar or a column from your data."
+            )
 
         fig, ax = plt.subplots(figsize=(12, 6))
 
@@ -1030,8 +1291,8 @@ class SubCatalogPlotter:
         if hl_ms is not None:
             large_quakes = self.sc.data[self.sc.data['mag'] > hl_ms]
             ax.scatter(
-                x=large_quakes.on_section_coords, y=large_quakes.depth, c=hl_color, s=hl_size,
-                marker=hl_marker, edgecolor=hl_edgecolor, linewidth=0.75,
+                x=large_quakes.on_section_coords, y=large_quakes.depth, c=hl_color, 
+                s=hl_size, marker=hl_marker, edgecolor=hl_edgecolor, linewidth=0.75,
                 label=f'Events M > {hl_ms}'
             )
         
@@ -1073,12 +1334,16 @@ class SubCatalogPlotter:
                 max_size = np.ceil(max(self.sc.data[size]))
                 size_values = [min_size, (min_size + max_size) / 2, max_size]
                 size_legend_labels = [
-                    f"{'M' if size == 'mag' else 'D' if size == 'depth' else size} {v}" for v in size_values
+                    f"{'M' if size == 'mag' else 'D' if size == 'depth' else size} {v}" 
+                    for v in size_values
                 ]
 
+
                 size_handles = [
-                    plt.scatter([], [], s=(v * size_scale_factor[0]) ** size_scale_factor[1],
-                                facecolor='white', edgecolor='black', alpha=alpha, label=label)
+                    plt.scatter(
+                        [], [], s=(v * size_scale_factor[0]) ** size_scale_factor[1],
+                        facecolor='white', edgecolor='black', alpha=alpha, label=label
+                    )
                     for v, label in zip(size_values, size_legend_labels)
                 ]
 
