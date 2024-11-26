@@ -1,6 +1,7 @@
 import pandas as pd
 
 from seismoviz.internal.decorators import sync_metadata
+from seismoviz.components.analysis.operations import Operations
 from seismoviz.components.analysis.magnitude import MagnitudeAnalyzer
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 from seismoviz.components.plotters.cat_plotter import CatalogPlotter, SubCatalogPlotter
@@ -47,148 +48,17 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         self._plotter = CatalogPlotter(self)
         self._mag = MagnitudeAnalyzer(self.data.mag)
 
-    def filter(self, **kwargs) -> 'Catalog':
-        """
-        Filters the catalog based on multiple specified conditions, with 
-        each condition passed as a keyword argument.
+    @sync_metadata(Operations, 'filter')
+    def filter(self, **kwargs):
+        return Operations.filter(self, **kwargs)
 
-        .. note::
-            Each keyword argument should be in the form 
-            ``attribute=('criteria', value)`` or 
-            ``attribute=('criteria', [value1, value2])`` for range criteria. 
-            This allows for intuitive and flexible filtering based on the 
-            attributes of seismic events.
+    @sync_metadata(Operations, 'sort')
+    def sort(self, by: str, ascending: bool = True):
+        return Operations.sort(self, by=by, ascending=ascending)
 
-        Parameters
-        ----------
-        **kwargs : dict
-            Arbitrary keyword arguments representing the filtering 
-            conditions. Each key is an attribute name of the seismic events, 
-            and the value is a tuple specifying the criteria (``'greater'``, 
-            ``'lower'``, ``'between'``, ``'outside'``) and the comparison value(s).
-
-        Returns
-        -------
-        Catalog
-            A new instance of ``Catalog`` containing the filtered subset of 
-            seismic events.
-
-        Examples
-        --------
-        To filter the catalog for events with magnitude greater than 4.5, depth 
-        between the range 10-50 km and occured before October 30, 2016:
-
-        .. code-block:: python
-
-            filtered_catalog = catalog.filter(
-                mag=('greater', 4.5),
-                depth=('between', [10, 50]),
-                time=('lower', '2016-10-30')
-            )
-
-        This would return a new ``Catalog`` instance containing only the 
-        events that match the specified criteria.
-
-        Raises
-        ------
-        ValueError
-            If an invalid criteria is provided or if the value format does 
-            not match the criteria requirements.
-
-        .. note::
-            The filtering operation is cumulative for multiple conditions. 
-            For example, specifying conditions for both ``'magnitude'`` and 
-            ``'depth'`` will filter events that satisfy both conditions 
-            simultaneously.
-        """
-        filtered_data = self.data
-
-        for attribute, (criteria, value) in kwargs.items():
-            if criteria == 'greater':
-                filtered_data = filtered_data[filtered_data[attribute] > value]
-
-            elif criteria == 'lower':
-                filtered_data = filtered_data[filtered_data[attribute] < value]
-
-            elif criteria == 'between':
-                if not isinstance(value, list) or len(value) != 2:
-                    raise ValueError(
-                        "Value must be a list of two numbers for 'between' criteria."
-                    )
-                filtered_data = filtered_data[
-                    filtered_data[attribute].between(value[0], value[1])
-                ]
-
-            elif criteria == 'outside':
-                if not isinstance(value, list) or len(value) != 2:
-                    raise ValueError(
-                        "Value must be a list of two numbers for 'outside' criteria."
-                    )
-                filtered_data = filtered_data[
-                    ~filtered_data[attribute].between(value[0], value[1])
-                ]
-
-            else:
-                raise ValueError(
-                    f"Invalid criteria '{criteria}'. Choose from 'greater', 'lower', "
-                    "'between', or 'outside'."
-                )
-
-        return Catalog(filtered_data)
-
-    def sort(self, by: str, ascending: bool = True) -> 'Catalog':
-        """
-        Sorts the catalog by a specific attribute, either in ascending or 
-        descending order.
-
-        Parameters
-        ----------
-        by : str
-            The attribute of the seismic events to sort by.
-
-        ascending : bool, optional
-            Determines the sorting order. If ``True`` (default), sorts in 
-            ascending order; if ``False``, in descending order.
-
-        Returns
-        -------
-        Catalog
-            The ``Catalog`` instance itself, modified to reflect the sorted 
-            order.
-
-        Examples
-        --------
-        To sort the catalog by time in ascending order:
-
-        .. code-block:: python
-
-            sorted_catalog = catalog.sort(
-                by='time',
-                ascending=True
-            )
-
-        """
-        return self.data.sort_values(by=by, ascending=ascending)
-
-    def deduplicate_events(self) -> 'Catalog':
-        """
-        Removes duplicate seismic events.
-
-        Returns
-        -------
-        Catalog
-            A new ``Catalog`` instance without duplicate entries.
-
-        Examples
-        --------
-        To remove duplicates inside the catalog:
-
-        .. code-block:: python
-
-            deduplicated_catalog = catalog.deduplicate_events()
-        
-        """
-        return self.data.drop_duplicates(subset=['lon', 'lat', 'depth', 'time'])
+    @sync_metadata(Operations, 'deduplicate_events')
+    def deduplicate_events(self):
+        return Operations.deduplicate_events(self)
 
     @sync_metadata(CatalogPlotter, 'plot_map')
     def plot_map(self, **kwargs) -> None:
@@ -218,9 +88,13 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
     def estimate_b_value(self, bin_size: float, mc: str | float, **kwargs):
         if mc == 'maxc':
             mc_maxc = self._mag._maxc(bin_size=bin_size)
-            return self._mag.estimate_b_value(bin_size=bin_size, mc=mc_maxc, **kwargs)
+            return self._mag.estimate_b_value(
+                bin_size=bin_size, mc=mc_maxc, **kwargs
+            )
         elif isinstance(mc, int) or isinstance(mc, float):
-            return self._mag.estimate_b_value(bin_size=bin_size, mc=mc, **kwargs)
+            return self._mag.estimate_b_value(
+                bin_size=bin_size, mc=mc, **kwargs
+            )
         else:
             raise ValueError('Mc value is not valid.')
 
@@ -232,5 +106,6 @@ class SubCatalog(Catalog):
         self.selected_from = selected_from
         self._sc_plotter = SubCatalogPlotter(self)
     
+    @sync_metadata(SubCatalogPlotter, 'plot_on_section')
     def plot_on_section(self, **kwargs):
         self._sc_plotter.plot_on_section(**kwargs)

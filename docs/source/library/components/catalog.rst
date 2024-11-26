@@ -35,5 +35,5 @@ Visualization methods
 Analysis methods
 ----------------
 
-.. automethod:: seismoviz.components.catalog.Catalog.plot_fmd
+.. automethod:: seismoviz.components.catalog.Catalog.fmd
 .. automethod:: seismoviz.components.catalog.Catalog.estimate_b_value

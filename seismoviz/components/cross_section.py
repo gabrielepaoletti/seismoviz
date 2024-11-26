@@ -4,6 +4,7 @@ import pandas as pd
 from seismoviz.utils import convert_to_utm
 from seismoviz.components.catalog import Catalog
 from seismoviz.internal.decorators import sync_metadata
+from seismoviz.components.analysis.operations import Operations
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 from seismoviz.components.plotters.crs_plotter import CrossSectionPlotter
 
@@ -87,6 +88,26 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
 
         self.data = self._cross_section()
         self._plotter = CrossSectionPlotter(self)
+
+    @sync_metadata(Operations, 'filter')
+    def filter(self, **kwargs):
+        return Operations.filter(self, **kwargs)
+
+    @sync_metadata(Operations, 'sort')
+    def sort(self, by: str, ascending: bool = True):
+        return Operations.sort(self, by=by, ascending=ascending)
+
+    @sync_metadata(Operations, 'deduplicate_events')
+    def deduplicate_events(self):
+        return Operations.deduplicate_events(self)
+
+    @sync_metadata(CrossSectionPlotter, 'plot_sections')
+    def plot_sections(self, **kwargs):
+        self._plotter.plot_sections(**kwargs)
+
+    @sync_metadata(CrossSectionPlotter, 'plot_section_lines')
+    def plot_section_lines(self, **kwargs):
+        self._plotter.plot_section_lines(**kwargs)
 
     @staticmethod
     def _distance_point_from_plane(
@@ -244,11 +265,3 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
         )
 
         return section_dataframes
-
-    @sync_metadata(CrossSectionPlotter, 'plot_sections')
-    def plot_sections(self, **kwargs):
-        self._plotter.plot_sections(**kwargs)
-
-    @sync_metadata(CrossSectionPlotter, 'plot_section_lines')
-    def plot_section_lines(self, **kwargs):
-        self._plotter.plot_section_lines(**kwargs)
