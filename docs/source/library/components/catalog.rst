@@ -14,8 +14,8 @@ Catalog
    :exclude-members: inherited_method, inherited_property
 
 
-Basic methods
--------------
+Operation methods
+------------------
 
 .. automethod:: seismoviz.components.catalog.Catalog.filter
 .. automethod:: seismoviz.components.catalog.Catalog.sort
@@ -32,8 +32,8 @@ Visualization methods
 .. automethod:: seismoviz.components.catalog.Catalog.plot_attribute_distributions
 
 
-Analysis methods
-----------------
+Magnitude analysis methods
+--------------------------
 
 .. automethod:: seismoviz.components.catalog.Catalog.fmd
 .. automethod:: seismoviz.components.catalog.Catalog.estimate_b_value
