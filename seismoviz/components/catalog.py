@@ -21,8 +21,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         of the catalog.
 
     _mag : MagnitudeAnalyzer
-        An internal object used for calculating the b-value and related seismic 
-        analysis metrics.
+        An internal object used for magnitude analysis.
 
     Raises
     ------

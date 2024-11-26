@@ -7,14 +7,21 @@ T = TypeVar('T')
 
 def sync_metadata(cls, method_name: str) -> Callable[[Callable[P, T]], Callable[P, T]]:
     """
-    Decoratore per sincronizzare la docstring e la firma di un metodo da un'altra classe.
+    A decorator to synchronize the docstring and signature of a method 
+    from another class.
 
-    Args:
-        cls: La classe dalla quale copiare il metodo.
-        method_name: Il nome del metodo da copiare.
+    Parameters
+    ----------
+    cls : type
+        The class from which to copy the method's docstring and signature.
+    method_name : str
+        The name of the method to copy.
 
-    Returns:
-        Il decoratore che aggiorna la funzione decorata.
+    Returns
+    -------
+    function
+        The decorator that updates the docstring and signature of the decorated 
+        function.
     """
     def decorator(func: Callable[P, T]) -> Callable[P, T]:
         source_method = getattr(cls, method_name)
