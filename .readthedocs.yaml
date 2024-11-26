@@ -24,3 +24,7 @@ python:
     - method: pip
       path: .
     - requirements: docs/requirements.txt
+
+# Clean cache at each build
+build:
+  no_cache: true
