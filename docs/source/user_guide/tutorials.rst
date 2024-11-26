@@ -1,6 +1,6 @@
 .. title:: Tutorials
 
-.. image:: _static/banners/tuts_light.jpg
+.. image:: ../_static/banners/tuts_light.jpg
    :align: center
 
 --------------------

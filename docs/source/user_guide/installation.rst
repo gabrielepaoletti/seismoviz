@@ -1,6 +1,6 @@
 .. title:: Installation
 
-.. image:: _static/banners/inst_light.jpg
+.. image:: ../_static/banners/inst_light.jpg
    :align: center
 
 --------------------

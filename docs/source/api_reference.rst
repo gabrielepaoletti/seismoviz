@@ -67,13 +67,13 @@ API Definition
 
    Contains essential functions for high-level operations.
 
-.. card:: :material-regular:`database;1.7em` Catalog
+.. card:: :material-regular:`filter_list;1.7em` Catalog
    :link: library/components/catalog
    :link-type: doc
 
    Contains methods for visualization and analysis of seismic catalogs.
 
-.. card:: :material-regular:`database_off;1.7em` Cross Sections
+.. card:: :material-regular:`filter_list_off;1.7em` Cross Sections
    :link: library/components/cross_section
    :link-type: doc
 

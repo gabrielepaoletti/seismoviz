@@ -1,22 +1,19 @@
+:html_theme.sidebar_secondary.remove:
+
 .. title:: SeismoViz
-
-.. image:: _static/banners/docs_light.jpg
-   :align: center
-
---------------------
-
-**Version:** 0.1.0
 
 .. toctree::
    :maxdepth: 1
    :hidden:
 
-   Getting Started <getting_started>
+   User Guide <user_guide>
    API Reference <api_reference>
 
 
 SeismoViz documentation
 =======================
+
+**Version:** 0.1.0
 
 SeismoViz is open-source Python library designed to simplify the analysis, manipulation, and visualization of seismic catalogs. With its intuitive and efficient interface, it reduces complex workflows into just a few lines of code, empowering users to explore seismic data effortlessly.
 
