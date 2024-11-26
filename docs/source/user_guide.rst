@@ -64,7 +64,7 @@ SeismoViz is an open-source project that thrives on community contributions. Whe
    Learn how to contribute to SeismoViz by submitting code, improving documentation, or suggesting new features.
 
 .. card:: :material-regular:`bug_report;1.7em` Report a bug/issue
-   :link: user_guide/contributions/repost_a_bug
+   :link: user_guide/contributions/report_a_bug
    :link-type: doc
 
    Encountered a problem? Report bugs or issues to help us improve SeismoViz and ensure a seamless experience for all users.
