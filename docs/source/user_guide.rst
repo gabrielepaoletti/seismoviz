@@ -12,6 +12,20 @@
 
    user_guide/installation
    user_guide/tutorials
+
+   .. toctree::
+   :maxdepth: 0
+   :hidden:
+   :caption: Contributions
+
+   user_guide/contributuibs/contribute
+   user_guide/contributions/report_a_bug
+
+.. toctree::
+   :maxdepth: 0
+   :hidden:
+   :caption: Get help!
+
    user_guide/faq
 
 User Guide
@@ -43,13 +57,13 @@ Contributions
 
 SeismoViz is an open-source project that thrives on community contributions. Whether you’re reporting issues, suggesting new features, or contributing code, your involvement is invaluable. 
 
-.. card:: :material-regular:`bug;1.7em` Contribute
+.. card:: :material-regular:`code;1.7em` Contribute
    :link: user_guide/contributions/contribute
    :link-type: doc
 
    Learn how to contribute to SeismoViz by submitting code, improving documentation, or suggesting new features.
 
-.. card:: :material-regular:`error;1.7em` Report a bug/issue
+.. card:: :material-regular:`bug_report;1.7em` Report a bug/issue
    :link: user_guide/contributions/repost_a_bug
    :link-type: doc
 
