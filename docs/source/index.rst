@@ -1,13 +1,11 @@
-:html_theme.sidebar_secondary.remove:
-
 .. title:: SeismoViz
 
 .. image:: _static/banners/docs_light.jpg
    :align: center
 
-**Version:** 0.1.0
-
 --------------------
+
+**Version:** 0.1.0
 
 .. toctree::
    :maxdepth: 1
@@ -28,7 +26,7 @@ SeismoViz is open-source Python library designed to simplify the analysis, manip
    :class-container: startpage-grid
 
    .. grid-item-card:: :material-regular:`account_circle;1.7em` User Guide
-      :link: getting_started
+      :link: user_guide
       :link-type: doc
       :link-alt: User Guide
 
