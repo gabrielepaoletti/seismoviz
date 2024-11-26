@@ -1034,7 +1034,7 @@ class CatalogPlotter:
         size_scale_factor : tuple[float, float], optional
             A tuple to scale marker sizes when ``size`` is based on a DataFrame 
             column. The first element scales the values, and the second element 
-            raises them to a power. Default is (1, 2).
+            raises them to a power. Default is ``(1, 2)``.
 
         yscale : str, optional
             Specifies the scale of the y-axis. Common options include ``'linear'``, 
@@ -1187,7 +1187,7 @@ class CatalogPlotter:
                 cumulative_events = range(1, len(timeline) + 1)
                 ax_twin.plot(timeline, cumulative_events, color=et_line_color)
 
-        ax.grid(True, alpha=0.25, axis='y', linestyle=':')
+        ax.grid(True, alpha=0.25, axis='x', linestyle=':')
     
         xlabel_map = {
             'time': None,
