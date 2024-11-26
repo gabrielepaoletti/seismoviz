@@ -36,8 +36,8 @@ How to contribute
         git checkout -b feature/your-feature-name
 
 4. **Make your changes**
-    - Implement your code changes, ensuring you follow the Code Style Guidelines.
-    - When adding methods to main classes, only include wrapper methods decorated with @sync_metadata. Internal implementation should be handled in separate modules or components.
+    - Implement your code changes, ensuring you follow the `Code Style Guidelines <https://seismoviz.readthedocs.io/en/latest/user_guide/contributions/contribute.html#code-style-guidelines>`_.
+    - When adding methods to main classes, only include wrapper methods decorated with ``@sync_metadata``. Internal implementation should be handled in separate modules or components.
 
 5. **Write tests**
     - Add unit tests to cover your new code.
@@ -91,13 +91,13 @@ Key points
 - **Line length:** Limit all lines to a maximum of 79 characters.
 - **Blank lines:** Use blank lines to separate functions and classes.
 - **Imports:** Place all imports at the top of the file.
-- **Naming conventions:** Use lowercase with underscores for functions and variables; use CapWords for classes.
+- **Naming conventions:** Use lowercase with underscores for functions and variables; use ``CapWords`` for classes.
 
 Make sure to read the official document by Python, to fully understand the guidelines.
 
 
 Write docstrings in NumPy Docstring format
-------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 The `numpydoc <https://numpydoc.readthedocs.io/en/latest/format.html>`_ provides a standard for writing well-structured and readable docstrings. Following these guidelines is critical to ensure that docstrings are processed correctly by documentation providers, such as Sphinx or other automatic generation tools.
 
@@ -158,7 +158,7 @@ The `numpydoc <https://numpydoc.readthedocs.io/en/latest/format.html>`_ provides
 
 
 Use decorators appropriately
-----------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 When adding methods to main classes, use the ``@sync_metadata`` decorator to ensure metadata consistency between the main class and its components.
 
