@@ -17,7 +17,6 @@ build:
   os: "ubuntu-20.04"
   tools:
     python: "3.11"
-  no_cache: true
 
 # Define how to install your project dependencies
 python:
