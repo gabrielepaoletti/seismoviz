@@ -89,3 +89,5 @@ html_theme_options = {
        }
    ]
 }
+
+autosummary_generate = True
