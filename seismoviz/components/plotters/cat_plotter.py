@@ -272,6 +272,27 @@ class CatalogPlotter:
         -------
         None
             A map with seismic events.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='global_seismic_catalog.csv')
+
+            # Create a map showing earthquake locations
+            catalog.plot_map(
+                title='Global seismicity (M > 4.0)',
+                color_by='depth',
+                cmap='YlOrRd',
+                size='mag',
+                projection=ccrs.Robinson()
+            )
+
+        .. image:: https://imgur.com/0d6OA1L.jpg
+            :align: center
         """
         self.mp.transform, self.mp.projection = transform, projection
 
@@ -658,6 +679,28 @@ class CatalogPlotter:
         -------
         None
             A space-time plot.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+            # Plot space-time distribution
+            catalog.plot_space_time(
+                center=(13.12, 42.83),
+                strike=155,
+                hl_ms=5,
+                size=0.5,
+                color='black',
+                alpha=0.25,
+            )
+
+        .. image:: https://imgur.com/AgrhmOt.jpg
+            :align: center  
         """
         self.bp.set_style(styling.DEFAULT)
 
@@ -797,6 +840,21 @@ class CatalogPlotter:
         -------
         None
             A event timeline plot.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+            # Plot the event timeline
+            catalog.plot_event_timeline()
+        
+        .. image:: https://imgur.com/FNnTzAV.jpg
+            :align: center
         """
         self.bp.set_style(styling.DEFAULT)
         
@@ -849,6 +907,21 @@ class CatalogPlotter:
         None
             A plot showing the distribution of the main attributes of the 
             catalog.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+            # Plot attribute distributions
+            catalog.plot_attribute_distributions()
+        
+        .. image:: https://imgur.com/UfucKab.jpg
+            :align: center
         """
         self.bp.set_style(styling.DEFAULT)
 

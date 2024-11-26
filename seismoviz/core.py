@@ -1,5 +1,4 @@
 import pandas as pd
-import holoviews as hv
 
 from seismoviz.components.catalog import Catalog, SubCatalog
 from seismoviz.components.cross_section import CrossSection
