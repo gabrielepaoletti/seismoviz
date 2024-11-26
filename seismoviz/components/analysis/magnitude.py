@@ -4,10 +4,11 @@ import matplotlib.pyplot as plt
 from seismoviz.components.common import styling
 from seismoviz.components.common.base_plotter import BasePlotter
 
+from numpy.typing import ArrayLike
 
-class BValueCalculator:
-    def __init__(self, catalog: type):
-        self.ct = catalog
+class MagnitudeAnalyzer:
+    def __init__(self, magnitudes: ArrayLike):
+        self.mags = magnitudes
         self.bp = BasePlotter()
         
     def fmd(
@@ -18,7 +19,7 @@ class BValueCalculator:
         save_figure: bool = False,
         save_name: str = 'fmd',
         save_extension: str = 'jpg'
-    ) -> tuple[np.ndarray, np.ndarray, np.ndarray]:
+    ) -> tuple[ArrayLike, ArrayLike, ArrayLike]:
         """
         Calculates the frequency-magnitude distribution (FMD) for seismic events, 
         which represents the number of events in each magnitude bin.
@@ -50,21 +51,21 @@ class BValueCalculator:
             Values are returned only if ``return_values`` argument is set to 
             ``True``
 
-        tuple[np.ndarray, np.ndarray, np.ndarray]
-            - ``bins`` : np.ndarray
+        tuple[ArrayLike, ArrayLike, ArrayLike]
+            - ``bins`` : ArrayLike
                 Array of magnitude bin edges.
-            - ``events_per_bin`` : np.ndarray
+            - ``events_per_bin`` : ArrayLike
                 Array with the number of events in each magnitude bin.
-            - ``cumulative_events`` : np.ndarray
+            - ``cumulative_events`` : ArrayLike
                 Array with the cumulative number of events for magnitudes greater than 
                 or equal to each bin.
 
         """
-        lowest_bin = np.floor(np.min(self.ct.data.mag) / bin_size) * bin_size
-        highest_bin = np.ceil(np.max(self.ct.data.mag) / bin_size) * bin_size
+        lowest_bin = np.floor(np.min(self.mags) / bin_size) * bin_size
+        highest_bin = np.ceil(np.max(self.mags) / bin_size) * bin_size
         bin_edges = np.arange(lowest_bin - bin_size / 2, highest_bin + bin_size, bin_size)
 
-        events_per_bin, _ = np.histogram(self.ct.data.mag, bins=bin_edges)
+        events_per_bin, _ = np.histogram(self.mags, bins=bin_edges)
         cumulative_events = np.cumsum(events_per_bin[::-1])[::-1]
         bins = bin_edges[:-1] + bin_size / 2
 
@@ -178,7 +179,7 @@ class BValueCalculator:
         threshold = mag_compl - bin_size / 2
         log10_e = np.log10(np.exp(1))
 
-        fm = self.ct.data.mag[self.ct.data.mag > threshold].values
+        fm = self.mags[self.mags > threshold].values
         num_events = fm.size
 
         if num_events < 2:
@@ -241,7 +242,7 @@ class BValueCalculator:
             ax.set_yscale('log')
             ax.set_xlabel('Magnitude')
             ax.set_ylabel('Frequency')
-            ax.set_ylim(1, 10**np.ceil(np.log10(self.ct.data.shape[0])))
+            ax.set_ylim(1, 10**np.ceil(np.log10(len(self.mags))))
 
             ax.legend(loc='upper right', frameon=False)
 

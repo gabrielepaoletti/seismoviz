@@ -1,7 +1,8 @@
+import inspect
 import pandas as pd
 
-from seismoviz.internal.decorators import sync_signature
-from seismoviz.components.analysis.b_value import BValueCalculator
+from seismoviz.internal.decorators import sync_signature, sync_metadata
+from seismoviz.components.analysis.magnitude import MagnitudeAnalyzer
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 from seismoviz.components.plotters.cat_plotter import CatalogPlotter, SubCatalogPlotter
 
@@ -19,7 +20,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         An internal object responsible for generating plots and visualizations 
         of the catalog.
 
-    _bvc : BValueCalculator
+    _mag : MagnitudeAnalyzer
         An internal object used for calculating the b-value and related seismic 
         analysis metrics.
 
@@ -45,7 +46,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         super().__init__()
 
         self._plotter = CatalogPlotter(self)
-        self._bvc = BValueCalculator(self)
+        self._mag = MagnitudeAnalyzer(self.data.mag)
 
     def filter(self, **kwargs) -> 'Catalog':
         """
@@ -473,87 +474,8 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         """
         self._plotter.plot_space_time(**kwargs)
 
-    @sync_signature('_plotter', 'plot_magnitude_time')
+    @sync_metadata(CatalogPlotter, 'plot_magnitude_time')
     def plot_magnitude_time(self, **kwargs) -> None:
-        """
-        Plots seismic event magnitudes over time.
-
-        Parameters
-        ----------            
-        color_by : str, optional
-            Specifies the column in the DataFrame used to color the 
-            seismic events. Default is ``None``, which applies a single color to 
-            all points.
-
-        cmap : str, optional
-            The colormap to use for coloring events if ``color_by`` is specified. 
-            Default is ``'jet'``.
-
-        size : float or str, optional
-            The size of the markers representing seismic events. If a string 
-            is provided, it should refer to a column in the DataFrame to scale 
-            point sizes proportionally. Default is 10.
-
-        size_scale_factor : tuple[float, float], optional
-            A tuple to scale marker sizes when ``size`` is based on a DataFrame 
-            column. The first element scales the values, and the second element 
-            raises them to a power. Default is (1, 3).
-
-        color : str, optional
-            Default color for event markers when ``color_by`` is ``None``. 
-            Default is ``'grey'``.
-
-        edgecolor : str, optional
-            Edge color for event markers. Default is ``'black'``.
-
-        alpha : float, optional
-            Transparency level for markers, ranging from 0 (transparent) to 1 
-            (opaque). Default is 0.75.
-
-        size_legend : bool, optional
-            If ``True``, displays a legend that explains marker sizes. Default is ``False``.
-            
-        size_legend_loc : str, optional
-            Location of the size legend when ``size_legend`` is ``True``. Default is 
-            ``'upper right'``. 
-
-        fig_size : tuple[float, float], optional
-            Figure size for the plot. Default is ``(10, 5)``.
-            
-        save_figure : bool, optional
-            If ``True``, saves the plot to a file. Default is ``False``.
-
-        save_name : str, optional
-            Base name for the file if `save_figure` is ``True``. Default is ``'magnitude_time'``.
-
-        save_extension : str, optional
-            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
-            is ``'jpg'``.
-
-        Returns
-        -------
-        None
-            A magnitude-time plot.
-
-        Examples
-        --------
-        .. code-block:: python
-
-            import seismoviz as sv
-
-            # Read the catalog from a file
-            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
-
-            # Plot magnitude-time distribution
-            catalog.plot_magnitude_time(
-                color_by='depth',
-                size='depth',
-                cmap='YlOrRd',
-            )
-        
-        .. image:: https://imgur.com/qYguHD1.jpg
-            :align: center
-        """
         self._plotter.plot_magnitude_time(**kwargs)
 
     @sync_signature('_plotter', 'plot_event_timeline')
@@ -640,7 +562,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         """
         self._plotter.plot_attribute_distributions(**kwargs)
     
-    @sync_signature('_bvc', 'fmd')
+    @sync_signature('_mag', 'fmd')
     def plot_fmd(self, **kwargs):
         """
         Calculates the frequency-magnitude distribution (FMD) for seismic events, 
@@ -697,7 +619,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         .. image:: https://imgur.com/OWT7Pa5.jpg
             :align: center
         """
-        self._bvc.fmd(**kwargs)
+        self._mag.fmd(**kwargs)
     
     def estimate_b_value(self, bin_size: float, mc: str | float, **kwargs):
         """
@@ -777,10 +699,10 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
             :align: center
         """
         if mc == 'maxc':
-            mc_maxc = self._bvc._maxc(bin_size=bin_size)
-            return self._bvc.estimate_b_value(bin_size=bin_size, mc=mc_maxc, **kwargs)
+            mc_maxc = self._mag._maxc(bin_size=bin_size)
+            return self._mag.estimate_b_value(bin_size=bin_size, mc=mc_maxc, **kwargs)
         elif isinstance(mc, int) or isinstance(mc, float):
-            return self._bvc.estimate_b_value(bin_size=bin_size, mc=mc, **kwargs)
+            return self._mag.estimate_b_value(bin_size=bin_size, mc=mc, **kwargs)
         else:
             raise ValueError('Mc value is not valid.')
 

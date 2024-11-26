@@ -440,6 +440,25 @@ class CatalogPlotter:
         -------
         None
             A magnitude-time plot.
+
+        Examples
+        --------
+        .. code-block:: python
+
+            import seismoviz as sv
+
+            # Read the catalog from a file
+            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+
+            # Plot magnitude-time distribution
+            catalog.plot_magnitude_time(
+                color_by='depth',
+                size='depth',
+                cmap='YlOrRd',
+            )
+        
+        .. image:: https://imgur.com/qYguHD1.jpg
+            :align: center
         """
         self.bp.set_style(styling.DEFAULT)
 
@@ -638,7 +657,7 @@ class CatalogPlotter:
         Returns
         -------
         None
-            A space-time plot.        
+            A space-time plot.
         """
         self.bp.set_style(styling.DEFAULT)
 
