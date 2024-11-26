@@ -18,7 +18,7 @@
    :hidden:
    :caption: Contributions
 
-   user_guide/contributuibs/contribute
+   user_guide/contributions/contribute
    user_guide/contributions/report_a_bug
 
 .. toctree::
