@@ -13,7 +13,7 @@
    user_guide/installation
    user_guide/tutorials
 
-   .. toctree::
+.. toctree::
    :maxdepth: 0
    :hidden:
    :caption: Contributions
