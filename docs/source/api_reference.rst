@@ -88,7 +88,7 @@ SeismoViz revolves around three primary objects that streamline your interaction
 
          Contains methods for visualization and analysis of seismic catalogs.
 
-   .. grid-item-card:: :octicon:`project;2.5em;sd-mr-1` Catalog
+   .. grid-item-card:: :octicon:`project;2.5em;sd-mr-1` CrossSection
          :link: library/components/cross_section
          :link-type: doc
 
