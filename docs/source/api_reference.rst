@@ -67,7 +67,7 @@ To begin using SeismoViz, users should start with the core module, which provide
    :padding: 0 0 3 3
    :gutter: 2 2 3 3
 
-   .. grid-item-card:: :octicon:`apps;2.5em;sd-mr-1` SeismoViz Core
+   .. grid-item-card:: :octicon:`cpu;2.5em;sd-mr-1` SeismoViz Core
          :link: library/core
          :link-type: doc
          :link-alt: SeismoViz Core
@@ -83,14 +83,14 @@ SeismoViz revolves around three primary objects that streamline your interaction
    :padding: 0 0 3 3
    :gutter: 2 2 3 3
 
-   .. grid-item-card:: :octicon:`log;2.5em;sd-mr-1` Catalog
+   .. grid-item-card:: :octicon:`list-unordered;2.5em;sd-mr-1` Catalog
          :link: library/components/catalog
          :link-type: doc
          :link-alt: Catalog
 
          Contains methods for visualization and analysis of seismic catalogs.
 
-   .. grid-item-card:: :octicon:`log;2.5em;sd-mr-1` CrossSection
+   .. grid-item-card:: :octicon:`list-unordered;2.5em;sd-mr-1` CrossSection
          :link: library/components/cross_section
          :link-type: doc
          :link-alt: CrossSection 
