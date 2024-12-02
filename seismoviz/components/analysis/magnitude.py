@@ -152,7 +152,7 @@ class MagnitudeAnalysis:
         decimals = self._count_decimals(bin_size)
 
         mag_compl = round(mc, decimals)
-        threshold = mag_compl - bin_size / 2
+        threshold = mag_compl - (bin_size / 2)
         log10_e = np.log10(np.exp(1))
 
         fm = self._instance.data.mag[self._instance.data.mag > threshold].values
