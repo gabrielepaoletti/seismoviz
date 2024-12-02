@@ -50,7 +50,7 @@ Begin your journey with SeismoViz. This section outlines the initial steps to se
 
       Detailed instructions to set up SeismoViz and integrate it into your Python environment.
 
-   .. grid-item-card:: :octicon:`terminal;2.5em;sd-mr-1` Tutorials
+   .. grid-item-card:: :octicon:`pencil;2.5em;sd-mr-1` Tutorials
       :link: user_guide/tutorials
       :link-type: doc
       :link-alt: Tutorials
@@ -74,7 +74,7 @@ SeismoViz is an open-source project that thrives on community contributions. Whe
 
       Learn how to contribute to SeismoViz by submitting code, improving documentation, or suggesting new features.
 
-   .. grid-item-card:: :octicon:`bug;2.5em;sd-mr-1` Report a bug/issue
+   .. grid-item-card:: :octicon:`bug;2.5em;sd-mr-1` Report a bug or issue
       :link: user_guide/contributions/report_a_bug
       :link-type: doc
       :link-alt: Report a bug/issue

@@ -8,8 +8,8 @@
    API Reference <api_reference>
 
 
-The ituitive framework for seismic data analysis and vsualization in Python
-===========================================================================
+The ituitive framework for seismic data analysis and visualization in Python
+============================================================================
 
 SeismoViz is open-source Python library designed to simplify the analysis, manipulation, and visualization of seismic catalogs. With its intuitive and efficient interface, it reduces complex workflows into just a few lines of code, empowering users to explore seismic data effortlessly.
 
