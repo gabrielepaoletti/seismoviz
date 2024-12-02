@@ -91,3 +91,4 @@ html_theme_options = {
 }
 
 autosummary_generate = False
+numpydoc_show_class_members = False

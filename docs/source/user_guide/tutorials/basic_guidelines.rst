@@ -44,7 +44,7 @@ This design emphasizes object-oriented workflows, enabling intuitive chaining of
 .. note::
    While Python allows access to private modules and methods, such usage is discouraged. Breaking changes may occur in future releases if private components are used.
 
-Accessing Documentation Inline
+Accessing documentation inline
 ------------------------------
 
 SeismoViz provides comprehensive docstrings for its methods and classes, allowing you to access detailed documentation directly within your Python environment. This is especially useful for understanding the functionality and parameters of specific methods or objects without leaving your development workflow.
