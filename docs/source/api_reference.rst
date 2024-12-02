@@ -63,7 +63,7 @@ API Definition
 To begin using SeismoViz, users should start with the core module, which provides essential functions and utilities to initialize workflows.
 
 
-.. grid:: 1 1 3 3
+.. grid:: 1 1 2 2
    :padding: 0 0 3 3
    :gutter: 2 2 3 3
 
@@ -79,27 +79,20 @@ Key objects
 ^^^^^^^^^^^
 SeismoViz revolves around three primary objects that streamline your interaction with seismic data:
 
-.. grid:: 1 1 3 3
+.. grid:: 1 1 2 2
    :padding: 0 0 3 3
    :gutter: 2 2 3 3
 
-   .. grid-item-card:: :octicon:`project-roadmap;2.5em;sd-mr-1` Catalog
+   .. grid-item-card:: :octicon:`log;2.5em;sd-mr-1` Catalog
          :link: library/components/catalog
          :link-type: doc
          :link-alt: Catalog
 
          Contains methods for visualization and analysis of seismic catalogs.
 
-   .. grid-item-card:: :octicon:`project;2.5em;sd-mr-1` CrossSection
+   .. grid-item-card:: :octicon:`log;2.5em;sd-mr-1` CrossSection
          :link: library/components/cross_section
          :link-type: doc
          :link-alt: CrossSection
 
          Provides tools to compute and visualize seismic cross-sections.
-
-   .. grid-item-card:: :octicon:`project-roadmap;2.5em;sd-mr-1` SubCatalog
-         :link: library/components/sub_catalog
-         :link-type: doc
-         :link-alt: SubCatalog
-
-         Contains methods for visualization and analysis of catalog subsets.
