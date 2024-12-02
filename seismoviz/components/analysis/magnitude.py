@@ -351,5 +351,8 @@ class MagnitudeAnalysis:
         pu.reset_style()
 
     def _count_decimals(self, number):
+        """
+        Calculate the number of decimal places in a given number.
+        """
         decimal_str = str(number).split(".")[1] if "." in str(number) else ""
         return len(decimal_str)
