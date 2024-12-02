@@ -119,13 +119,8 @@ class StatisticalAnalysis:
         --------
         .. code-block:: python
 
-            import seismoviz as sv
-
-            # Read the catalog from a file
-            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
-
             # Plot inter-event time distribution
-            catalog.interevent_time()
+            instance.interevent_time()
 
         .. image:: https://imgur.com/Nx79ICZ.jpg
             :align: center
@@ -257,13 +252,8 @@ class StatisticalAnalysis:
         --------
         .. code-block:: python
 
-            import seismoviz as sv
-
-            # Read the catalog from a file
-            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
-
             # Plot coefficient of variation over time
-            catalog.cov(window_size=1000)
+            instance.cov(window_size=1000)
 
         .. image:: https://imgur.com/4jxaP6N.jpg
             :align: center

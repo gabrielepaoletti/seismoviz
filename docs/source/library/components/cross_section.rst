@@ -9,9 +9,7 @@ Cross Sections
 ==============
 
 .. autoclass:: seismoviz.components.cross_section.CrossSection
-   :undoc-members:
-   :member-order: bysource
-   :exclude-members: inherited_method, inherited_property
+   :no-members:
 
 
 Operation methods
@@ -27,3 +25,20 @@ Visualization methods
 
 .. automethod:: seismoviz.components.cross_section.CrossSection.plot_sections
 .. automethod:: seismoviz.components.cross_section.CrossSection.plot_section_lines
+
+
+Magnitude analysis methods
+--------------------------
+
+.. automethod:: seismoviz.components.cross_section.CrossSection.plot_attribute_distributions
+.. automethod:: seismoviz.components.cross_section.CrossSection.plot_magnitude_time
+.. automethod:: seismoviz.components.cross_section.CrossSection.fmd
+.. automethod:: seismoviz.components.cross_section.CrossSection.estimate_b_value
+
+
+Statistical analysis methods
+----------------------------
+
+.. automethod:: seismoviz.components.cross_section.CrossSection.plot_event_timeline
+.. automethod:: seismoviz.components.cross_section.CrossSection.interevent_time
+.. automethod:: seismoviz.components.cross_section.CrossSection.cov

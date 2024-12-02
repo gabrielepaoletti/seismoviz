@@ -62,13 +62,8 @@ class MagnitudeAnalysis:
         --------
         .. code-block:: python
 
-            import seismoviz as sv
-
-            # Read the catalog from a file
-            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
-
             # Plot frequency-magnitude distributions
-            catalog.plot_fmd(bin_size=0.1)
+            instance.plot_fmd(bin_size=0.1)
         
         .. image:: https://imgur.com/OWT7Pa5.jpg
             :align: center
@@ -165,13 +160,8 @@ class MagnitudeAnalysis:
         --------
         .. code-block:: python
 
-            import seismoviz as sv
-
-            # Read the catalog from a file
-            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
-
             # Estimate b-value and plot it
-            catalog.estimate_b_value(
+            instance.estimate_b_value(
                 bin_size=0.1,
                 mc='maxc',
                 plot=True,

@@ -146,38 +146,6 @@ class SubCatalogPlotter(CommonPlotter):
         -------
         None
             A cross-sectional plot of seismic events.
-
-        Examples
-        --------
-        .. code-block:: python
-
-            import seismoviz as sv
-
-            # Read the catalog from a file
-            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
-
-            # Create cross section object
-            cs = sv.create_cross_section(
-                catalog=catalog,
-                center=(13.12, 42.83),
-                num_sections=(0,0),
-                thickness=2,
-                strike=155,
-                map_length=40,
-                depth_range=(0, 10)
-            )
-
-            # Create a SubCatalog by selecting events from the cross-section
-            sub_catalog = cs.select_events(criteria='depth > 5')
-
-            # Plot the events on the cross-section
-            sub_catalog.plot_on_section(
-                color_by='mag',
-                cmap='viridis',
-                size='mag',
-                legend='Selected Events',
-                title='Events with Depth > 5 km'
-            )
         """
         if self.sc.selected_from != 'CrossSection':
             raise ValueError('To be plotted on-section, the SubCatalog must be '
