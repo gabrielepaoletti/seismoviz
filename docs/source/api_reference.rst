@@ -93,6 +93,6 @@ SeismoViz revolves around three primary objects that streamline your interaction
    .. grid-item-card:: :octicon:`log;2.5em;sd-mr-1` CrossSection
          :link: library/components/cross_section
          :link-type: doc
-         :link-alt: CrossSection
+         :link-alt: CrossSection 
 
          Provides tools to compute and visualize seismic cross-sections.
