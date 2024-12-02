@@ -57,16 +57,6 @@ class MagnitudeAnalysis:
             - ``cumulative_events`` : ArrayLike
                 Array with the cumulative number of events for magnitudes greater than 
                 or equal to each bin.
-
-        Examples
-        --------
-        .. code-block:: python
-
-            # Plot frequency-magnitude distributions
-            instance.plot_fmd(bin_size=0.1)
-        
-        .. image:: https://imgur.com/OWT7Pa5.jpg
-            :align: center
         """
         lowest_bin = np.floor(np.min(self._instance.data.mag) / bin_size) * bin_size
         highest_bin = np.ceil(np.max(self._instance.data.mag) / bin_size) * bin_size
@@ -155,21 +145,6 @@ class MagnitudeAnalysis:
         -----
         ValueError
             If the selected Mc type or value is not valid.
-
-        Examples
-        --------
-        .. code-block:: python
-
-            # Estimate b-value and plot it
-            instance.estimate_b_value(
-                bin_size=0.1,
-                mc='maxc',
-                plot=True,
-                return_values=False
-            )
-        
-        .. image:: https://imgur.com/7vLgHh3.jpg
-            :align: center
         """
         def count_decimals(number):
             decimal_str = str(number).split(".")[1] if "." in str(number) else ""

@@ -100,20 +100,6 @@ class CommonPlotter:
         -------
         None
             A magnitude-time plot.
-
-        Examples
-        --------
-        .. code-block:: python
-
-            # Plot magnitude-time distribution
-            instance.plot_magnitude_time(
-                color_by='depth',
-                size='depth',
-                cmap='YlOrRd',
-            )
-
-        .. image:: https://imgur.com/qYguHD1.jpg
-            :align: center
         """
         pu.set_style(styling.DEFAULT)
 
@@ -201,16 +187,6 @@ class CommonPlotter:
         -------
         None
             An event timeline plot.
-
-        Examples
-        --------
-        .. code-block:: python
-
-            # Plot the event timeline
-            instance.plot_event_timeline()
-
-        .. image:: https://imgur.com/FNnTzAV.jpg
-            :align: center
         """
         pu.set_style(styling.DEFAULT)
 
@@ -266,16 +242,6 @@ class CommonPlotter:
         None
             A plot showing the distribution of the main attributes of the
             data.
-
-        Examples
-        --------
-        .. code-block:: python
-
-            # Plot attribute distributions
-            instance.plot_attribute_distributions()
-
-        .. image:: https://imgur.com/UfucKab.jpg
-            :align: center
         """
         pu.set_style(styling.DEFAULT)
 

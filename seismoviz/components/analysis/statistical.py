@@ -114,16 +114,6 @@ class StatisticalAnalysis:
 
         ValueError
             If an invalid configuration is provided.
-
-        Examples
-        --------
-        .. code-block:: python
-
-            # Plot inter-event time distribution
-            instance.interevent_time()
-
-        .. image:: https://imgur.com/Nx79ICZ.jpg
-            :align: center
         """
         valid_units = {'sec': 1, 'min': 60, 'hour': 3600, 'day': 86400}
         if unit not in valid_units:
@@ -247,16 +237,6 @@ class StatisticalAnalysis:
         ------
         ValueError
             If an invalid configuration is provided.
-
-        Examples
-        --------
-        .. code-block:: python
-
-            # Plot coefficient of variation over time
-            instance.cov(window_size=1000)
-
-        .. image:: https://imgur.com/4jxaP6N.jpg
-            :align: center
         """
         if 'interevent_time' not in self._instance.data.columns:
             self.interevent_time(plot=False)

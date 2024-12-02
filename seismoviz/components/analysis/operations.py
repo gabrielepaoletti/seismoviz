@@ -28,19 +28,6 @@ class Operations:
         -------
         object
             The same instance, with its dataset filtered.
-
-        Examples
-        --------
-        To filter the dataset for entries with magnitude greater than 4.5, depth 
-        between the range 10-50 km, and time earlier than October 30, 2016:
-
-        .. code-block:: python
-
-            filtered_instance = instance.filter(
-                mag=('greater', 4.5),
-                depth=('between', [10, 50]),
-                time=('lower', '2016-10-30')
-            )
         """
         filtered_data = self._instance.data
 
@@ -98,17 +85,6 @@ class Operations:
         -------
         object
             The same instance, with its dataset sorted.
-
-        Examples
-        --------
-        To sort the dataset by time in ascending order:
-
-        .. code-block:: python
-
-            sorted_instance = instance.sort(
-                by='time',
-                ascending=True
-            )
         """
         self._instance.data = self._instance.data.sort_values(by=by, ascending=ascending)
         return self._instance
@@ -126,19 +102,6 @@ class Operations:
         -------
         object
             The same instance, with duplicate entries removed.
-
-        Examples
-        --------
-        To remove duplicates from the dataset:
-
-        .. code-block:: python
-
-            deduplicated_instance = instance.deduplicate_events()
-
-        Notes
-        -----
-        This method considers duplicates based on the combination of the 
-        following attributes: ``'lon'``, ``'lat'``, ``'depth'``, and ``'time'``.
         """
         self._instance.data = self._instance.data.drop_duplicates(
             subset=['lon', 'lat', 'depth', 'time']

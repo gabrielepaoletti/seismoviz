@@ -196,27 +196,6 @@ class CatalogPlotter(CommonPlotter):
         -------
         None
             A map with seismic events.
-
-        Examples
-        --------
-        .. code-block:: python
-
-            import seismoviz as sv
-
-            # Read the catalog from a file
-            catalog = sv.read_catalog(path='global_seismic_catalog.csv')
-
-            # Create a map showing earthquake locations
-            catalog.plot_map(
-                title='Global seismicity (M > 4.0)',
-                color_by='depth',
-                cmap='YlOrRd',
-                size='mag',
-                projection=ccrs.Robinson()
-            )
-
-        .. image:: https://imgur.com/0d6OA1L.jpg
-            :align: center
         """
         self.mp.transform, self.mp.projection = transform, projection
 
@@ -428,28 +407,6 @@ class CatalogPlotter(CommonPlotter):
         -------
         None
             A space-time plot.
-
-        Examples
-        --------
-        .. code-block:: python
-
-            import seismoviz as sv
-
-            # Read the catalog from a file
-            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
-
-            # Plot space-time distribution
-            catalog.plot_space_time(
-                center=(13.12, 42.83),
-                strike=155,
-                hl_ms=5,
-                size=0.5,
-                color='black',
-                alpha=0.25,
-            )
-
-        .. image:: https://imgur.com/AgrhmOt.jpg
-            :align: center  
         """
         pu.set_style(styling.DEFAULT)
 

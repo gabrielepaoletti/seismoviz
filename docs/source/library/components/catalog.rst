@@ -9,7 +9,7 @@ Catalog
 =======
 
 .. autoclass:: seismoviz.components.catalog.Catalog
-   :exclude-members: *
+   :members:
 
 
 Operation methods

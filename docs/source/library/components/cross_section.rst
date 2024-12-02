@@ -9,7 +9,7 @@ Cross Sections
 ==============
 
 .. autoclass:: seismoviz.components.cross_section.CrossSection
-   :no-members:
+   :members:
 
 
 Operation methods

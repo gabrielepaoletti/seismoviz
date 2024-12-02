@@ -170,42 +170,6 @@ class CrossSectionPlotter(CommonPlotter):
         -------
         None
             A cross-section plot.
-
-        Examples
-        --------
-        .. code-block:: python
-
-            import seismoviz as sv
-
-            # Read the catalog from a file
-            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
-
-            # Create cross section object
-            cs = sv.create_cross_section(
-                catalog=catalog,
-                center=(13.12, 42.83),
-                num_sections=(0,0),
-                thickness=2,
-                strike=155,
-                map_length=40,
-                depth_range=(0, 10)
-            )
-
-            # Visualize the cross-section
-            cs.plot_sections(
-                color_by='time',
-                cmap='Blues',
-                size='mag',
-                edgecolor='black',
-                hl_ms=5,
-                hl_size=300,
-                legend='Seismicity',
-                legend_loc='upper left',
-                scale_legend_loc='upper right'
-            )
-
-        .. image:: https://imgur.com/juiawDc.jpg
-            :align: center
         """
         elev_profiles = self._get_elevation_profiles()
 
@@ -543,45 +507,6 @@ class CrossSectionPlotter(CommonPlotter):
         -------
         None
             A map showing section lines.
-
-        Examples
-        --------
-        .. code-block:: python
-        
-            import seismoviz as sv
-
-            # Read the catalog from a file
-            catalog = sv.read_catalog(path='local_seismic_catalog.csv')
-
-            # Create cross section object
-            cs = sv.create_cross_section(
-                catalog=catalog,        
-                center=(13.12, 42.83),  
-                num_sections=(2, 2),     
-                thickness=2,            
-                strike=155,             
-                map_length=40,          
-                depth_range=(0, 10),
-                section_distance=8    
-            )
-
-            # Plot section traces on a map
-            cs.plot_section_lines(
-                title='Section lines',
-                size='mag',
-                color='lightgrey',
-                hl_ms=5,
-                hl_size=300,
-                sl_box_style='square',
-                sl_box_color='white',
-                sl_text_color='black',
-                legend='Tan et al. 2021',
-                inset=True,
-                bmap_res=12
-            )
-
-        .. image:: https://imgur.com/7n4ZAFL.jpg
-            :align: center
         """
         self.mp.transform, self.mp.projection = transform, projection
 
