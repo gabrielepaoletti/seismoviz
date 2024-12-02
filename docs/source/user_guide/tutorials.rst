@@ -10,7 +10,7 @@ Tutorials
 
 Welcome to the SeismoViz tutorials! This section is designed to help you master the key features of SeismoViz through step-by-step guides and practical examples.
 
-`Basic usage guidelines <tutorials/basic_guidelines.html>`_
+`**Basic usage guidelines** <tutorials/basic_guidelines.html>`_
 Learn the core principles for effectively using SeismoViz.
 
 - `Guidelines for importing <tutorials/basic_guidelines.html#basic_guidelines-for-importing>`_
