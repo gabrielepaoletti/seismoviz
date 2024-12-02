@@ -39,14 +39,6 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         self._plotter = CatalogPlotter(self)
         self._analyzer = Analyzer(self)
 
-    @sync_metadata(Analyzer, 'interevent_time')
-    def interevent_time(self, **kwargs):
-        self._analyzer.interevent_time(**kwargs)
-
-    @sync_metadata(Analyzer, 'interevent_time')
-    def cov(self, **kwargs):
-        self._analyzer.cov(**kwargs)
-
     @sync_metadata(Analyzer, 'filter')
     def filter(self, **kwargs):
         return self._analyzer.filter(**kwargs)
@@ -78,10 +70,6 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
     @sync_metadata(CatalogPlotter, 'plot_attribute_distributions')
     def plot_attribute_distributions(self, **kwargs) -> None:
         self._plotter.plot_attribute_distributions(**kwargs)
-
-    @sync_metadata(CatalogPlotter, 'plot_interevent_time')
-    def plot_interevent_time(self, **kwargs) -> None:
-        self._plotter.plot_interevent_time(**kwargs)
     
     @sync_metadata(Analyzer, 'fmd')
     def fmd(self, **kwargs):
@@ -100,3 +88,11 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
             )
         else:
             raise ValueError('Mc value is not valid.')
+
+    @sync_metadata(Analyzer, 'interevent_time')
+    def interevent_time(self, **kwargs):
+        self._analyzer.interevent_time(**kwargs)
+
+    @sync_metadata(Analyzer, 'interevent_time')
+    def cov(self, **kwargs):
+        self._analyzer.cov(**kwargs)
