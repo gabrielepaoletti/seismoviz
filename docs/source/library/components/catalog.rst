@@ -5,7 +5,7 @@
 
 --------------------
 
-- ``:ref:`filter_events <filter_events>```
+- ``:ref:`filter_events```  
    Filters the catalog based on criteria such as time range, magnitude, or location.
 
 Catalog
