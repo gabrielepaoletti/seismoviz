@@ -110,10 +110,6 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
     @sync_metadata(CrossSectionPlotter, 'plot_section_lines')
     def plot_magnitude_time(self, **kwargs):
         self._plotter.plot_magnitude_time(**kwargs) 
-    
-    @sync_metadata(CrossSectionPlotter, 'plot_magnitude_time')
-    def plot_magnitude_time(self, **kwargs) -> None:
-        self._plotter.plot_magnitude_time(**kwargs)
 
     @sync_metadata(CrossSectionPlotter, 'plot_event_timeline')
     def plot_event_timeline(self, **kwargs) -> None:
@@ -145,7 +141,7 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
     def interevent_time(self, **kwargs):
         self._analyzer.interevent_time(**kwargs)
 
-    @sync_metadata(Analyzer, 'interevent_time')
+    @sync_metadata(Analyzer, 'cov')
     def cov(self, **kwargs):
         self._analyzer.cov(**kwargs)
 
