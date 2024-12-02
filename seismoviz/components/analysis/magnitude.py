@@ -130,6 +130,8 @@ class MagnitudeAnalysis:
             ``True``
             
         tuple[float, float, float, float]
+            - ``mc``: float
+                The magnitude of completeness value.
             - ``a_value`` : float
                 The a-value, representing the logarithmic scale of the seismicity 
                 rate.
@@ -146,11 +148,8 @@ class MagnitudeAnalysis:
         ValueError
             If the selected Mc type or value is not valid.
         """
-        def count_decimals(number):
-            decimal_str = str(number).split(".")[1] if "." in str(number) else ""
-            return len(decimal_str)
         
-        decimals = count_decimals(bin_size)
+        decimals = self._count_decimals(bin_size)
 
         mag_compl = round(mc, decimals)
         threshold = mag_compl - bin_size / 2
@@ -193,7 +192,7 @@ class MagnitudeAnalysis:
             )
 
         if return_values:
-            return a_value, b_value, aki_uncertainty, shi_bolt_uncertainty
+            return mag_compl, a_value, b_value, aki_uncertainty, shi_bolt_uncertainty
 
     def _maxc(self, bin_size: float) -> float:
         """
@@ -206,9 +205,8 @@ class MagnitudeAnalysis:
             return_values=True
         )
         max_event_count_bin = bins[np.argmax(events_per_bin)]
-        mc = round(max_event_count_bin, 1)
-        
-        return mc
+        decimals = self._count_decimals(bin_size)
+        return round(max_event_count_bin, decimals)
 
     def _plot_fmd(
             self,
@@ -239,9 +237,9 @@ class MagnitudeAnalysis:
         )
 
         ax.set_yscale('log')
-        ax.set_xlabel('Magnitude', fontsize=12)
-        ax.set_ylabel('Frequency', fontsize=12)
-        ax.legend(loc='best', frameon=False, fontsize=12)
+        ax.set_xlabel('Magnitude')
+        ax.set_ylabel('Frequency')
+        ax.legend(loc='best', frameon=False)
 
         min_tick_positions = np.arange(min(bins), max(bins) + bin_size, bin_size)
         ax.set_xticks(min_tick_positions, minor=True)
@@ -351,3 +349,7 @@ class MagnitudeAnalysis:
 
         plt.show()
         pu.reset_style()
+
+    def _count_decimals(self, number):
+        decimal_str = str(number).split(".")[1] if "." in str(number) else ""
+        return len(decimal_str)
