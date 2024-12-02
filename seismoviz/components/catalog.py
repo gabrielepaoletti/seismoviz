@@ -93,6 +93,6 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
     def interevent_time(self, **kwargs):
         self._analyzer.interevent_time(**kwargs)
 
-    @sync_metadata(Analyzer, 'interevent_time')
+    @sync_metadata(Analyzer, 'cov')
     def cov(self, **kwargs):
         self._analyzer.cov(**kwargs)
