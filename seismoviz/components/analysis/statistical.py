@@ -255,7 +255,7 @@ class StatisticalAnalysis:
             # Plot coefficient of variation over time
             instance.cov(window_size=1000)
 
-        .. image:: https://imgur.com/a/LJEvL1J.jpg
+        .. image:: https://imgur.com/4jxaP6N.jpg
             :align: center
         """
         if 'interevent_time' not in self._instance.data.columns:
