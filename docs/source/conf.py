@@ -91,3 +91,8 @@ html_theme_options = {
 }
 
 autosummary_generate = True
+
+numpydoc_show_inherited_class_members = {
+    'seismoviz.components.catalog.Catalog': False,
+    'seismoviz.components.catalog.CrossSection': False,
+}
