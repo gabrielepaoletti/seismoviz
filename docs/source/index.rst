@@ -24,7 +24,7 @@ SeismoViz is open-source Python library designed to simplify the analysis, manip
 
       Access comprehensive installation instructions and detailed tutorials to get started with SeismoViz.
 
-   .. grid-item-card:: :octicon:`book;1.7em` API Reference
+   .. grid-item-card:: :octicon:`book;2.5em;sd-mr-1` API Reference
       :link: api_reference
       :link-type: doc
       :link-alt: API Reference
