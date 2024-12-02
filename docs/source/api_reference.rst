@@ -19,49 +19,9 @@ API Reference
 
 This reference manual provides an in-depth overview of the SeismoViz library, detailing its modules, functions, and core components. It is designed to assist users in managing seismic data effectively and implementing advanced analytical workflows.
 
-
-Guidelines for importing
-------------------------
-
-The recommended way to import SeismoViz is by using the shorthand alias ``sv``:
-
-.. code-block:: python
-
-   import seismoviz as sv
-
-This approach ensures consistency across projects and keeps the code concise and readable.
-
-
-Accessing library functions and classes
----------------------------------------
-
-SeismoViz is designed around high-level methods and classes that streamline workflows for seismic data processing and analysis. The main functionalities are accessed as methods or attributes of specific objects.
-
-Example workflow
-^^^^^^^^^^^^^^^^
-
-Start by loading a seismic catalog using the ``sv.read_catalog`` function, which returns a ``Catalog`` object:
-
-.. code-block:: python
-
-   catalog = sv.read_catalog(path='path/to/catalog.csv')
-
-Once you have the ``Catalog`` object, all subsequent operations can be performed using its methods and attributes:
-
-.. code-block:: python
-
-   catalog.method_name()
-
-This design emphasizes object-oriented workflows, enabling intuitive chaining of operations while maintaining a clean namespace.
-
-.. note::
-   While Python allows access to private modules and methods, such usage is discouraged. Breaking changes may occur in future releases if private components are used.
-
-
-API Definition
---------------
-To begin using SeismoViz, users should start with the core module, which provides essential functions and utilities to initialize workflows.
-
+Modules overview
+----------------
+The core module provides foundational functionalities and utilities to initialize and work with seismic data.
 
 .. grid:: 1 1 2 2
    :padding: 0 0 3 3
@@ -72,12 +32,11 @@ To begin using SeismoViz, users should start with the core module, which provide
          :link-type: doc
          :link-alt: SeismoViz Core
 
-         Contains essential functions for high-level operations.
+         Essential functions for high-level operations such as catalog loading and preprocessing.
 
-
-Key objects
-^^^^^^^^^^^
-SeismoViz revolves around three primary objects that streamline your interaction with seismic data:
+Objects overview
+----------------
+SeismoViz revolves around two primary objects that enable seamless interaction with seismic data. Each object provides specialized methods and attributes designed to simplify workflows for analysis, visualization, and data manipulation.
 
 .. grid:: 1 1 2 2
    :padding: 0 0 3 3
@@ -88,11 +47,11 @@ SeismoViz revolves around three primary objects that streamline your interaction
          :link-type: doc
          :link-alt: Catalog
 
-         Contains methods for visualization and analysis of seismic catalogs.
+         Contains methods for querying, filtering, and visualizing seismic data.
 
-   .. grid-item-card:: :octicon:`list-unordered;2.5em;sd-mr-1` CrossSection
+   .. grid-item-card:: :octicon:`graph;2.5em;sd-mr-1` CrossSection
          :link: library/components/cross_section
          :link-type: doc
          :link-alt: CrossSection 
 
-         Provides tools to compute and visualize seismic cross-sections.
+         Tools to compute and visualize seismic cross-sections, providing insights into subsurface activity.

@@ -74,7 +74,7 @@ SeismoViz is an open-source project that thrives on community contributions. Whe
 
       Learn how to contribute to SeismoViz by submitting code, improving documentation, or suggesting new features.
 
-   .. grid-item-card:: :octicon:`book;2.5em;sd-mr-1` Report a bug/issue
+   .. grid-item-card:: :octicon:`bug;2.5em;sd-mr-1` Report a bug/issue
       :link: user_guide/contributions/report_a_bug
       :link-type: doc
       :link-alt: Report a bug/issue
