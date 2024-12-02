@@ -7,11 +7,6 @@ class CatalogSelector:
     """
     A class to handle map plotting and selection of seismic event 
     data in a Holoviews plot.
-
-    Parameters
-    ----------
-    catalog : type
-        The class containing the catalog data and plotting configurations.
     """
     def __init__(self, catalog: type) -> None:
         self.ct = catalog
@@ -21,14 +16,6 @@ class CatalogSelector:
     def _set_bounds(self, plot, element) -> None:
         """
         Set the x and y range bounds for the cross-section plot.
-
-        Parameters
-        ----------
-        plot : holoviews.plotting.bokeh.ElementPlot
-            The plot object that contains the current state of the figure.
-
-        element : holoviews.core.element.Element
-            The element being plotted (usually the Scatter plot).
         """
         plot.state.x_range.bounds = (
             self.ct.data.lon.min(), self.ct.data.lon.max()
@@ -40,19 +27,6 @@ class CatalogSelector:
     def _plot_map(self, size: float, color: str) -> hv.Scatter:
         """
         Create a Holoviews Scatter plot of the seismic data.
-
-        Parameters
-        ----------
-        size : float
-            The size of the points in the scatter plot.
-
-        color : str
-            The color of the points.
-
-        Returns
-        -------
-        holoviews.core.element.Scatter
-            A Scatter plot object configured with the cross-section data.
         """
         scatter = hv.Scatter(
             self.ct.data,
@@ -77,11 +51,6 @@ class CatalogSelector:
     def _selection_callback(self, index: list[int]) -> None:
         """
         Callback function to handle point selection events.
-
-        Parameters
-        ----------
-        index : list of int
-            List of indices corresponding to selected points in the data.
         """
         if index:
             self.sd = self.ct.data.iloc[index]
@@ -109,13 +78,7 @@ class CrossSectionSelector:
     """
     A class to handle cross-section plotting and selection of seismic event 
     data in a Holoviews plot.
-
-    Parameters
-    ----------
-    cross_section : type
-        The class containing the cross-section data and plotting configurations.
     """
-
     def __init__(self, cross_section: type) -> None:
         self.cs = cross_section
         self.sd = None
@@ -124,14 +87,6 @@ class CrossSectionSelector:
     def _set_bounds(self, plot, element) -> None:
         """
         Set the x and y range bounds for the cross-section plot.
-
-        Parameters
-        ----------
-        plot : holoviews.plotting.bokeh.ElementPlot
-            The plot object that contains the current state of the figure.
-
-        element : holoviews.core.element.Element
-            The element being plotted (usually the Scatter plot).
         """
         plot.state.x_range.bounds = (
             -self.cs.map_length / 2, self.cs.map_length / 2
@@ -143,19 +98,6 @@ class CrossSectionSelector:
     def _plot_section(self, size: float, color: str) -> hv.Scatter:
         """
         Create a Holoviews Scatter plot of the seismic data.
-
-        Parameters
-        ----------
-        size : float
-            The size of the points in the scatter plot.
-
-        color : str
-            The color of the points.
-
-        Returns
-        -------
-        holoviews.core.element.Scatter
-            A Scatter plot object configured with the cross-section data.
         """
         scatter = hv.Scatter(
             self.cs.data,
@@ -181,11 +123,6 @@ class CrossSectionSelector:
     def _selection_callback(self, index: list[int]) -> None:
         """
         Callback function to handle point selection events.
-
-        Parameters
-        ----------
-        index : list of int
-            List of indices corresponding to selected points in the data.
         """
         if index:
             self.sd = self.cs.data.iloc[index]

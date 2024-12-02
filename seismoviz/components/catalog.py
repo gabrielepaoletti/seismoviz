@@ -1,10 +1,9 @@
 import pandas as pd
 
+from seismoviz.components.analysis import Analyzer
 from seismoviz.internal.decorators import sync_metadata
-from seismoviz.components.analysis.operations import Operations
-from seismoviz.components.analysis.magnitude import MagnitudeAnalyzer
+from seismoviz.components.visualization import CatalogPlotter
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
-from seismoviz.components.plotters.cat_plotter import CatalogPlotter, SubCatalogPlotter
 
 
 class Catalog(GeospatialMixin, DunderMethodMixin):
@@ -15,13 +14,6 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
     ----------
     data : pandas.DataFrame
         A DataFrame containing the seismic event data.
-
-    _plotter : CatalogPlotter
-        An internal object responsible for generating plots and visualizations 
-        of the catalog.
-
-    _mag : MagnitudeAnalyzer
-        An internal object used for magnitude analysis.
 
     Raises
     ------
@@ -45,19 +37,27 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         super().__init__()
 
         self._plotter = CatalogPlotter(self)
-        self._mag = MagnitudeAnalyzer(self.data.mag)
+        self._analyzer = Analyzer(self)
 
-    @sync_metadata(Operations, 'filter')
+    @sync_metadata(Analyzer, 'interevent_time')
+    def interevent_time(self, **kwargs):
+        self._analyzer.interevent_time(**kwargs)
+
+    @sync_metadata(Analyzer, 'interevent_time')
+    def cov(self, **kwargs):
+        self._analyzer.cov(**kwargs)
+
+    @sync_metadata(Analyzer, 'filter')
     def filter(self, **kwargs):
-        return Operations.filter(self, **kwargs)
+        return self._analyzer.filter(**kwargs)
 
-    @sync_metadata(Operations, 'sort')
-    def sort(self, by: str, ascending: bool = True):
-        return Operations.sort(self, by=by, ascending=ascending)
+    @sync_metadata(Analyzer, 'sort')
+    def sort(self, **kwargs):
+        return self._analyzer.sort(**kwargs)
 
-    @sync_metadata(Operations, 'deduplicate_events')
+    @sync_metadata(Analyzer, 'deduplicate_events')
     def deduplicate_events(self):
-        return Operations.deduplicate_events(self)
+        return self._analyzer.deduplicate_events()
 
     @sync_metadata(CatalogPlotter, 'plot_map')
     def plot_map(self, **kwargs) -> None:
@@ -83,32 +83,20 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
     def plot_interevent_time(self, **kwargs) -> None:
         self._plotter.plot_interevent_time(**kwargs)
     
-    @sync_metadata(MagnitudeAnalyzer, 'fmd')
+    @sync_metadata(Analyzer, 'fmd')
     def fmd(self, **kwargs):
-        self._mag.fmd(**kwargs)
+        self._analyzer.fmd(**kwargs)
     
-    @sync_metadata(MagnitudeAnalyzer, 'estimate_b_value')
+    @sync_metadata(Analyzer, 'estimate_b_value')
     def estimate_b_value(self, bin_size: float, mc: str | float, **kwargs):
         if mc == 'maxc':
-            mc_maxc = self._mag._maxc(bin_size=bin_size)
-            return self._mag.estimate_b_value(
+            mc_maxc = self._analyzer._maxc(bin_size=bin_size)
+            return self._analyzer.estimate_b_value(
                 bin_size=bin_size, mc=mc_maxc, **kwargs
             )
         elif isinstance(mc, int) or isinstance(mc, float):
-            return self._mag.estimate_b_value(
+            return self._analyzer.estimate_b_value(
                 bin_size=bin_size, mc=mc, **kwargs
             )
         else:
             raise ValueError('Mc value is not valid.')
-
-
-class SubCatalog(Catalog):
-    def __init__(self, data: pd.DataFrame, selected_from: str) -> None:
-        super().__init__(data)
-        
-        self.selected_from = selected_from
-        self._sc_plotter = SubCatalogPlotter(self)
-    
-    @sync_metadata(SubCatalogPlotter, 'plot_on_section')
-    def plot_on_section(self, **kwargs):
-        self._sc_plotter.plot_on_section(**kwargs)

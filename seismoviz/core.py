@@ -1,6 +1,7 @@
 import pandas as pd
 
-from seismoviz.components.catalog import Catalog, SubCatalog
+from seismoviz.components.catalog import Catalog
+from seismoviz.components.sub_catalog import SubCatalog
 from seismoviz.components.cross_section import CrossSection
 from seismoviz.internal.selector import CatalogSelector, CrossSectionSelector
 
@@ -111,14 +112,14 @@ def create_cross_section(
     .. code-block:: python
 
         cs = sv.create_cross_section(
-            catalog=catalog,        # Select the source catalog
-            center=(13.12, 42.83),  # Center coordinates (lon, lat)
-            num_sections=(2,2),     # Number of parallel sections (total=5 in this case)
-            thickness=1,            # Width of the section in km (from each side)
-            strike=155,             # Strike angle in degrees (section perpendicular to strike)
-            map_length=40,          # Lenght of the section in km
-            depth_range=(0, 10),    # Depth range in km
-            section_distance=2      # Distance between adjacent sections
+            catalog=catalog,
+            center=(13.12, 42.83),
+            num_sections=(2,2),
+            thickness=1,
+            strike=155,
+            map_length=40,
+            depth_range=(0, 10),
+            section_distance=2
         )
 
     The output will be a ``CrossSection`` object. To access the data, you can 

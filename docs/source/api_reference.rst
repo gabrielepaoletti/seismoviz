@@ -60,21 +60,42 @@ This design emphasizes object-oriented workflows, enabling intuitive chaining of
 
 API Definition
 --------------
+To begin using SeismoViz, users should start with the core module, which provides essential functions and utilities to initialize workflows.
 
-.. card:: :material-regular:`control_camera;1.7em` Core
-   :link: library/core
-   :link-type: doc
 
-   Contains essential functions for high-level operations.
+.. grid:: 1 1 3 3
+   :padding: 0 0 3 3
+   :gutter: 2 2 3 3
 
-.. card:: :material-regular:`filter_list;1.7em` Catalog
-   :link: library/components/catalog
-   :link-type: doc
+   .. grid-item-card:: :octicon:`apps;2.5em;sd-mr-1` SeismoViz core
+         :link: library/core
+         :link-type: doc
 
-   Contains methods for visualization and analysis of seismic catalogs.
+         Contains essential functions for high-level operations.
 
-.. card:: :material-regular:`filter_list_off;1.7em` Cross Sections
-   :link: library/components/cross_section
-   :link-type: doc
 
-   Provides tools to compute and visualize seismic cross-sections.
+Key objects
+^^^^^^^^^^^
+SeismoViz revolves around three primary objects that streamline your interaction with seismic data:
+
+.. grid:: 1 1 3 3
+   :padding: 0 0 3 3
+   :gutter: 2 2 3 3
+
+   .. grid-item-card:: :octicon:`project-roadmap;2.5em;sd-mr-1` Catalog
+         :link: library/components/catalog
+         :link-type: doc
+
+         Contains methods for visualization and analysis of seismic catalogs.
+
+   .. grid-item-card:: :octicon:`project;2.5em;sd-mr-1` Catalog
+         :link: library/components/cross_section
+         :link-type: doc
+
+         Provides tools to compute and visualize seismic cross-sections.
+
+   .. grid-item-card:: :octicon:`project-roadmap;2.5em;sd-mr-1` SubCatalog
+         :link: library/components/sub_catalog
+         :link-type: doc
+
+         Contains methods for visualization and analysis of catalog subsets.

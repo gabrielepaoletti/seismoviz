@@ -1,12 +1,12 @@
 import numpy as np
 import pandas as pd
 
+from seismoviz.components import Catalog
 from seismoviz.utils import convert_to_utm
-from seismoviz.components.catalog import Catalog
+from seismoviz.components.analysis import Analyzer
 from seismoviz.internal.decorators import sync_metadata
-from seismoviz.components.analysis.operations import Operations
+from seismoviz.components.visualization import CrossSectionPlotter
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
-from seismoviz.components.plotters.crs_plotter import CrossSectionPlotter
 
 from numpy.typing import ArrayLike
 
@@ -17,6 +17,9 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
 
     Attributes
     ----------
+    data : pd.DataFrame
+        A DataFrame containing the seismic event data for each cross-sectional slice.
+
     catalog : Catalog
         An instance of the ``Catalog`` class containing seismic event data.
     
@@ -47,12 +50,6 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
 
     section_distance : float, optional
         The distance (in km) between adjacent sections. Default is 1.
-
-    _plotter : CrossSectionPlotter
-        An internal object for generating plots of the cross-section and related visuals.
-
-    data : pd.DataFrame
-        A DataFrame containing the seismic event data for each cross-sectional slice.
 
     Raises
     ------
@@ -85,21 +82,22 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
         self.map_length = map_length
         self.depth_range = depth_range
         self.section_distance = section_distance
-
         self.data = self._cross_section()
+
         self._plotter = CrossSectionPlotter(self)
+        self._analyzer = Analyzer(self)
 
-    @sync_metadata(Operations, 'filter')
+    @sync_metadata(Analyzer, 'filter')
     def filter(self, **kwargs):
-        return Operations.filter(self, **kwargs)
+        return self._analyzer.filter(**kwargs)
 
-    @sync_metadata(Operations, 'sort')
-    def sort(self, by: str, ascending: bool = True):
-        return Operations.sort(self, by=by, ascending=ascending)
+    @sync_metadata(Analyzer, 'sort')
+    def sort(self, **kwargs):
+        return self._analyzer.sort(**kwargs)
 
-    @sync_metadata(Operations, 'deduplicate_events')
+    @sync_metadata(Analyzer, 'deduplicate_events')
     def deduplicate_events(self):
-        return Operations.deduplicate_events(self)
+        return self._analyzer.deduplicate_events()
 
     @sync_metadata(CrossSectionPlotter, 'plot_sections')
     def plot_sections(self, **kwargs):
@@ -108,6 +106,44 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
     @sync_metadata(CrossSectionPlotter, 'plot_section_lines')
     def plot_section_lines(self, **kwargs):
         self._plotter.plot_section_lines(**kwargs)
+    
+    @sync_metadata(CrossSectionPlotter, 'plot_section_lines')
+    def plot_magnitude_time(self, **kwargs):
+        self._plotter.plot_magnitude_time(**kwargs) 
+    
+    @sync_metadata(CrossSectionPlotter, 'plot_magnitude_time')
+    def plot_magnitude_time(self, **kwargs) -> None:
+        self._plotter.plot_magnitude_time(**kwargs)
+
+    @sync_metadata(CrossSectionPlotter, 'plot_event_timeline')
+    def plot_event_timeline(self, **kwargs) -> None:
+        self._plotter.plot_event_timeline(**kwargs)
+
+    @sync_metadata(CrossSectionPlotter, 'plot_attribute_distributions')
+    def plot_attribute_distributions(self, **kwargs) -> None:
+        self._plotter.plot_attribute_distributions(**kwargs)
+
+    @sync_metadata(CrossSectionPlotter, 'plot_interevent_time')
+    def plot_interevent_time(self, **kwargs) -> None:
+        self._plotter.plot_interevent_time(**kwargs)
+    
+    @sync_metadata(Analyzer, 'fmd')
+    def fmd(self, **kwargs):
+        self._analyzer.fmd(**kwargs)
+    
+    @sync_metadata(Analyzer, 'estimate_b_value')
+    def estimate_b_value(self, bin_size: float, mc: str | float, **kwargs):
+        if mc == 'maxc':
+            mc_maxc = self._analyzer._maxc(bin_size=bin_size)
+            return self._analyzer.estimate_b_value(
+                bin_size=bin_size, mc=mc_maxc, **kwargs
+            )
+        elif isinstance(mc, int) or isinstance(mc, float):
+            return self._analyzer.estimate_b_value(
+                bin_size=bin_size, mc=mc, **kwargs
+            )
+        else:
+            raise ValueError('Mc value is not valid.')
 
     @staticmethod
     def _distance_point_from_plane(
@@ -120,28 +156,6 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
         """
         Calculate the perpendicular distance of a point (x, y, z) from 
         a plane defined by its normal vector and origin.
-
-        Parameters
-        ----------
-        x : float
-            The x-coordinate of the point.
-
-        y : float
-            The y-coordinate of the point.
-
-        z : float
-            The z-coordinate of the point.
-
-        normal : ArrayLike
-            The normal vector to the plane, defined by [nx, ny, nz].
-
-        origin : ArrayLike
-            The origin point on the plane, defined by [ox, oy, oz].
-
-        Returns
-        -------
-        float
-            The perpendicular distance from the point to the plane.
         """
         d = -normal[0] * origin[0] - normal[1] * origin[1] - normal[2] * origin[2]
         dist = np.abs(normal[0] * x + normal[1] * y + normal[2] * z + d)
@@ -158,29 +172,6 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
         """
         Calculate the positions of section centers based on a reference 
         point and strike angle.
-
-        Parameters
-        ----------
-        center_x : float
-            The x-coordinate of the reference center.
-
-        center_y : float
-            The y-coordinate of the reference center.
-
-        section_centers : ArrayLike
-            The distances of section centers relative to the reference 
-            point.
-
-        strike : float
-            The strike angle of the sections in degrees, measured 
-            clockwise from north.
-
-        Returns
-        -------
-        tuple[ArrayLike, ArrayLike]
-            A tuple containing:
-                - The x-coordinates of the section centers.
-                - The y-coordinates of the section centers.
         """
         angle_rad = np.pi / 2 - np.radians(strike)
         return (
@@ -191,18 +182,6 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
     def _cross_section(self) -> pd.DataFrame:
         """
         Generate cross-sectional slices of seismic event data.
-
-        Returns
-        -------
-        pd.DataFrame
-            A concatenated dataframe containing seismic events for each 
-            cross section. The dataframe includes:
-            - All events within the defined thickness and depth range 
-              for each section.
-            - The ``'on_section_coords'`` column, representing the position 
-              of events along the section.
-            - The ``'section_id'`` column, indicating the cross-sectional 
-              slice each event belongs to.
         """
         self.data.depth = np.abs(self.data.depth)
 

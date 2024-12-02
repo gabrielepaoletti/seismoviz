@@ -1,6 +1,8 @@
 class Operations:
-    @staticmethod
-    def filter(instance, **kwargs):
+    def __init__(self, instance: type):
+        self._instance = instance
+    
+    def filter(self, **kwargs):
         """
         Filters the instance's dataset based on multiple specified conditions.
 
@@ -40,7 +42,7 @@ class Operations:
                 time=('lower', '2016-10-30')
             )
         """
-        filtered_data = instance.data
+        filtered_data = self._instance.data
 
         for attribute, (criteria, value) in kwargs.items():
             if criteria == 'greater':
@@ -73,11 +75,10 @@ class Operations:
                     "'between', or 'outside'."
                 )
 
-        instance.data = filtered_data
-        return instance
+        self._instance.data = filtered_data
+        return self._instance
 
-    @staticmethod
-    def sort(instance, by: str, ascending: bool = True):
+    def sort(self, by: str, ascending: bool = True):
         """
         Sorts the instance's dataset by a specific attribute.
 
@@ -109,11 +110,10 @@ class Operations:
                 ascending=True
             )
         """
-        instance.data = instance.data.sort_values(by=by, ascending=ascending)
-        return instance
+        self._instance.data = self._instance.data.sort_values(by=by, ascending=ascending)
+        return self._instance
 
-    @staticmethod
-    def deduplicate_events(instance):
+    def deduplicate_events(self):
         """
         Removes duplicate entries based on specific attributes.
 
@@ -140,7 +140,7 @@ class Operations:
         This method considers duplicates based on the combination of the 
         following attributes: ``'lon'``, ``'lat'``, ``'depth'``, and ``'time'``.
         """
-        instance.data = instance.data.drop_duplicates(
+        self._instance.data = self._instance.data.drop_duplicates(
             subset=['lon', 'lat', 'depth', 'time']
         )
-        return instance
+        return self._instance
