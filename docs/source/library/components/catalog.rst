@@ -5,8 +5,15 @@
 
 --------------------
 
-- :doc:`filter_events <methods/common_filter_events>`
+* `filter_events`
   Filters the catalog based on criteria such as time range, magnitude, or location.
+
+.. toctree::
+   :maxdepth: 1
+   :hidden:
+   :titlesonly:
+
+   filter_events <methods/common_filter>
 
 Catalog
 =======
