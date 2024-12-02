@@ -1,6 +1,5 @@
 .. title:: Basic usage guidelines
-
---------------------
+   
 
 Basic usage guidelines
 ======================

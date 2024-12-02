@@ -31,8 +31,8 @@ The core module provides foundational functionalities and utilities to initializ
          :link: library/core
          :link-type: doc
          :link-alt: SeismoViz Core
-
-         Essential functions for high-level operations such as catalog loading and preprocessing.
+      
+         Essential functions for initializing and managing seismic catalogs, providing the foundation for further analysis and interaction.
 
 Objects overview
 ----------------

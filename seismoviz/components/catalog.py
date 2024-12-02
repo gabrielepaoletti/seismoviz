@@ -38,7 +38,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
 
         self._plotter = CatalogPlotter(self)
         self._analyzer = Analyzer(self)
-
+    
     @sync_metadata(Analyzer, 'filter')
     def filter(self, **kwargs):
         return self._analyzer.filter(**kwargs)

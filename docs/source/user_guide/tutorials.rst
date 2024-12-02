@@ -14,7 +14,7 @@ Welcome to the SeismoViz tutorials! This section is designed to help you master 
 Basic usage guidelines
 ----------------------
 
-Learn the core principles for effectively using SeismoViz.
+Learn how to use SeismoViz efficiently by exploring its key functionalities, recommended practices, and methods for accessing documentation inline to simplify your workflow.
 
 - `Guidelines for importing <tutorials/basic_guidelines.html#basic_guidelines-for-importing>`_
 - `Accessing library functions and classes <tutorials/basic_guidelines.html#accessing-library-functions-and-classes>`_

@@ -135,8 +135,7 @@ def create_cross_section(
 
 class select_on_map:
     """
-    Simulates a function for selecting data from a map, using 
-    a ``CatalogSelector`` to interact with seismic data.
+    Simulates a function for selecting data from a map.
 
     Parameters
     ----------
@@ -178,8 +177,7 @@ class select_on_map:
 
 class select_on_section:
     """
-    Simulates a function for selecting data from a cross-section, using 
-    a ``CrossSectionSelector`` to interact with seismic data.
+    Simulates a function for selecting data from a cross-section.
 
     Parameters
     ----------
