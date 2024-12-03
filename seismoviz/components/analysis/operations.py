@@ -1,3 +1,6 @@
+import copy
+
+
 class Operations:
     def __init__(self, instance: type):
         self._instance = instance
@@ -29,42 +32,35 @@ class Operations:
         object
             The same instance, with its dataset filtered.
         """
-        filtered_data = self._instance.data
+        instance = copy.deepcopy(self._instance)
 
         for attribute, (criteria, value) in kwargs.items():
             if criteria == 'greater':
-                filtered_data = filtered_data[filtered_data[attribute] > value]
-
+                instance.data = instance.data[instance.data[attribute] > value]
             elif criteria == 'lower':
-                filtered_data = filtered_data[filtered_data[attribute] < value]
-
+                instance.data = instance.data[instance.data[attribute] < value]
             elif criteria == 'between':
-                if not isinstance(value, list) or len(value) != 2:
-                    raise ValueError(
-                        "Value must be a list of two numbers for 'between' criteria."
-                    )
-                filtered_data = filtered_data[
-                    filtered_data[attribute].between(value[0], value[1])
-                ]
-
+                if isinstance(value, list) and len(value) == 2:
+                    instance.data = instance.data[
+                        instance.data[attribute].between(value[0], value[1])
+                    ]
+                else:
+                    raise ValueError("Value must be a list of two numbers for 'between' criteria.")
             elif criteria == 'outside':
-                if not isinstance(value, list) or len(value) != 2:
-                    raise ValueError(
-                        "Value must be a list of two numbers for 'outside' criteria."
-                    )
-                filtered_data = filtered_data[
-                    ~filtered_data[attribute].between(value[0], value[1])
-                ]
-
+                if isinstance(value, list) and len(value) == 2:
+                    instance.data = instance.data[
+                        ~instance.data[attribute].between(value[0], value[1])
+                    ]
+                else:
+                    raise ValueError("Value must be a list of two numbers for 'outside' criteria.")
             else:
                 raise ValueError(
                     f"Invalid criteria '{criteria}'. Choose from 'greater', 'lower', "
                     "'between', or 'outside'."
                 )
 
-        self._instance.data = filtered_data
-        return self._instance
-
+        return instance
+    
     def sort(self, by: str, ascending: bool = True):
         """
         Sorts the instance's dataset by a specific attribute.
@@ -86,9 +82,10 @@ class Operations:
         object
             The same instance, with its dataset sorted.
         """
-        self._instance.data = self._instance.data.sort_values(by=by, ascending=ascending)
-        return self._instance
-
+        instance = copy.deepcopy(self._instance)
+        instance.data = instance.data.sort_values(by=by, ascending=ascending)
+        return instance
+    
     def deduplicate_events(self):
         """
         Removes duplicate entries based on specific attributes.
@@ -103,7 +100,8 @@ class Operations:
         object
             The same instance, with duplicate entries removed.
         """
-        self._instance.data = self._instance.data.drop_duplicates(
-            subset=['lon', 'lat', 'depth', 'time']
+        instance = copy.deepcopy(self._instance)
+        instance.data = instance.data.drop_duplicates(
+subset=['lon', 'lat', 'depth', 'time']
         )
-        return self._instance
+        return instance

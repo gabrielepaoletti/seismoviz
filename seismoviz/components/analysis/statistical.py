@@ -14,7 +14,7 @@ class StatisticalAnalysis:
         Calculates the inter-event time for sequential events in the instance.
 
         .. note::
-            After executing this method, a new column named ```interevent_time``` 
+            After executing this method, a new column named ``interevent_time`` 
             will be created in the `instance.data` DataFrame. This column will 
             contain the calculated inter-event times, making the data accessible 
             for further analysis or visualization.
@@ -102,11 +102,6 @@ class StatisticalAnalysis:
             File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default
             is ``'jpg'``.
 
-        Returns
-        -------
-        None
-            A plot of inter-event times.            
-
         Raises
         ------
         ValueError
@@ -139,7 +134,7 @@ class StatisticalAnalysis:
         using a rolling window.
 
         .. note::
-            After executing this method, a new column named ```cov``` will be 
+            After executing this method, a new column named ``cov`` will be 
             created in the `instance.data` DataFrame. This column will contain 
             the calculated inter-event times, making the data accessible for 
             further analysis or visualization.
@@ -227,11 +222,6 @@ class StatisticalAnalysis:
         save_extension : str, optional
             File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default
             is ``'jpg'``.
-
-        Returns
-        -------
-        None
-            A plot of the coefficient of variation.            
 
         Raises
         ------
