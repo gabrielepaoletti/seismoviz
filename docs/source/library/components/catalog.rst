@@ -31,7 +31,8 @@ Magnitude analysis methods
 
 .. automethod:: seismoviz.components.catalog.Catalog.magnitude_time
 .. automethod:: seismoviz.components.catalog.Catalog.fmd
-.. automethod:: seismoviz.components.catalog.Catalog.estimate_b_value
+.. automethod:: seismoviz.components.catalog.Catalog.b_value
+.. automethod:: seismoviz.components.catalog.Catalog.b_value_over_time
 
 
 Statistical analysis methods

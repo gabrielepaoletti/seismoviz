@@ -31,7 +31,8 @@ Magnitude analysis methods
 
 .. automethod:: seismoviz.components.cross_section.CrossSection.magnitude_time
 .. automethod:: seismoviz.components.cross_section.CrossSection.fmd
-.. automethod:: seismoviz.components.cross_section.CrossSection.estimate_b_value
+.. automethod:: seismoviz.components.cross_section.CrossSection.b_value
+   .. automethod:: seismoviz.components.cross_section.CrossSection.b_value_over_time
 
 
 Statistical analysis methods

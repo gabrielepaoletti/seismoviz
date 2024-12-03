@@ -117,19 +117,13 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
     def fmd(self, **kwargs):
         self._analyzer.fmd(**kwargs)
     
-    @sync_metadata(Analyzer, 'estimate_b_value')
-    def estimate_b_value(self, bin_size: float, mc: str | float, **kwargs):
-        if mc == 'maxc':
-            mc_maxc = self._analyzer._maxc(bin_size=bin_size)
-            return self._analyzer.estimate_b_value(
-                bin_size=bin_size, mc=mc_maxc, **kwargs
-            )
-        elif isinstance(mc, int) or isinstance(mc, float):
-            return self._analyzer.estimate_b_value(
-                bin_size=bin_size, mc=mc, **kwargs
-            )
-        else:
-            raise ValueError('Mc value is not valid.')
+    @sync_metadata(Analyzer, 'b_value')
+    def b_value(self, **kwargs):
+        return self._analyzer.b_value(**kwargs)
+
+    @sync_metadata(Analyzer, 'b_value_over_time')
+    def b_value_over_time(self, **kwargs):
+        return self._analyzer.b_value_over_time(**kwargs)
 
     # Statistical analysis
     @sync_metadata(Analyzer, 'event_timeline')

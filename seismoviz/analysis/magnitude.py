@@ -1,4 +1,5 @@
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 
 from seismoviz.analysis.utils import styling
@@ -94,7 +95,9 @@ class MagnitudeAnalysis:
         fig, ax = plt.subplots(figsize=fig_size)
         ax.set_title('Magnitude-time distribution', fontweight='bold')
 
-        plt_size = pu.process_size_parameter(size, self._instance.data, size_scale_factor)
+        plt_size = pu.process_size_parameter(
+            size, self._instance.data, size_scale_factor
+        )
 
         if color_by:
             fig.set_figwidth(fig_size[0] + 2)
@@ -212,14 +215,7 @@ class MagnitudeAnalysis:
         if return_values:
             return bins, events_per_bin, cumulative_events
 
-    def estimate_b_value(
-            self,
-            bin_size: float,
-            mc: str | float,
-            plot: bool = True,
-            return_values: bool = False,
-            **kwargs
-        ) -> tuple[float, float, float, float]:
+    def b_value(self, bin_size: float, mc: str | float, **kwargs):
         """
         Estimates the b-value for seismic events, and calculates the associated 
         uncertainties.
@@ -282,14 +278,304 @@ class MagnitudeAnalysis:
         ValueError
             If the selected Mc type or value is not valid.
         """
-        
+        if isinstance(mc, str):
+            mc = self._estimate_mc(bin_size, mc)
+            return self._estimate_b_value(
+                bin_size=bin_size, mc=mc, **kwargs
+            )
+        elif isinstance(mc, int) or isinstance(mc, float):
+            return self._estimate_b_value(
+                bin_size=bin_size, mc=mc, **kwargs
+            )
+        else:
+            raise ValueError('Mc value is not valid.')
+
+    def b_value_over_time(
+        self,
+        bin_size: float,
+        window_type: str = 'event',
+        window_size: int | str = 100,
+        step_size: int | str = None,
+        mc_method: str = 'maxc',
+        uncertainty: str = 'shi_bolt',
+        plot: bool = True,
+        return_values: bool = False,
+        **kwargs
+    ) -> tuple[list, list, list, list] | None:
+        """
+        Calculates the b-value over time windows, either by grouping a fixed 
+        number of events or by fixed time intervals.
+
+        Parameters
+        ----------
+        bin_size : float
+            The size of each magnitude bin for calculating frequency-magnitude 
+            distribution.
+
+        window_type : str, optional
+            The type of windowing method to use: ``'event'`` for a fixed number 
+            of events per window, or ``'time'`` for time-based windows. Default 
+            is ``'event'.``
+
+        window_size : int or str, optional
+            The size of each window. For ``'event'`` windowing, this should be 
+            an integer specifying the number of events. For ``'time'`` windowing, 
+            this should be a string representing a pandas time offset alias (e.g., 
+            ``'1D'`` for one day). Default is 100.
+
+        step_size : int or str, optional
+            The step size for moving the window. For ``'event'`` windowing, this 
+            should be an integer. For ``'time'`` windowing, this should be a string 
+            representing a pandas time offset alias. If not provided, defaults 
+            to the window_size (non-overlapping windows).
+
+        mc_method : str, optional
+            The method to calculate the magnitude of completeness. Default is 
+            ``'maxc'``.
+
+        uncertainty : str, optional
+            Type of uncertainty to display in the plot. Options are ``'shi_bolt'`` 
+            for Shi & Bolt uncertainty and ``'aki'`` for Aki uncertainty. Default 
+            is ``'shi_bolt'``.
+
+        plot : bool, optional
+            If ``True``, plots the frequency-magnitude distribution with the 
+            calculated b-value curve. Default is ``True``.
+
+        return_values : bool, optional
+            If ``True``, returns the calculated values. Default is ``False``.            
+
+        save_figure : bool, optional
+            If ``True``, saves the plot to a file. Default is ``False``.
+
+        save_name : str, optional
+            Base name for the file if `save_figure` is ``True``. Default is 
+            ``'b-value'``.
+
+        save_extension : str, optional
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). 
+            Default is ``'jpg'``.
+
+        Returns
+        -------
+        .. warning::
+            Values are returned only if ``return_values`` argument is set to 
+            ``True``
+
+        tuple[list, list, list, list]
+                - ``times`` : list
+                    List of times corresponding to each b-value calculation.
+                - ``b_values`` : list
+                    List of calculated b-values.
+                - ``aki_uncs`` : list
+                    List of Aki uncertainties associated with each b-value.
+                - ``shi_bolt_uncs`` : list
+                    List of Shi and Bolt uncertainties associated with each b-value.
+
+        Raises
+        ------
+        ValueError
+            If invalid values or types are provided for ``window_type``, 
+            ``window_size``, or ``step_size``.
+        """
+        mc = self._estimate_mc(bin_size, mc_method)
+        data = self._instance.data.sort_values('time').reset_index(drop=True)
+
+        b_values, times = [], []
+        aki_uncs, shi_bolt_uncs = [], []
+
+        if window_type == 'event':
+            if not isinstance(window_size, int):
+                raise ValueError(
+                    "window_size must be an integer when window_type is 'event'."
+                )
+
+            if step_size is None:
+                step_size = window_size
+
+            if not isinstance(step_size, int):
+                raise ValueError(
+                    "step_size must be an integer when window_type is 'event'."
+                )
+
+            total_events = data.shape[0]
+            indices = range(0, total_events - window_size + 1, step_size)
+
+            for idx in indices:
+                window_data = data.iloc[idx:idx + window_size]
+                mags = window_data.mag.values
+
+                if len(mags) < 2:
+                    continue
+
+                _, _, b_value, aki_uncertainty, shi_bolt_uncertainty = (
+                    self._estimate_b_value(
+                        bin_size=bin_size,
+                        mc=mc,
+                        mags=mags,
+                        plot=False,
+                        return_values=True
+                    )
+                )
+
+                middle_index = len(window_data) // 2
+                time = window_data.time.iloc[middle_index]
+                times.append(time)
+                b_values.append(b_value)
+                aki_uncs.append(aki_uncertainty)
+                shi_bolt_uncs.append(shi_bolt_uncertainty)
+
+        elif window_type == 'time':
+            if not isinstance(window_size, str):
+                raise ValueError(
+                    "window_size must be a string when window_type is 'time'."
+                )
+
+            if step_size is None:
+                step_size = window_size
+
+            if not isinstance(step_size, str):
+                raise ValueError(
+                    "step_size must be a string when window_type is 'time'."
+                )
+
+            data.set_index('time', inplace=True)
+            start_time = data.index.min()
+            end_time = data.index.max()
+            window_starts = pd.date_range(start=start_time, end=end_time, freq=step_size)
+
+            for window_start in window_starts:
+                window_end = window_start + pd.Timedelta(window_size)
+                window_data = data.loc[window_start:window_end].reset_index()
+
+                if len(window_data) < 2:
+                    continue
+
+                mags = window_data.mag.values
+
+                _, _, b_value, aki_uncertainty, shi_bolt_uncertainty = (
+                    self._estimate_b_value(
+                        bin_size=bin_size,
+                        mc=mc,
+                        mags=mags,
+                        plot=False,
+                        return_values=True
+                    )
+                )
+
+                times.append(window_start + (window_end - window_start) / 2)
+                b_values.append(b_value)
+                aki_uncs.append(aki_uncertainty)
+                shi_bolt_uncs.append(shi_bolt_uncertainty)
+
+            data.reset_index(inplace=True)
+
+        else:
+            raise ValueError("window_type must be 'event' or 'time'.")
+
+        if plot:
+            selected_uncertainties = (
+                aki_uncs if uncertainty == 'aki' else shi_bolt_uncs
+            )
+            uncertainty_label = 'Aki' if uncertainty == 'aki' else 'Shi & Bolt'
+
+            self._plot_b_value_over_time(
+                times=times,
+                b_values=b_values,
+                uncertainties=selected_uncertainties,
+                uncertainty_label=uncertainty_label,
+                **kwargs
+            )
+
+        if return_values:
+            return times, b_values, aki_uncs, shi_bolt_uncs
+
+
+    def _maxc(self, bin_size: float) -> float:
+        """
+        Calculates the magnitude of completeness (Mc) for the seismic catalog
+        using the MAXC method.
+        """
+        bins, events_per_bin, _ = self.fmd(
+            bin_size=bin_size,
+            plot=False,
+            return_values=True
+        )
+        max_event_count_bin = bins[np.argmax(events_per_bin)]
+        decimals = self._count_decimals(bin_size)
+        return round(max_event_count_bin, decimals)
+
+    def _estimate_mc(
+            self,
+            bin_size: float,
+            method: str
+    ) -> float:
+        """
+        Estimates catalog's magnitude of completeness (Mc) using the selected
+        method.
+        """
+        if method == 'maxc':
+            return self._maxc(bin_size)
+        else:
+            raise ValueError('Mc value is not valid.')
+
+    def _estimate_b_value(
+            self,
+            bin_size: float,
+            mc: float,
+            mags: np.ndarray = None,
+            plot: bool = True,
+            return_values: bool = False,
+            **kwargs
+        ) -> tuple[float, float, float, float]:
+        """
+        Estimates the b-value for seismic events, and calculates the associated 
+        uncertainties.
+
+        Parameters
+        ----------
+        bin_size : float
+            The size of each magnitude bin for calculating frequency-magnitude distribution.
+
+        mc : float
+            The magnitude of completeness (threshold), above which the b-value 
+            estimation is considered valid.
+
+        mags : np.ndarray, optional
+            An array of magnitudes to use for the calculation. If not provided,
+            the method uses self._instance.data.mag.values.
+
+        plot : bool, optional
+            If True, plots the frequency-magnitude distribution with the 
+            calculated b-value curve. Default is True.
+
+        return_values : bool, optional
+            If True, returns the calculated values. Default is False.
+
+        Returns
+        -------
+        tuple[float, float, float, float]
+            - mc : float
+                The magnitude of completeness value.
+            - a_value : float
+                The a-value, representing the logarithmic scale of the seismicity rate.
+            - b_value : float
+                The b-value, indicating the relative occurrence of large and small earthquakes.
+            - aki_uncertainty : float
+                The Aki uncertainty in the b-value estimation.
+            - shi_bolt_uncertainty : float
+                The Shi and Bolt uncertainty in the b-value estimation.
+        """
         decimals = self._count_decimals(bin_size)
 
         mag_compl = round(mc, decimals)
         threshold = mag_compl - (bin_size / 2)
         log10_e = np.log10(np.exp(1))
 
-        fm = self._instance.data.mag[self._instance.data.mag > threshold].values
+        if mags is None:
+            mags = self._instance.data.mag.values
+
+        fm = mags[mags > threshold]
         num_events = fm.size
 
         if num_events < 2:
@@ -317,7 +603,7 @@ class MagnitudeAnalysis:
                 events_per_bin=events_per_bin,
                 cumulative_events=cumulative_events,
                 bin_size=bin_size,
-                mag_compl=mag_compl,
+                mc=mag_compl,
                 a_value=a_value,
                 b_value=b_value,
                 shi_bolt_uncertainty=shi_bolt_uncertainty,
@@ -327,20 +613,6 @@ class MagnitudeAnalysis:
 
         if return_values:
             return mag_compl, a_value, b_value, aki_uncertainty, shi_bolt_uncertainty
-
-    def _maxc(self, bin_size: float) -> float:
-        """
-        Calculates the magnitude of completeness (Mc) for the seismic catalog
-        using the MAXC method.
-        """
-        bins, events_per_bin, _ = self.fmd(
-            bin_size=bin_size,
-            plot=False,
-            return_values=True
-        )
-        max_event_count_bin = bins[np.argmax(events_per_bin)]
-        decimals = self._count_decimals(bin_size)
-        return round(max_event_count_bin, decimals)
 
     def _plot_fmd(
             self,
@@ -392,7 +664,7 @@ class MagnitudeAnalysis:
             events_per_bin: ArrayLike,
             cumulative_events: ArrayLike,
             bin_size: float,
-            mag_compl: float,
+            mc: float,
             a_value: float,
             b_value: float,
             shi_bolt_uncertainty: float,
@@ -410,8 +682,8 @@ class MagnitudeAnalysis:
         _, ax = plt.subplots(figsize=(10, 5))
         ax.set_title('b-value', fontsize=14, fontweight='bold')
 
-        below_mc = bins < mag_compl
-        above_mc = bins >= mag_compl
+        below_mc = bins < mc
+        above_mc = bins >= mc
 
         ax.scatter(
             bins[above_mc], cumulative_events[above_mc], color='white', marker='o', 
@@ -435,9 +707,9 @@ class MagnitudeAnalysis:
             bins[above_mc], (10**(a_value - (b_value * bins[above_mc]))), color='blue'
         )
 
-        ax.axvline(x=mag_compl, color='gray', linestyle='--', linewidth=1)
+        ax.axvline(x=mc, color='gray', linestyle='--', linewidth=1)
 
-        mc_index = np.where(bins == mag_compl)
+        mc_index = np.where(bins == mc)
         ax.scatter(
             bins[mc_index], cumulative_events[mc_index], color='black', marker='o', 
             s=50
@@ -462,7 +734,7 @@ class MagnitudeAnalysis:
             raise ValueError("Uncertainty must be 'shi_bolt' or 'aki'.")
 
         text_str = (
-            f'$M_c$ = {mag_compl}\n'
+            f'$M_c$ = {mc}\n'
             f'$b-value$ = {round(b_value, 3)} ± {round(plot_uncert, 3)}'
         )
         ax.text(
@@ -477,6 +749,48 @@ class MagnitudeAnalysis:
         ax.set_xticks(min_tick_positions, minor=True)
 
         ax.grid(True, alpha=0.25, axis='x', linestyle=':')
+
+        if save_figure:
+            pu.save_figure(save_name, save_extension)
+
+        plt.show()
+        pu.reset_style()
+
+    def _plot_b_value_over_time(
+        self,
+        times: ArrayLike,
+        b_values: ArrayLike,
+        uncertainties: ArrayLike,
+        uncertainty_label: str,
+        save_figure: bool = False,
+        save_name: str = 'b_value_over_time',
+        save_extension: str = 'jpg',
+        fig_size: tuple[float, float] = (10, 5),
+    ) -> None:
+        """
+        Plots the b-value over time with associated uncertainties.
+        """
+        pu.set_style(styling.DEFAULT)
+
+        fig, ax = plt.subplots(figsize=fig_size)
+        ax.set_title('b-value over time', fontweight='bold')
+
+        # Plot b-values
+        ax.plot(times, b_values, color='black', lw=1, label='b-value')
+
+        # Plot uncertainties as fill_between
+        lower = np.array(b_values) - np.array(uncertainties)
+        upper = np.array(b_values) + np.array(uncertainties)
+        ax.fill_between(
+            times, lower, upper, color='gray', alpha=0.3,
+            label=f'Uncertainty ({uncertainty_label})'
+        )
+
+        ax.set_ylabel('$b-value$')
+        ax.grid(True, axis='x', alpha=0.25, linestyle=':')
+        ax.legend(loc='best', frameon=False)
+
+        pu.format_x_axis_time(ax)
 
         if save_figure:
             pu.save_figure(save_name, save_extension)
