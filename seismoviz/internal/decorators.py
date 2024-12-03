@@ -1,5 +1,5 @@
-from typing import TypeVar, ParamSpec, Callable
 import inspect
+from typing import TypeVar, ParamSpec, Callable
 
 P = ParamSpec('P')
 T = TypeVar('T')

@@ -1,8 +1,6 @@
 import pandas as pd
 
-from seismoviz.components.catalog import Catalog
-from seismoviz.components.sub_catalog import SubCatalog
-from seismoviz.components.cross_section import CrossSection
+from seismoviz.components import Catalog, CrossSection
 from seismoviz.internal.selector import CatalogSelector, CrossSectionSelector
 
 
@@ -159,20 +157,17 @@ class select_on_map:
         self._selector = CatalogSelector(catalog)
         self._selector.select(size=size, color=color)
 
-    def confirm_selection(self) -> SubCatalog:
+    def confirm_selection(self) -> Catalog:
         """
-        Confirms the selection and returns a ``SubCatalog`` of the selected data.
+        Confirms the selection and returns a ``Catalog`` of the selected data.
 
         Returns
         -------
-        SubCatalog
-            A ``SubCatalog`` object containing the selected data from the 
+        Catalog
+            A ``Catalog`` object containing the selected data from the 
             cross-section.
         """
-        return SubCatalog(
-            data=self._selector.sd,
-            selected_from='Catalog'
-        )
+        return Catalog(self._selector.sd)
 
 
 class select_on_section:
@@ -201,17 +196,14 @@ class select_on_section:
         self._selector = CrossSectionSelector(cross_section)
         self._selector.select(size=size, color=color)
 
-    def confirm_selection(self) -> SubCatalog:
+    def confirm_selection(self) -> Catalog:
         """
-        Confirms the selection and returns a ``SubCatalog`` of the selected data.
+        Confirms the selection and returns a ``Catalog`` of the selected data.
 
         Returns
         -------
-        SubCatalog
-            A ``SubCatalog`` object containing the selected data from the 
+        Catalog
+            A ``Catalog`` object containing the selected data from the 
             cross-section.
         """
-        return SubCatalog(
-            data=self._selector.sd,
-            selected_from='CrossSection'
-        )
+        return Catalog(data=self._selector.sd)

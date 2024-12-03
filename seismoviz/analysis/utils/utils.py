@@ -16,34 +16,6 @@ def convert_to_geographical(
     """
     Converts UTM coordinates to geographical (longitude and latitude)
     coordinates.
-
-    Parameters
-    ----------
-    utmx : ArrayLike
-        Represents the UTM x coordinate(s) (easting).
-
-    utmy : ArrayLike
-        Represents the UTM y coordinate(s) (northing).
-
-    zone : int
-        The UTM zone number (ranges from 1 to 60).
-
-    northern : bool
-        True if in the Northern Hemisphere, False otherwise.
-
-    units : str
-        Specifies the units ('m' for meters, 'km' for kilometers).
-
-    ellps : str, optional
-        The ellipsoid model for the Earth (default: 'WGS84').
-
-    datum : str, optional
-        The geodetic datum (default: 'WGS84').
-
-    Returns
-    -------
-    tuple[ArrayLike, ArrayLike]
-        Longitude and latitude values in the same format as the input.
     """
     utm_crs = pyproj.CRS(
         f'+proj=utm +zone={zone} +{"+north" if northern else "+south"} '
@@ -69,31 +41,6 @@ def convert_to_utm(
     """
     Converts geographical (longitude and latitude) coordinates to UTM
     coordinates.
-
-    Parameters
-    ----------
-    lon : ArrayLike
-        The longitude value(s).
-    
-    lat : ArrayLike
-        The latitude value(s).
-
-    zone : int
-        The UTM zone number (ranges from 1 to 60).
-
-    units : str
-        Specifies the units ('m' for meters, 'km' for kilometers).
-
-    ellps : str, optional
-        The ellipsoid model for the Earth (default: 'WGS84').
-
-    datum : str, optional
-        The geodetic datum (default: 'WGS84').
-
-    Returns
-    -------
-    tuple[ArrayLike, ArrayLike]
-        UTM x and y coordinates (easting and northing).
     """
     utm_converter = pyproj.Proj(
         proj='utm', zone=zone, units=units, ellps=ellps, datum=datum

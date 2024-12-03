@@ -1,14 +1,69 @@
+import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
 
-from seismoviz.components.visualization.utils import styling
-import seismoviz.components.visualization.utils.plot_utils as pu
+from seismoviz.analysis.utils import styling
+from seismoviz.analysis.utils import plot_utils as pu
 
 
 class StatisticalAnalysis:
-    def __init__(self, instance: type):
+    def __init__(self, instance: object):
         self._instance = instance
-    
+
+    def event_timeline(
+            self,
+            fig_size: tuple[float, float] = (10, 5),
+            save_figure: bool = False,
+            save_name: str = 'event_timeline',
+            save_extension: str = 'jpg'
+    ) -> None:
+        """
+        Plots a timeline of seismic events to visualize the cumulative
+        number of events over time.
+
+        Parameters
+        ----------
+        fig_size : tuple[float, float], optional
+            Figure size for the plot. Default is ``(10, 5)``.
+
+        save_figure : bool, optional
+            If ``True``, saves the plot to a file. Default is ``False``.
+
+        save_name : str, optional
+            Base name for the file if `save_figure` is ``True``. Default is
+            ``'event_timeline'``.
+
+        save_extension : str, optional
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default
+            is ``'jpg'``.
+
+        Returns
+        -------
+        None
+            An event timeline plot.
+        """
+        pu.set_style(styling.DEFAULT)
+
+        events_sorted = self._instance.data.sort_values('time')
+        time_data = pd.to_datetime(events_sorted['time'])
+
+        fig, ax = plt.subplots(figsize=fig_size)
+        ax.set_title('Event timeline', fontweight='bold')
+        ax.plot(time_data, np.arange(len(events_sorted)), color='black')
+
+        pu.format_x_axis_time(ax)
+
+        ax.set_ylabel('Cumulative no. of events')
+        ax.set_ylim(0)
+        ax.grid(True, axis='x', linestyle=':', alpha=0.25)
+
+        plt.tight_layout()
+        if save_figure:
+            pu.save_figure(save_name, save_extension)
+
+        plt.show()
+        pu.reset_style()
+
     def interevent_time(self, unit='sec', plot: bool = True, **kwargs) -> None:
         """
         Calculates the inter-event time for sequential events in the instance.

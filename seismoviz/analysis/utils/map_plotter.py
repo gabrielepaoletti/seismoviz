@@ -6,7 +6,8 @@ import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 from cartopy.io.img_tiles import GoogleTiles
 from cartopy.mpl.ticker import LatitudeFormatter, LongitudeFormatter
-from seismoviz.components.visualization.utils import plot_utils as pu
+
+from seismoviz.analysis.utils import plot_utils as pu
 
 from numpy.typing import ArrayLike
 from matplotlib.text import Annotation, Text

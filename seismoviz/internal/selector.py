@@ -1,4 +1,3 @@
-import pandas as pd
 import holoviews as hv
 from holoviews import streams
 

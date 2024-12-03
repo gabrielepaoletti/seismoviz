@@ -2,10 +2,9 @@ import numpy as np
 import pandas as pd
 
 from seismoviz.components import Catalog
-from seismoviz.utils import convert_to_utm
-from seismoviz.components.analysis import Analyzer
+from seismoviz.analysis.utils import convert_to_utm
+from seismoviz.analysis import Analyzer, GeoAnalyzer
 from seismoviz.internal.decorators import sync_metadata
-from seismoviz.components.visualization import CrossSectionPlotter
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 
 from numpy.typing import ArrayLike
@@ -84,9 +83,10 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
         self.section_distance = section_distance
         self.data = self._cross_section()
 
-        self._plotter = CrossSectionPlotter(self)
         self._analyzer = Analyzer(self)
+        self._geo_analyzer = GeoAnalyzer(self)
 
+    # Operations
     @sync_metadata(Analyzer, 'filter')
     def filter(self, **kwargs):
         return self._analyzer.filter(**kwargs)
@@ -99,25 +99,19 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
     def deduplicate_events(self):
         return self._analyzer.deduplicate_events()
 
-    @sync_metadata(CrossSectionPlotter, 'plot_sections')
+    # Geographical analysis
+    @sync_metadata(GeoAnalyzer, 'plot_sections')
     def plot_sections(self, **kwargs):
-        self._plotter.plot_sections(**kwargs)
+        self._geo_analyzer.plot_sections(**kwargs)
 
-    @sync_metadata(CrossSectionPlotter, 'plot_section_lines')
+    @sync_metadata(GeoAnalyzer, 'plot_section_lines')
     def plot_section_lines(self, **kwargs):
-        self._plotter.plot_section_lines(**kwargs)
+        self._geo_analyzer.plot_section_lines(**kwargs)
     
-    @sync_metadata(CrossSectionPlotter, 'plot_section_lines')
-    def plot_magnitude_time(self, **kwargs):
-        self._plotter.plot_magnitude_time(**kwargs) 
-
-    @sync_metadata(CrossSectionPlotter, 'plot_event_timeline')
-    def plot_event_timeline(self, **kwargs) -> None:
-        self._plotter.plot_event_timeline(**kwargs)
-
-    @sync_metadata(CrossSectionPlotter, 'plot_attribute_distributions')
-    def plot_attribute_distributions(self, **kwargs) -> None:
-        self._plotter.plot_attribute_distributions(**kwargs)
+    # Magnitude analysis
+    @sync_metadata(Analyzer, 'magnitude_time')
+    def magnitude_time(self, **kwargs):
+        self._analyzer.magnitude_time(**kwargs) 
 
     @sync_metadata(Analyzer, 'fmd')
     def fmd(self, **kwargs):
@@ -136,6 +130,11 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
             )
         else:
             raise ValueError('Mc value is not valid.')
+
+    # Statistical analysis
+    @sync_metadata(Analyzer, 'event_timeline')
+    def event_timeline(self, **kwargs) -> None:
+        self._analyzer.event_timeline(**kwargs)
 
     @sync_metadata(Analyzer, 'interevent_time')
     def interevent_time(self, **kwargs):

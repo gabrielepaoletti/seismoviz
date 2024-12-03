@@ -2,7 +2,7 @@ import copy
 
 
 class Operations:
-    def __init__(self, instance: type):
+    def __init__(self, instance: object):
         self._instance = instance
     
     def filter(self, **kwargs):

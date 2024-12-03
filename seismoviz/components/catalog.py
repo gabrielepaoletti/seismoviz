@@ -1,8 +1,7 @@
 import pandas as pd
 
-from seismoviz.components.analysis import Analyzer
+from seismoviz.analysis import Analyzer, GeoAnalyzer
 from seismoviz.internal.decorators import sync_metadata
-from seismoviz.components.visualization import CatalogPlotter
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 
 
@@ -36,9 +35,10 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
         self.data = data
         super().__init__()
 
-        self._plotter = CatalogPlotter(self)
         self._analyzer = Analyzer(self)
+        self._geo_analyzer = GeoAnalyzer(self)
     
+    # Operations
     @sync_metadata(Analyzer, 'filter')
     def filter(self, **kwargs):
         return self._analyzer.filter(**kwargs)
@@ -51,25 +51,23 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
     def deduplicate_events(self):
         return self._analyzer.deduplicate_events()
 
-    @sync_metadata(CatalogPlotter, 'plot_map')
+    # Geographical analysis
+    @sync_metadata(GeoAnalyzer, 'plot_map')
     def plot_map(self, **kwargs) -> None:
-        self._plotter.plot_map(**kwargs)
+        self._geo_analyzer.plot_map(**kwargs)
 
-    @sync_metadata(CatalogPlotter, 'plot_space_time')
+    @sync_metadata(GeoAnalyzer, 'plot_space_time')
     def plot_space_time(self, **kwargs) -> None:
-        self._plotter.plot_space_time(**kwargs)
+        self._geo_analyzer.plot_space_time(**kwargs)
 
-    @sync_metadata(CatalogPlotter, 'plot_magnitude_time')
-    def plot_magnitude_time(self, **kwargs) -> None:
-        self._plotter.plot_magnitude_time(**kwargs)
+    @sync_metadata(GeoAnalyzer, 'plot_on_section')
+    def plot_on_section(self, **kwargs) -> None:
+        self._geo_analyzer.plot_on_section(**kwargs)
 
-    @sync_metadata(CatalogPlotter, 'plot_event_timeline')
-    def plot_event_timeline(self, **kwargs) -> None:
-        self._plotter.plot_event_timeline(**kwargs)
-
-    @sync_metadata(CatalogPlotter, 'plot_attribute_distributions')
-    def plot_attribute_distributions(self, **kwargs) -> None:
-        self._plotter.plot_attribute_distributions(**kwargs)
+    # Magnitude analysis
+    @sync_metadata(Analyzer, 'magnitude_time')
+    def magnitude_time(self, **kwargs) -> None:
+        self._analyzer.magnitude_time(**kwargs)
     
     @sync_metadata(Analyzer, 'fmd')
     def fmd(self, **kwargs):
@@ -88,6 +86,11 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
             )
         else:
             raise ValueError('Mc value is not valid.')
+
+    # Statistical analysis
+    @sync_metadata(Analyzer, 'event_timeline')
+    def event_timeline(self, **kwargs) -> None:
+        self._analyzer.event_timeline(**kwargs)
 
     @sync_metadata(Analyzer, 'interevent_time')
     def interevent_time(self, **kwargs):
