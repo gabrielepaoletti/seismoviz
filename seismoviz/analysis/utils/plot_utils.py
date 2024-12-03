@@ -4,9 +4,11 @@ import pandas as pd
 import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 import matplotlib.dates as mdates
+from matplotlib.colors import to_rgba
 from matplotlib.collections import PathCollection
 
 
+# Style management functions
 def set_style(style: dict) -> None:
     """
     Sets a custom style for plotting.
@@ -21,6 +23,7 @@ def reset_style() -> None:
     plt.rcdefaults()
 
 
+# Axis formatting functions
 def format_x_axis_time(ax: Axes) -> None:
     """
     Formats the x-axis based on the displayed range of the axis.
@@ -31,7 +34,7 @@ def format_x_axis_time(ax: Axes) -> None:
     plt.xticks(rotation=30, ha='right')
 
 
-def format_colorbar_time(cbar, orientation: str):
+def format_colorbar_time(cbar, orientation: str) -> None:
     """
     Formats the colorbar based on the displayed range and orientation.
     """
@@ -47,21 +50,22 @@ def format_colorbar_time(cbar, orientation: str):
         plt.setp(cbar.ax.get_xticklabels(), rotation=45, ha='right')
 
 
+# Plotting functions
 def plot_with_colorbar(
-        ax: Axes,
-        data: pd.DataFrame,
-        x: str,
-        y: str,
-        color_by: str,
-        cmap: str,
-        edgecolor: str,
-        size: float | np.ndarray,
-        alpha: float,
-        legend: str = None,
-        cbar_orientation: str = 'horizontal',
-        cbar_pad: float = 0.06,
-        cbar_aspect: int = 40,
-        cbar_shrink: float = 0.6
+    ax: Axes,
+    data: pd.DataFrame,
+    x: str,
+    y: str,
+    color_by: str,
+    cmap: str,
+    edgecolor: str,
+    size: float | np.ndarray,
+    alpha: float,
+    legend: str = None,
+    cbar_orientation: str = 'horizontal',
+    cbar_pad: float = 0.06,
+    cbar_aspect: int = 40,
+    cbar_shrink: float = 0.6
 ) -> PathCollection:
     """
     Plots a scatter plot on the given axes with an associated colorbar.
@@ -98,17 +102,86 @@ def plot_with_colorbar(
         pad=cbar_pad, shrink=cbar_shrink, aspect=cbar_aspect
     )
     cbar.set_label(colorbar_label, fontsize=14)
-    
+
     if color_by == 'time':
         format_colorbar_time(cbar, cbar_orientation)
 
     return scatter
 
 
+def plot_highlighted_events(
+    ax: Axes,
+    data: pd.DataFrame,
+    hl_ms: float,
+    hl_size: float,
+    hl_marker: str,
+    hl_color: str,
+    hl_edgecolor: str,
+    x: str,
+    y: str
+) -> None:
+    """
+    Plots highlighted events on the given Axes.
+    """
+    large_quakes = data[data['mag'] > hl_ms]
+    ax.scatter(
+        x=large_quakes[x], y=large_quakes[y], c=hl_color, s=hl_size,
+        marker=hl_marker, edgecolor=hl_edgecolor, linewidth=0.75,
+        label=f'Events M > {hl_ms}'
+    )
+
+
+def add_vertical_lines(
+    ax: Axes,
+    data: pd.DataFrame,
+    ms_line: float,
+    color: str = 'red',
+    linewidth: float = 1.5,
+    linestyle: str = '-',
+    gradient: bool = True
+) -> None:
+    """
+    Adds vertical gradient or solid lines to the plot for events with magnitude 
+    >= ms_line.
+    """
+    if 'mag' not in data.columns or 'time' not in data.columns:
+        raise KeyError("The data must include 'mag' and 'time' columns.")
+
+    filtered_events = data[data['mag'] >= ms_line]
+    unique_dates = pd.to_datetime(filtered_events['time']).dt.date.unique()
+
+    ymin, ymax = ax.get_ylim()
+    y = np.linspace(ymin, ymax, 500)
+
+    for event_date in unique_dates:
+        x = mdates.date2num(pd.Timestamp(event_date))
+        x_vals = np.full_like(y, x)
+
+        if gradient:
+            colors = np.linspace(0, 1, len(y))
+            gradient_colors = [to_rgba(color, alpha) for alpha in reversed(colors)]
+
+            for i in range(len(y) - 1):
+                ax.plot(
+                    [x_vals[i], x_vals[i + 1]], [y[i], y[i + 1]],
+                    color=gradient_colors[i],
+                    linewidth=linewidth,
+                    linestyle=linestyle
+                )
+        else:
+            ax.axvline(
+                x,
+                color=color,
+                linewidth=linewidth,
+                linestyle=linestyle
+            )
+
+
+# Utility functions
 def save_figure(
-        save_name: str,
-        save_extension: str = 'jpg',
-        directory: str = './seismoviz_figures'
+    save_name: str,
+    save_extension: str = 'jpg',
+    directory: str = './seismoviz_figures'
 ) -> None:
     """
     Saves the given figure to a file with the specified name, extension,
@@ -141,12 +214,12 @@ def process_size_parameter(
 
 
 def create_size_legend(
-        ax: Axes,
-        size: str,
-        data: pd.DataFrame,
-        size_scale_factor: tuple[float, float],
-        alpha: float,
-        size_legend_loc: str
+    ax: Axes,
+    size: str,
+    data: pd.DataFrame,
+    size_scale_factor: tuple[float, float],
+    alpha: float,
+    size_legend_loc: str
 ) -> None:
     """
     Creates a size legend on the given Axes.
@@ -177,29 +250,8 @@ def create_size_legend(
     ax.add_artist(legend)
 
 
-def plot_highlighted_events(
-        ax: Axes,
-        data: pd.DataFrame,
-        hl_ms: float,
-        hl_size: float,
-        hl_marker: str,
-        hl_color: str,
-        hl_edgecolor: str,
-        x: str,
-        y: str
-) -> None:
-    """
-    Plots highlighted events on the given Axes.
-    """
-    large_quakes = data[data['mag'] > hl_ms]
-    ax.scatter(
-        x=large_quakes[x], y=large_quakes[y], c=hl_color, s=hl_size,
-        marker=hl_marker, edgecolor=hl_edgecolor, linewidth=0.75,
-        label=f'Events M > {hl_ms}'
-    )
-
-
-def _configure_time_axis(axis, time_range):
+# Private helper functions
+def _configure_time_axis(axis, time_range) -> None:
     """
     Configures a time axis (x or y) based on the range of time.
     """

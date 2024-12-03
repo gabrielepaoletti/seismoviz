@@ -23,6 +23,11 @@ class MagnitudeAnalysis:
             alpha: float = 0.75,
             size_legend: bool = False,
             size_legend_loc: str = 'upper right',
+            ms_line: float = None,
+            ms_line_color: str = 'red',
+            ms_line_width: float = 1,
+            ms_line_style: str = '-',
+            ms_line_gradient : bool = True,
             fig_size: tuple[float, float] = (10, 5),
             save_figure: bool = False,
             save_name: str = 'magnitude_time',
@@ -41,6 +46,11 @@ class MagnitudeAnalysis:
         cmap : str, optional
             The colormap to use for coloring events if ``color_by`` is specified.
             Default is ``'jet'``.
+
+        hl_ms : float
+            The minimum magnitude threshold for highlighting events. Vertical 
+            lines will be added to the plot at dates corresponding to seismic 
+            events with a magnitude greater than or equal to this value.
 
         size : float or str, optional
             The size of the markers representing seismic events. If a string
@@ -71,6 +81,25 @@ class MagnitudeAnalysis:
             Location of the size legend when ``size_legend`` is ``True``. Default
             is ``'upper right'``.
 
+        ms_line : float, optional
+            The magnitude threshold above which vertical lines will be added to 
+            the plot. If ``None``, no vertical lines are added. Default is ``None``.
+
+        ms_line_color : str, optional
+            The color of the vertical lines. Accepts any Matplotlib-compatible 
+            color string. Default is ``'red'``.
+
+        ms_line_width : float, optional
+            The thickness of the vertical lines. Default is 1.5.
+
+        ms_line_style : str, optional
+            The style of the vertical lines. Default is ``'-'``.
+
+        ms_line_gradient : bool, optional
+            If ``True``, the vertical lines will have a gradient effect, fading 
+            from the pecified color to transparent along the y-axis. If ``False``, 
+            the lines will be solid. Default is ``True``.    
+        
         fig_size : tuple[float, float], optional
             Figure size for the plot. Default is ``(10, 5)``.
 
@@ -127,6 +156,16 @@ class MagnitudeAnalysis:
                 lw=0.25
             )
 
+        pu.add_vertical_lines(
+            ax=ax,
+            data=self._instance.data,
+            ms_line=ms_line,
+            color=ms_line_color,
+            linewidth=ms_line_width,
+            linestyle=ms_line_style,
+            gradient=ms_line_gradient
+        )
+
         if size_legend and isinstance(size, str):
             pu.create_size_legend(
                 ax=ax,
@@ -139,6 +178,7 @@ class MagnitudeAnalysis:
 
         pu.format_x_axis_time(ax)
         ax.set_ylabel('Magnitude')
+        ax.set_ylim(self._instance.data.mag.min())
         ax.grid(True, alpha=0.25, axis='y', linestyle=':')
 
         if save_figure:
@@ -341,6 +381,25 @@ class MagnitudeAnalysis:
         plot : bool, optional
             If ``True``, plots the frequency-magnitude distribution with the 
             calculated b-value curve. Default is ``True``.
+
+        ms_line : float, optional
+            The magnitude threshold above which vertical lines will be added to 
+            the plot. If ``None``, no vertical lines are added. Default is ``None``.
+
+        ms_line_color : str, optional
+            The color of the vertical lines. Accepts any Matplotlib-compatible 
+            color string. Default is ``'red'``.
+
+        ms_line_width : float, optional
+            The thickness of the vertical lines. Default is 1.5.
+
+        ms_line_style : str, optional
+            The style of the vertical lines. Default is ``'-'``.
+
+        ms_line_gradient : bool, optional
+            If ``True``, the vertical lines will have a gradient effect, fading 
+            from the pecified color to transparent along the y-axis. If ``False``, 
+            the lines will be solid. Default is ``True``.
 
         return_values : bool, optional
             If ``True``, returns the calculated values. Default is ``False``.            
@@ -757,28 +816,40 @@ class MagnitudeAnalysis:
         pu.reset_style()
 
     def _plot_b_value_over_time(
-        self,
-        times: ArrayLike,
-        b_values: ArrayLike,
-        uncertainties: ArrayLike,
-        uncertainty_label: str,
-        save_figure: bool = False,
-        save_name: str = 'b_value_over_time',
-        save_extension: str = 'jpg',
-        fig_size: tuple[float, float] = (10, 5),
+            self,
+            times: ArrayLike,
+            b_values: ArrayLike,
+            uncertainties: ArrayLike,
+            uncertainty_label: str,
+            ms_line: float = None,
+            ms_line_color: str = 'red',
+            ms_line_width: float = 1.5,
+            ms_line_style: str = '-',
+            ms_line_gradient : bool = True,
+            save_figure: bool = False,
+            save_name: str = 'b_value_over_time',
+            save_extension: str = 'jpg',
+            fig_size: tuple[float, float] = (10, 5),
     ) -> None:
         """
         Plots the b-value over time with associated uncertainties.
         """
         pu.set_style(styling.DEFAULT)
 
-        fig, ax = plt.subplots(figsize=fig_size)
+        _, ax = plt.subplots(figsize=fig_size)
         ax.set_title('b-value over time', fontweight='bold')
 
-        # Plot b-values
-        ax.plot(times, b_values, color='black', lw=1, label='b-value')
+        ax.plot(times, b_values, color='black', lw=0.75, label='b-value')
+        pu.add_vertical_lines(
+            ax=ax,
+            data=self._instance.data,
+            ms_line=ms_line,
+            color=ms_line_color,
+            linewidth=ms_line_width,
+            linestyle=ms_line_style,
+            gradient=ms_line_gradient
+        )
 
-        # Plot uncertainties as fill_between
         lower = np.array(b_values) - np.array(uncertainties)
         upper = np.array(b_values) + np.array(uncertainties)
         ax.fill_between(
@@ -787,6 +858,7 @@ class MagnitudeAnalysis:
         )
 
         ax.set_ylabel('$b-value$')
+        ax.set_ylim(min(b_values))
         ax.grid(True, axis='x', alpha=0.25, linestyle=':')
         ax.legend(loc='best', frameon=False)
 

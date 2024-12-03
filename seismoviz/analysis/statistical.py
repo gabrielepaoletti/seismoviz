@@ -12,6 +12,11 @@ class StatisticalAnalysis:
 
     def event_timeline(
             self,
+            ms_line: float = None,
+            ms_line_color: str = 'red',
+            ms_line_width: float = 1.5,
+            ms_line_style: str = '-',
+            ms_line_gradient : bool = True,
             fig_size: tuple[float, float] = (10, 5),
             save_figure: bool = False,
             save_name: str = 'event_timeline',
@@ -23,6 +28,25 @@ class StatisticalAnalysis:
 
         Parameters
         ----------
+        ms_line : float, optional
+            The magnitude threshold above which vertical lines will be added to 
+            the plot. If ``None``, no vertical lines are added. Default is ``None``.
+
+        ms_line_color : str, optional
+            The color of the vertical lines. Accepts any Matplotlib-compatible 
+            color string. Default is ``'red'``.
+
+        ms_line_width : float, optional
+            The thickness of the vertical lines. Default is 1.5.
+
+        ms_line_style : str, optional
+            The style of the vertical lines. Default is ``'-'``.
+
+        ms_line_gradient : bool, optional
+            If ``True``, the vertical lines will have a gradient effect, fading 
+            from the pecified color to transparent along the y-axis. If ``False``, 
+            the lines will be solid. Default is ``True``.
+
         fig_size : tuple[float, float], optional
             Figure size for the plot. Default is ``(10, 5)``.
 
@@ -50,6 +74,15 @@ class StatisticalAnalysis:
         fig, ax = plt.subplots(figsize=fig_size)
         ax.set_title('Event timeline', fontweight='bold')
         ax.plot(time_data, np.arange(len(events_sorted)), color='black')
+        pu.add_vertical_lines(
+            ax=ax,
+            data=self._instance.data,
+            ms_line=ms_line,
+            color=ms_line_color,
+            linewidth=ms_line_width,
+            linestyle=ms_line_style,
+            gradient=ms_line_gradient
+        )
 
         pu.format_x_axis_time(ax)
 
@@ -143,6 +176,25 @@ class StatisticalAnalysis:
             Location of the size legend when ``size_legend`` is ``True``.
             Default is ``'upper right'``.
 
+        ms_line : float, optional
+            The magnitude threshold above which vertical lines will be added to 
+            the plot. If ``None``, no vertical lines are added. Default is ``None``.
+
+        ms_line_color : str, optional
+            The color of the vertical lines. Accepts any Matplotlib-compatible 
+            color string. Default is ``'orange'``.
+
+        ms_line_width : float, optional
+            The thickness of the vertical lines. Default is 1.5.
+
+        ms_line_style : str, optional
+            The style of the vertical lines. Default is ``'-'``.
+
+        ms_line_gradient : bool, optional
+            If ``True``, the vertical lines will have a gradient effect, fading 
+            from the pecified color to transparent along the y-axis. If ``False``, 
+            the lines will be solid. Default is ``True``.    
+
         fig_size : tuple[float, float], optional
             Figure size for the plot. Default is ``(10, 5)``.
 
@@ -211,7 +263,7 @@ class StatisticalAnalysis:
         et_color : str, optional
             Specifies the color used for the secondary y-axis (event timeline axis), 
             including the ticks, labels, axis line, and the line representing 
-            the cumulative number of events. Default is ``'red'``.
+            the cumulative number of events. Default is ``'orange'``.
 
         plot_cov : bool, optional
             If ``True`` and ``plot_vs='time'``, adds a secondary y-axis (``twiny``)
@@ -263,6 +315,25 @@ class StatisticalAnalysis:
         size_legend_loc : str, optional
             Location of the size legend when ``size_legend`` is ``True``.
             Default is ``'upper right'``.
+
+        ms_line : float, optional
+            The magnitude threshold above which vertical lines will be added to 
+            the plot. If ``None``, no vertical lines are added. Default is ``None``.
+
+        ms_line_color : str, optional
+            The color of the vertical lines. Accepts any Matplotlib-compatible 
+            color string. Default is ``'red'``.
+
+        ms_line_width : float, optional
+            The thickness of the vertical lines. Default is 1.5.
+
+        ms_line_style : str, optional
+            The style of the vertical lines. Default is ``'-'``.
+
+        ms_line_gradient : bool, optional
+            If ``True``, the vertical lines will have a gradient effect, fading 
+            from the pecified color to transparent along the y-axis. If ``False``, 
+            the lines will be solid. Default is ``True``.                
 
         fig_size : tuple[float, float], optional
             Figure size for the plot. Default is ``(10, 5)``.
@@ -323,6 +394,11 @@ class StatisticalAnalysis:
             alpha: float = 0.75,
             size_legend: bool = False,
             size_legend_loc: str = 'upper right',
+            ms_line: float = None,
+            ms_line_color: str = 'orange',
+            ms_line_width: float = 1.5,
+            ms_line_style: str = '-',
+            ms_line_gradient : bool = True,
             fig_size: tuple[float, float] = (10, 5),
             save_name: str = 'interevent_time',
             save_figure: bool = False,
@@ -390,6 +466,15 @@ class StatisticalAnalysis:
 
         if plot_vs == 'time':
             pu.format_x_axis_time(ax)
+            pu.add_vertical_lines(
+                ax=ax,
+                data=self._instance.data,
+                ms_line=ms_line,
+                color=ms_line_color,
+                linewidth=ms_line_width,
+                linestyle=ms_line_style,
+                gradient=ms_line_gradient
+            )
 
             if plot_cov:
                 pu.set_style(styling.CROSS_SECTION)
@@ -434,7 +519,9 @@ class StatisticalAnalysis:
 
                 ax_et = ax.twinx()
                 ax_et.spines['right'].set_color(et_color)
-                ax_et.spines['right'].set_position(('axes', 1.1))
+                ax_et.spines['right'].set_position(
+                    ('axes', 1.1 if plot_cov else 1)
+                )
                 ax_et.set_ylabel(
                     'Cumulative no. of events', color=et_color
                 )
