@@ -29,8 +29,7 @@ Visualization methods
 Magnitude analysis methods
 --------------------------
 
-.. automethod:: seismoviz.components.cross_section.CrossSection.plot_attribute_distributions
-.. automethod:: seismoviz.components.cross_section.CrossSection.plot_magnitude_time
+.. automethod:: seismoviz.components.cross_section.CrossSection.magnitude_time
 .. automethod:: seismoviz.components.cross_section.CrossSection.fmd
 .. automethod:: seismoviz.components.cross_section.CrossSection.estimate_b_value
 
@@ -38,6 +37,6 @@ Magnitude analysis methods
 Statistical analysis methods
 ----------------------------
 
-.. automethod:: seismoviz.components.cross_section.CrossSection.plot_event_timeline
+.. automethod:: seismoviz.components.cross_section.CrossSection.event_timeline
 .. automethod:: seismoviz.components.cross_section.CrossSection.interevent_time
 .. automethod:: seismoviz.components.cross_section.CrossSection.cov

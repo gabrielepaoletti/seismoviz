@@ -29,8 +29,7 @@ Visualization methods
 Magnitude analysis methods
 --------------------------
 
-.. automethod:: seismoviz.components.catalog.Catalog.plot_attribute_distributions
-.. automethod:: seismoviz.components.catalog.Catalog.plot_magnitude_time
+.. automethod:: seismoviz.components.catalog.Catalog.magnitude_time
 .. automethod:: seismoviz.components.catalog.Catalog.fmd
 .. automethod:: seismoviz.components.catalog.Catalog.estimate_b_value
 
@@ -38,6 +37,6 @@ Magnitude analysis methods
 Statistical analysis methods
 ----------------------------
 
-.. automethod:: seismoviz.components.catalog.Catalog.plot_event_timeline
+.. automethod:: seismoviz.components.catalog.Catalog.event_timeline
 .. automethod:: seismoviz.components.catalog.Catalog.interevent_time
 .. automethod:: seismoviz.components.catalog.Catalog.cov
