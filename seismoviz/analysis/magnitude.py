@@ -9,15 +9,15 @@ from numpy.typing import ArrayLike
 
 
 class Mc:
-    def __init__(self, instance: object):
-        self._instance = instance
+    def __init__(self, ma_instance: 'MagnitudeAnalysis'):
+        self._ma = ma_instance
 
-    def maxc(self, bin_size: float, mags: np.ndarray = None) -> float:
+    def maxc(self, bin_size: float, mags: ArrayLike = None) -> float:
         """
         Calculates the magnitude of completeness (Mc) for the seismic catalog
         using the MAXC method.
         """
-        bins, events_per_bin, _ = self._instance.fmd(
+        bins, events_per_bin, _ = self._ma.fmd(
             bin_size=bin_size,
             plot=False,
             return_values=True,
@@ -31,8 +31,309 @@ class Mc:
         decimals = self._count_decimals(bin_size)
         return round(max_event_count_bin, decimals)
 
+    def gft(
+        self,
+        bin_size: float,
+        mags: ArrayLike = None,
+        gft_plot: bool = False,
+        **kwargs
+    ) -> float:
+        """
+        Estimates the completeness magnitude (Mc) using the Goodness-of-Fit Test (GFT).
+        """
+        bins, _, cumulative_events = self._ma.fmd(
+            bin_size=bin_size,
+            plot=False,
+            return_values=True,
+            mags=mags
+        )
+
+        if len(bins) == 0:
+            return np.nan
+
+        max_mc = self.maxc(bin_size=bin_size, mags=mags)
+
+        num_bins = len(bins)
+        a_values = np.zeros(num_bins)
+        b_values = np.zeros(num_bins)
+        R_values = np.zeros(num_bins)
+
+        for i in range(num_bins):
+            cutoff_magnitude = round(bins[i], 1)
+            try:
+                result = self._ma._estimate_b_value(
+                    bin_size=bin_size,
+                    mc=cutoff_magnitude,
+                    mags=mags,
+                    plot=False,
+                    return_values=True
+                )
+                if result is None:
+                    continue
+
+                _, a_value, b_value, _, _ = result
+                a_values[i] = a_value
+                b_values[i] = b_value
+            except Exception:
+                continue
+
+            synthetic_gr = 10 ** (a_values[i] - b_values[i] * bins)
+            observed_count = cumulative_events[i:]
+            synthetic_count = synthetic_gr[i:]
+
+            if np.sum(observed_count) == 0:
+                R_values[i] = np.nan
+            else:
+                R_values[i] = (
+                    np.sum(np.abs(observed_count - synthetic_count)) /
+                    np.sum(observed_count)
+                ) * 100
+
+        confidence_levels = [95, 90]
+        GFT_results = [
+            np.where(R_values <= (100 - conf_level)) for conf_level in confidence_levels
+        ]
+
+        for i, result in enumerate(GFT_results):
+            if len(result[0]) > 0:
+                mc = round(bins[result[0][0]], 1)
+                break
+        else:
+            mc = max_mc
+            print('No fits within confidence levels, using MAXC estimate.')
+
+        if gft_plot:
+            self._plot_gft(
+                mc=mc,
+                bins=bins,
+                R_values=R_values,
+                bin_size=bin_size,
+                mags=mags,
+                **kwargs
+            )
+
+        return mc
+
+    def mbs(
+        self,
+        bin_size: float,
+        delta_magnitude: float = 0.4,
+        min_completeness: float = -3,
+        mags: ArrayLike = None,
+        mbs_plot: bool = False,
+        **kwargs
+    ) -> float:
+        """
+        Calculates the magnitude of completeness (Mc) using the 
+        Magnitude Binning Stability (MBS) method.
+        """
+        bins, _, _ = self._ma.fmd(
+            bin_size=bin_size,
+            plot=False,
+            return_values=True,
+            mags=mags
+        )
+
+        if len(bins) == 0:
+            return np.nan
+
+        maxc_completeness = self.maxc(bin_size=bin_size, mags=mags)
+
+        num_bins = len(bins)
+        a_values = np.zeros(num_bins)
+        individual_b_values = np.zeros(num_bins)
+        rolling_avg_b_values = np.full(num_bins, np.nan)
+        shi_bolt_uncertainties = np.zeros(num_bins)
+
+        for i in range(num_bins):
+            cutoff_magnitude = round(bins[i], 1)
+            try:
+                result = self._ma._estimate_b_value(
+                    bin_size=bin_size,
+                    mc=cutoff_magnitude,
+                    mags=mags,
+                    plot=False,
+                    return_values=True
+                )
+                if result is None:
+                    continue
+
+                _, a_value, b_value, _, shi_bolt_uncertainty = result
+                a_values[i] = a_value
+                individual_b_values[i] = b_value
+                shi_bolt_uncertainties[i] = shi_bolt_uncertainty
+            except Exception:
+                a_values[i] = np.nan
+                individual_b_values[i] = np.nan
+                shi_bolt_uncertainties[i] = np.nan
+
+        number_of_bins_in_delta = int(round(delta_magnitude / bin_size))
+        b_value_stability_checks = []
+
+        for i in range(num_bins):
+            if i >= num_bins - number_of_bins_in_delta:
+                b_value_stability_checks.append(False)
+                continue
+
+            window_b_values = individual_b_values[i:i + number_of_bins_in_delta + 1]
+            if np.any(np.isnan(window_b_values)):
+                b_value_stability_checks.append(False)
+            else:
+                rolling_avg = np.mean(window_b_values)
+                rolling_avg_b_values[i] = rolling_avg
+                stability_check = (
+                    np.abs(rolling_avg - individual_b_values[i]) <= 
+                    shi_bolt_uncertainties[i]
+                )
+                b_value_stability_checks.append(stability_check)
+
+        if any(b_value_stability_checks):
+            stable_b_value_bins = bins[np.array(b_value_stability_checks)]
+            mc_candidates_above_minimum = stable_b_value_bins[
+                stable_b_value_bins > min_completeness
+            ]
+            if len(mc_candidates_above_minimum) > 0:
+                mc = round(np.min(mc_candidates_above_minimum), 1)
+            else:
+                mc = maxc_completeness
+        else:
+            mc = maxc_completeness
+
+        if mbs_plot:
+            self._plot_mbs(
+                mc=mc,
+                bins=bins,
+                individual_b_values=individual_b_values,
+                rolling_avg_b_values=rolling_avg_b_values,
+                shi_bolt_uncertainties=shi_bolt_uncertainties,
+                bin_size=bin_size,
+                mags=mags,
+                **kwargs
+            )
+
+        return mc
+
+    def _plot_gft(
+        self,
+        mc: float,
+        bins: ArrayLike,
+        R_values: ArrayLike,
+        bin_size: float,
+        mags: ArrayLike = None,
+        save_figure: bool = False,
+        save_name: str = 'gft',
+        save_extension: str = 'jpg',
+    ) -> None:
+        """
+        Plots the Goodness-of-Fit Test (GFT) results.
+        """
+        pu.set_style(styling.DEFAULT)
+
+        _, ax = plt.subplots(figsize=(10, 5))
+        ax.set_title('Goodness-of-Fit Test (GFT)')
+
+        ax.scatter(
+            bins, R_values, color='white', marker='o',
+            edgecolor='black', linewidth=0.75, label='GFT R vs. $M_{c}$'
+        )
+        ax.plot(bins, R_values, color='black', linewidth=0.75)
+
+        ax.axvline(
+            mc, color='blue', linestyle='--', linewidth=1,
+            label=f'GFT $M_c$ = {round(mc, 1)}'
+        )
+        ax.axhline(5, linestyle='--', color='grey', linewidth=1)
+        ax.axhline(10, linestyle='--', color='grey', linewidth=1)
+        ax.text(
+            0.01, 0.42, '90% Conf.', color='grey', transform=ax.transAxes, fontsize=12,
+            verticalalignment='bottom', horizontalalignment='left'
+        )
+        ax.text(
+            0.01, 0.22, '95% Conf.', color='grey', transform=ax.transAxes, fontsize=12,
+            verticalalignment='bottom', horizontalalignment='left'
+        )
+
+        ax.set_ylim(0, 25)
+        ax.set_xlabel('Cut-off magnitude', fontsize=12)
+        ax.set_ylabel('GFT R statistic', fontsize=12)
+
+        if mags is None:
+            mags = self._ma._instance.data.mag
+
+        min_tick_positions = np.arange(
+            mags.min(), mags.max() + bin_size, bin_size
+        )
+        ax.set_xticks(min_tick_positions, minor=True)
+
+        ax.grid(True, alpha=0.25, axis='x', linestyle=':')
+        ax.legend(loc='best', frameon=False,)
+
+        if save_figure:
+            pu.save_figure(save_name, save_extension)
+
+        plt.show()
+        pu.reset_style()
+
+    def _plot_mbs(
+        self,
+        mc: float,
+        bins: ArrayLike,
+        individual_b_values: ArrayLike,
+        rolling_avg_b_values: ArrayLike,
+        shi_bolt_uncertainties: ArrayLike,
+        bin_size: float,
+        mags: ArrayLike = None,
+        save_figure: bool = False,
+        save_name: str = 'mbs',
+        save_extension: str = 'jpg',
+    ) -> None:
+        """
+        Plots the Magnitude Binning Stability (MBS) results.
+        """
+        pu.set_style(styling.DEFAULT)
+
+        _, ax = plt.subplots(figsize=(10, 5))
+        ax.set_title('Magnitude Binning Stability (MBS)')
+
+        ax.errorbar(
+            bins, individual_b_values, yerr=shi_bolt_uncertainties, color='black',
+            fmt='o', capthick=1, capsize=3, label='$b-value$ at $M_{c}$'
+        )
+
+        ax.scatter(
+            bins, rolling_avg_b_values, color='white', marker='o',
+            edgecolor='red', linewidth=0.75,
+            label="Avg. $b-value$, $M_{c}$ to $M_{c} + \\Delta M$"
+        )
+
+        ax.axvline(
+            mc, color='blue', linestyle='--', linewidth=1,
+            label=f"MBS $M_c$ = {round(mc, 1)}"
+        )
+
+        ax.set_ylim(0, 4)
+        ax.set_xlabel('Cut-off magnitude')
+        ax.set_ylabel('$b-value$ estimate')
+
+        if mags is None:
+            mags = self._ma._instance.data.mag
+
+        min_tick_positions = np.arange(
+            mags.min(), mags.max() + bin_size, bin_size
+        )
+        ax.set_xticks(min_tick_positions, minor=True)
+
+        ax.grid(True, alpha=0.25, axis='x', linestyle=':')
+        ax.legend(loc='best', frameon=False)
+
+        if save_figure:
+            pu.save_figure(save_name, save_extension)
+
+        plt.show()
+        pu.reset_style()
+
     @staticmethod
-    def _count_decimals(number):
+    def _count_decimals(number: float) -> int:
         """
         Calculate the number of decimal places in a given number.
         """
@@ -243,7 +544,7 @@ class MagnitudeAnalysis:
             bin_size: float,
             plot: bool = True,
             return_values: bool = False,
-            mags: np.ndarray = None,
+            mags: ArrayLike = None,
             **kwargs
     ) -> tuple[ArrayLike, ArrayLike, ArrayLike]:
         """
@@ -390,7 +691,7 @@ class MagnitudeAnalysis:
             If the selected Mc type or value is not valid.
         """
         if isinstance(mc, str):
-            mc = self._estimate_mc(bin_size, mc)
+            mc = self._estimate_mc(bin_size, mc, plot_mc=True)
             return self._estimate_b_value(
                 bin_size=bin_size, mc=mc, **kwargs
             )
@@ -547,7 +848,12 @@ class MagnitudeAnalysis:
                 if len(mags) < 2:
                     continue
 
-                mc = self._estimate_mc(bin_size=bin_size, method=mc_method, mags=mags)
+                mc = self._estimate_mc(
+                    bin_size=bin_size,
+                    method=mc_method,
+                    plot_mc=False,
+                    mags=mags
+                )
 
                 if np.isnan(mc):
                     continue
@@ -611,7 +917,12 @@ class MagnitudeAnalysis:
                 if len(mags) < 2:
                     continue
 
-                mc = self._estimate_mc(bin_size=bin_size, method=mc_method, mags=mags)
+                mc = self._estimate_mc(
+                    bin_size=bin_size,
+                    method=mc_method,
+                    plot_mc=False,
+                    mags=mags
+                )
 
                 if np.isnan(mc):
                     continue
@@ -672,7 +983,8 @@ class MagnitudeAnalysis:
             self,
             bin_size: float,
             method: str,
-            mags: np.ndarray = None
+            plot_mc: bool = False,
+            mags: ArrayLike = None
     ) -> float:
         """
         Estimates catalog's magnitude of completeness (Mc) using the selected
@@ -680,6 +992,10 @@ class MagnitudeAnalysis:
         """
         if method == 'maxc':
             return self.mc.maxc(bin_size, mags=mags)
+        if method == 'gft':
+            return self.mc.gft(bin_size, mags=mags, gft_plot=plot_mc)
+        if method == 'mbs':
+            return self.mc.mbs(bin_size, mags=mags, mbs_plot=plot_mc)
         else:
             raise ValueError('Mc value is not valid.')
 
@@ -687,7 +1003,7 @@ class MagnitudeAnalysis:
             self,
             bin_size: float,
             mc: float,
-            mags: np.ndarray = None,
+            mags: ArrayLike = None,
             plot: bool = True,
             return_values: bool = False,
             **kwargs
