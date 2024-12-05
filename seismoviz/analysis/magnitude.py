@@ -193,6 +193,7 @@ class MagnitudeAnalysis:
             bin_size: float,
             plot: bool = True,
             return_values: bool = False,
+            mags: np.ndarray = None,
             **kwargs
     ) -> tuple[ArrayLike, ArrayLike, ArrayLike]:
         """
@@ -235,11 +236,31 @@ class MagnitudeAnalysis:
                 Array with the cumulative number of events for magnitudes greater than 
                 or equal to each bin.
         """
-        lowest_bin = np.floor(np.min(self._instance.data.mag) / bin_size) * bin_size
-        highest_bin = np.ceil(np.max(self._instance.data.mag) / bin_size) * bin_size
+        if mags is None:
+            mags = self._instance.data.mag.values
+
+        mags = mags[~np.isnan(mags)]
+
+        if len(mags) == 0:
+            if return_values:
+                return np.array([]), np.array([]), np.array([])
+            else:
+                print("No valid magnitude data available to compute FMD.")
+                return
+
+        lowest_bin = np.floor(np.min(mags) / bin_size) * bin_size
+        highest_bin = np.ceil(np.max(mags) / bin_size) * bin_size
+
+        if lowest_bin >= highest_bin:
+            if return_values:
+                return np.array([]), np.array([]), np.array([])
+            else:
+                print("Invalid magnitude range to compute FMD.")
+                return
+
         bin_edges = np.arange(lowest_bin - bin_size / 2, highest_bin + bin_size, bin_size)
 
-        events_per_bin, _ = np.histogram(self._instance.data.mag, bins=bin_edges)
+        events_per_bin, _ = np.histogram(mags, bins=bin_edges)
         cumulative_events = np.cumsum(events_per_bin[::-1])[::-1]
         bins = bin_edges[:-1] + bin_size / 2
 
@@ -333,11 +354,12 @@ class MagnitudeAnalysis:
     def b_value_over_time(
         self,
         bin_size: float,
-        window_type: str = 'event',
-        window_size: int | str = 100,
+        mc_method: str,
+        window_type: str,
+        window_size: int | str,
         step_size: int | str = None,
-        mc_method: str = 'maxc',
         uncertainty: str = 'shi_bolt',
+        min_events_ratio: float = 0.5,
         plot: bool = True,
         return_values: bool = False,
         **kwargs
@@ -352,16 +374,18 @@ class MagnitudeAnalysis:
             The size of each magnitude bin for calculating frequency-magnitude 
             distribution.
 
+        mc_method : str, optional
+            The method to calculate the magnitude of completeness.
+
         window_type : str, optional
             The type of windowing method to use: ``'event'`` for a fixed number 
-            of events per window, or ``'time'`` for time-based windows. Default 
-            is ``'event'.``
+            of events per window, or ``'time'`` for time-based windows.
 
         window_size : int or str, optional
             The size of each window. For ``'event'`` windowing, this should be 
             an integer specifying the number of events. For ``'time'`` windowing, 
             this should be a string representing a pandas time offset alias (e.g., 
-            ``'1D'`` for one day). Default is 100.
+            ``'1D'`` for one day).
 
         step_size : int or str, optional
             The step size for moving the window. For ``'event'`` windowing, this 
@@ -369,14 +393,15 @@ class MagnitudeAnalysis:
             representing a pandas time offset alias. If not provided, defaults 
             to the window_size (non-overlapping windows).
 
-        mc_method : str, optional
-            The method to calculate the magnitude of completeness. Default is 
-            ``'maxc'``.
-
         uncertainty : str, optional
             Type of uncertainty to display in the plot. Options are ``'shi_bolt'`` 
             for Shi & Bolt uncertainty and ``'aki'`` for Aki uncertainty. Default 
             is ``'shi_bolt'``.
+
+        min_events_ratio : float, optional
+            The minimum fraction (between 0 and 1) of events above the magnitude 
+            of completeness required to calculate the b-value for a window. Default 
+            is 0.5 (50%).
 
         plot : bool, optional
             If ``True``, plots the frequency-magnitude distribution with the 
@@ -435,13 +460,17 @@ class MagnitudeAnalysis:
         ------
         ValueError
             If invalid values or types are provided for ``window_type``, 
-            ``window_size``, or ``step_size``.
+            ``window_size``, or ``step_size``, or if ``min_events_ratio`` is 
+            not between 0 and 1.
         """
+        if not (0 <= min_events_ratio <= 1):
+                raise ValueError("min_events_ratio must be between 0 and 1.")
+
         data = self._instance.data.sort_values('time').reset_index(drop=True)
 
+        mc_values = []
         b_values, times = [], []
         aki_uncs, shi_bolt_uncs = [], []
-        mc_values = []
 
         if window_type == 'event':
             if not isinstance(window_size, int):
@@ -463,18 +492,36 @@ class MagnitudeAnalysis:
             for idx in indices:
                 window_data = data.iloc[idx:idx + window_size]
                 mags = window_data.mag.values
+                mags = mags[~np.isnan(mags)]
 
-                if len(mags) < 2 or np.all(np.isnan(mags)):
+                if len(mags) < 2:
                     continue
 
-                mc = self._calculate_mc_for_window(mags, bin_size, mc_method)
+                mc = self._estimate_mc(bin_size=bin_size, method=mc_method, mags=mags)
 
                 if np.isnan(mc):
                     continue
 
-                b_value, aki_uncertainty, shi_bolt_uncertainty = self._calculate_b_value_for_window(
-                    mags, bin_size, mc
+                # Calculate the number of events above Mc
+                threshold = mc - bin_size / 2
+                events_above_mc = mags[mags >= threshold]
+
+                # Check if the fraction of events above Mc meets the minimum requirement
+                if len(events_above_mc) < min_events_ratio * len(mags):
+                    continue  # Skip this window
+
+                result = self._estimate_b_value(
+                    bin_size=bin_size,
+                    mc=mc,
+                    mags=mags,
+                    plot=False,
+                    return_values=True
                 )
+
+                if result is None:
+                    continue
+
+                _, _, b_value, aki_uncertainty, shi_bolt_uncertainty = result
 
                 if np.isnan(b_value):
                     continue
@@ -511,18 +558,34 @@ class MagnitudeAnalysis:
                 window_data = data.loc[window_start:window_end].reset_index()
 
                 mags = window_data.mag.values
+                mags = mags[~np.isnan(mags)]
 
-                if len(mags) < 2 or np.all(np.isnan(mags)):
+                if len(mags) < 2:
                     continue
 
-                mc = self._calculate_mc_for_window(mags, bin_size, mc_method)
+                mc = self._estimate_mc(bin_size=bin_size, method=mc_method, mags=mags)
 
                 if np.isnan(mc):
                     continue
 
-                b_value, aki_uncertainty, shi_bolt_uncertainty = self._calculate_b_value_for_window(
-                    mags, bin_size, mc
+                threshold = mc - bin_size / 2
+                events_above_mc = mags[mags >= threshold]
+
+                if len(events_above_mc) < min_events_ratio * len(mags):
+                    continue
+
+                result = self._estimate_b_value(
+                    bin_size=bin_size,
+                    mc=mc,
+                    mags=mags,
+                    plot=False,
+                    return_values=True
                 )
+
+                if result is None:
+                    continue
+
+                _, _, b_value, aki_uncertainty, shi_bolt_uncertainty = result
 
                 if np.isnan(b_value):
                     continue
@@ -557,7 +620,7 @@ class MagnitudeAnalysis:
         if return_values:
             return times, b_values, aki_uncs, shi_bolt_uncs, mc_values
 
-    def _maxc(self, bin_size: float) -> float:
+    def _maxc(self, bin_size: float, mags: np.ndarray = None) -> float:
         """
         Calculates the magnitude of completeness (Mc) for the seismic catalog
         using the MAXC method.
@@ -565,23 +628,29 @@ class MagnitudeAnalysis:
         bins, events_per_bin, _ = self.fmd(
             bin_size=bin_size,
             plot=False,
-            return_values=True
+            return_values=True,
+            mags=mags
         )
+
+        if len(events_per_bin) == 0 or len(bins) == 0:
+            return np.nan
+
         max_event_count_bin = bins[np.argmax(events_per_bin)]
         decimals = self._count_decimals(bin_size)
         return round(max_event_count_bin, decimals)
-
+    
     def _estimate_mc(
             self,
             bin_size: float,
-            method: str
+            method: str,
+            mags: np.ndarray = None
     ) -> float:
         """
         Estimates catalog's magnitude of completeness (Mc) using the selected
         method.
         """
         if method == 'maxc':
-            return self._maxc(bin_size)
+            return self._maxc(bin_size, mags=mags)
         else:
             raise ValueError('Mc value is not valid.')
 
@@ -593,44 +662,10 @@ class MagnitudeAnalysis:
             plot: bool = True,
             return_values: bool = False,
             **kwargs
-        ) -> tuple[float, float, float, float]:
+    ) -> tuple[float, float, float, float]:
         """
         Estimates the b-value for seismic events, and calculates the associated 
         uncertainties.
-
-        Parameters
-        ----------
-        bin_size : float
-            The size of each magnitude bin for calculating frequency-magnitude distribution.
-
-        mc : float
-            The magnitude of completeness (threshold), above which the b-value 
-            estimation is considered valid.
-
-        mags : np.ndarray, optional
-            An array of magnitudes to use for the calculation. If not provided,
-            the method uses self._instance.data.mag.values.
-
-        plot : bool, optional
-            If True, plots the frequency-magnitude distribution with the 
-            calculated b-value curve. Default is True.
-
-        return_values : bool, optional
-            If True, returns the calculated values. Default is False.
-
-        Returns
-        -------
-        tuple[float, float, float, float]
-            - mc : float
-                The magnitude of completeness value.
-            - a_value : float
-                The a-value, representing the logarithmic scale of the seismicity rate.
-            - b_value : float
-                The b-value, indicating the relative occurrence of large and small earthquakes.
-            - aki_uncertainty : float
-                The Aki uncertainty in the b-value estimation.
-            - shi_bolt_uncertainty : float
-                The Shi and Bolt uncertainty in the b-value estimation.
         """
         decimals = self._count_decimals(bin_size)
 
@@ -641,26 +676,34 @@ class MagnitudeAnalysis:
         if mags is None:
             mags = self._instance.data.mag.values
 
-        fm = mags[mags > threshold]
+        mags = mags[~np.isnan(mags)]
+        fm = mags[mags >= threshold]
         num_events = fm.size
 
-        if num_events < 2:
+        if num_events < 2 or np.std(fm) == 0:
             a_value, b_value = np.nan, np.nan
             shi_bolt_uncertainty, aki_uncertainty = np.nan, np.nan
         else:
             mean_magnitude = np.mean(fm)
             delta_m = mean_magnitude - threshold
-            b_value = log10_e / delta_m
-            a_value = np.log10(num_events) + b_value * mag_compl
-            aki_uncertainty = b_value / np.sqrt(num_events)
-            variance = np.var(fm, ddof=1)
-            shi_bolt_uncertainty = 2.3 * b_value**2 * np.sqrt(variance / num_events)
+
+            if delta_m == 0:
+                b_value = np.nan
+                aki_uncertainty = np.nan
+                shi_bolt_uncertainty = np.nan
+            else:
+                b_value = log10_e / delta_m
+                a_value = np.log10(num_events) + b_value * mag_compl
+                aki_uncertainty = b_value / np.sqrt(num_events)
+                variance = np.var(fm, ddof=1)
+                shi_bolt_uncertainty = 2.3 * b_value**2 * np.sqrt(variance / num_events)
 
         if plot:
             bins, events_per_bin, cumulative_events = self.fmd(
                 bin_size=bin_size,
                 plot=False,
-                return_values=True
+                return_values=True,
+                mags=mags
             )
             bins = np.round(bins, decimals)
 
@@ -883,65 +926,3 @@ class MagnitudeAnalysis:
         """
         decimal_str = str(number).split(".")[1] if "." in str(number) else ""
         return len(decimal_str)
-
-    def _calculate_mc_for_window(self, mags: np.ndarray, bin_size: float, mc_method: str) -> float:
-        if mc_method == 'maxc':
-            mags = mags[~np.isnan(mags)]
-
-            if len(mags) < 2:
-                return np.nan
-
-            lowest_bin = np.floor(np.min(mags) / bin_size) * bin_size
-            highest_bin = np.ceil(np.max(mags) / bin_size) * bin_size
-
-            if lowest_bin >= highest_bin:
-                return np.nan
-
-            bin_edges = np.arange(lowest_bin - bin_size / 2, highest_bin + bin_size, bin_size)
-
-            if len(bin_edges) < 2:
-                return np.nan
-
-            events_per_bin, _ = np.histogram(mags, bins=bin_edges)
-            bins = bin_edges[:-1] + bin_size / 2
-
-            if len(events_per_bin) == 0:
-                return np.nan
-
-            max_event_count_bin = bins[np.argmax(events_per_bin)]
-            decimals = self._count_decimals(bin_size)
-            mc = round(max_event_count_bin, decimals)
-            return mc
-        else:
-            raise ValueError(f"Unsupported mc_method: {mc_method}")
-
-    def _calculate_b_value_for_window(self, mags: np.ndarray, bin_size: float, mc: float) -> tuple:
-        decimals = self._count_decimals(bin_size)
-        mag_compl = round(mc, decimals)
-        threshold = mag_compl - (bin_size / 2)
-        log10_e = np.log10(np.exp(1))
-
-        mags = mags[~np.isnan(mags)]
-
-        fm = mags[mags >= threshold]
-        num_events = fm.size
-
-        if num_events < 2:
-            b_value = np.nan
-            aki_uncertainty = np.nan
-            shi_bolt_uncertainty = np.nan
-        else:
-            mean_magnitude = np.mean(fm)
-            delta_m = mean_magnitude - threshold
-
-            if delta_m == 0:
-                b_value = np.nan
-                aki_uncertainty = np.nan
-                shi_bolt_uncertainty = np.nan
-            else:
-                b_value = log10_e / delta_m
-                aki_uncertainty = b_value / np.sqrt(num_events)
-                variance = np.var(fm, ddof=1)
-                shi_bolt_uncertainty = 2.3 * b_value**2 * np.sqrt(variance / num_events)
-
-        return b_value, aki_uncertainty, shi_bolt_uncertainty
