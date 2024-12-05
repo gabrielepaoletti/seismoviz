@@ -48,56 +48,52 @@ class Mc:
             mags=mags
         )
 
-        if len(bins) == 0:
+        if not bins.size:
             return np.nan
 
         max_mc = self.maxc(bin_size=bin_size, mags=mags)
 
-        num_bins = len(bins)
-        a_values = np.zeros(num_bins)
-        b_values = np.zeros(num_bins)
-        R_values = np.zeros(num_bins)
-
-        for i in range(num_bins):
-            cutoff_magnitude = round(bins[i], 1)
-            try:
-                result = self._ma._estimate_b_value(
-                    bin_size=bin_size,
-                    mc=cutoff_magnitude,
-                    mags=mags,
-                    plot=False,
-                    return_values=True
-                )
-                if result is None:
-                    continue
-
-                _, a_value, b_value, _, _ = result
-                a_values[i] = a_value
-                b_values[i] = b_value
-            except Exception:
+        results = []
+        for i, bin_mag in enumerate(bins):
+            cutoff_magnitude = round(bin_mag, 1)
+            result = self._ma._estimate_b_value(
+                bin_size=bin_size,
+                mc=cutoff_magnitude,
+                mags=mags,
+                plot=False,
+                return_values=True
+            )
+            if result is None:
                 continue
 
-            synthetic_gr = 10 ** (a_values[i] - b_values[i] * bins)
+            _, a_value, b_value, _, _ = result
+
+            synthetic_gr = 10 ** (a_value - b_value * bins)
             observed_count = cumulative_events[i:]
             synthetic_count = synthetic_gr[i:]
 
-            if np.sum(observed_count) == 0:
-                R_values[i] = np.nan
+            total_observed = observed_count.sum()
+            if total_observed == 0:
+                continue
+
+            R_value = (np.abs(observed_count - synthetic_count).sum() / total_observed) * 100
+            results.append((bin_mag, R_value))
+
+        if not results:
+            print('No valid results found, using MAXC estimate.')
+            return max_mc
+
+        _, R_values = zip(*results)
+
+        for conf_level in [95, 90]:
+            acceptable_R = 100 - conf_level
+            for bin_mag, R_value in results:
+                if R_value <= acceptable_R:
+                    mc = round(bin_mag, 1)
+                    break
             else:
-                R_values[i] = (
-                    np.sum(np.abs(observed_count - synthetic_count)) /
-                    np.sum(observed_count)
-                ) * 100
-
-        confidence_levels = [95, 90]
-        GFT_results = [
-            np.where(R_values <= (100 - conf_level)) for conf_level in confidence_levels
-        ]
-
-        for i, result in enumerate(GFT_results):
-            if len(result[0]) > 0:
-                mc = round(bins[result[0][0]], 1)
-                break
+                continue
+            break
         else:
             mc = max_mc
             print('No fits within confidence levels, using MAXC estimate.')
@@ -134,76 +130,77 @@ class Mc:
             mags=mags
         )
 
-        if len(bins) == 0:
+        if not bins.size:
             return np.nan
 
         maxc_completeness = self.maxc(bin_size=bin_size, mags=mags)
 
-        num_bins = len(bins)
-        a_values = np.zeros(num_bins)
-        individual_b_values = np.zeros(num_bins)
-        rolling_avg_b_values = np.full(num_bins, np.nan)
-        shi_bolt_uncertainties = np.zeros(num_bins)
-
-        for i in range(num_bins):
-            cutoff_magnitude = round(bins[i], 1)
-            try:
-                result = self._ma._estimate_b_value(
-                    bin_size=bin_size,
-                    mc=cutoff_magnitude,
-                    mags=mags,
-                    plot=False,
-                    return_values=True
-                )
-                if result is None:
-                    continue
-
-                _, a_value, b_value, _, shi_bolt_uncertainty = result
-                a_values[i] = a_value
-                individual_b_values[i] = b_value
-                shi_bolt_uncertainties[i] = shi_bolt_uncertainty
-            except Exception:
-                a_values[i] = np.nan
-                individual_b_values[i] = np.nan
-                shi_bolt_uncertainties[i] = np.nan
-
-        number_of_bins_in_delta = int(round(delta_magnitude / bin_size))
-        b_value_stability_checks = []
-
-        for i in range(num_bins):
-            if i >= num_bins - number_of_bins_in_delta:
-                b_value_stability_checks.append(False)
+        results = []
+        for bin_mag in bins:
+            cutoff_magnitude = round(bin_mag, 1)
+            result = self._ma._estimate_b_value(
+                bin_size=bin_size,
+                mc=cutoff_magnitude,
+                mags=mags,
+                plot=False,
+                return_values=True
+            )
+            if result is None:
                 continue
 
-            window_b_values = individual_b_values[i:i + number_of_bins_in_delta + 1]
-            if np.any(np.isnan(window_b_values)):
-                b_value_stability_checks.append(False)
-            else:
-                rolling_avg = np.mean(window_b_values)
-                rolling_avg_b_values[i] = rolling_avg
-                stability_check = (
-                    np.abs(rolling_avg - individual_b_values[i]) <= 
-                    shi_bolt_uncertainties[i]
-                )
-                b_value_stability_checks.append(stability_check)
+            _, _, b_value, _, shi_bolt_uncertainty = result
+            results.append({
+                'bin_mag': bin_mag,
+                'b_value': b_value,
+                'shi_bolt_uncertainty': shi_bolt_uncertainty
+            })
 
-        if any(b_value_stability_checks):
-            stable_b_value_bins = bins[np.array(b_value_stability_checks)]
-            mc_candidates_above_minimum = stable_b_value_bins[
-                stable_b_value_bins > min_completeness
-            ]
-            if len(mc_candidates_above_minimum) > 0:
-                mc = round(np.min(mc_candidates_above_minimum), 1)
+        if not results:
+            print('No valid results found, using MAXC estimate.')
+            return maxc_completeness
+
+        bin_mags = np.array([res['bin_mag'] for res in results])
+        b_values = np.array([res['b_value'] for res in results])
+        shi_bolt_uncertainties = np.array([res['shi_bolt_uncertainty'] for res in results])
+
+        number_of_bins_in_delta = int(round(delta_magnitude / bin_size))
+
+        rolling_avg_b_values = np.full_like(b_values, np.nan)
+        b_value_stability_checks = np.full_like(b_values, False, dtype=bool)
+
+        for i in range(len(b_values)):
+            end_idx = i + number_of_bins_in_delta + 1
+            if end_idx > len(b_values):
+                break
+
+            window_b_values = b_values[i:end_idx]
+            window_uncertainties = shi_bolt_uncertainties[i:end_idx]
+
+            if np.any(np.isnan(window_b_values)) or np.any(np.isnan(window_uncertainties)):
+                continue
+
+            rolling_avg = np.mean(window_b_values)
+            rolling_avg_b_values[i] = rolling_avg
+
+            stability_check = np.abs(rolling_avg - b_values[i]) <= shi_bolt_uncertainties[i]
+            b_value_stability_checks[i] = stability_check
+
+        if np.any(b_value_stability_checks):
+            stable_bins = bin_mags[b_value_stability_checks]
+            mc_candidates = stable_bins[stable_bins > min_completeness]
+            if mc_candidates.size > 0:
+                mc = round(np.min(mc_candidates), 1)
             else:
                 mc = maxc_completeness
         else:
             mc = maxc_completeness
 
+        # Plotting if mbs_plot is True
         if mbs_plot:
             self._plot_mbs(
                 mc=mc,
-                bins=bins,
-                individual_b_values=individual_b_values,
+                bins=bin_mags,
+                individual_b_values=b_values,
                 rolling_avg_b_values=rolling_avg_b_values,
                 shi_bolt_uncertainties=shi_bolt_uncertainties,
                 bin_size=bin_size,
@@ -862,7 +859,7 @@ class MagnitudeAnalysis:
                 events_above_mc = mags[mags >= threshold]
 
                 if len(events_above_mc) < min_events_ratio * len(mags):
-                    continue  # Skip this window
+                    continue
 
                 result = self._estimate_b_value(
                     bin_size=bin_size,
