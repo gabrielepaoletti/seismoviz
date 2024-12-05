@@ -341,7 +341,7 @@ class MagnitudeAnalysis:
         plot: bool = True,
         return_values: bool = False,
         **kwargs
-    ) -> tuple[list, list, list, list] | None:
+    ) -> tuple[list, list, list, list, list] | None:
         """
         Calculates the b-value over time windows, either by grouping a fixed 
         number of events or by fixed time intervals.
@@ -437,11 +437,11 @@ class MagnitudeAnalysis:
             If invalid values or types are provided for ``window_type``, 
             ``window_size``, or ``step_size``.
         """
-        mc = self._estimate_mc(bin_size, mc_method)
         data = self._instance.data.sort_values('time').reset_index(drop=True)
 
         b_values, times = [], []
         aki_uncs, shi_bolt_uncs = [], []
+        mc_values = []
 
         if window_type == 'event':
             if not isinstance(window_size, int):
@@ -464,18 +464,20 @@ class MagnitudeAnalysis:
                 window_data = data.iloc[idx:idx + window_size]
                 mags = window_data.mag.values
 
-                if len(mags) < 2:
+                if len(mags) < 2 or np.all(np.isnan(mags)):
                     continue
 
-                _, _, b_value, aki_uncertainty, shi_bolt_uncertainty = (
-                    self._estimate_b_value(
-                        bin_size=bin_size,
-                        mc=mc,
-                        mags=mags,
-                        plot=False,
-                        return_values=True
-                    )
+                mc = self._calculate_mc_for_window(mags, bin_size, mc_method)
+
+                if np.isnan(mc):
+                    continue
+
+                b_value, aki_uncertainty, shi_bolt_uncertainty = self._calculate_b_value_for_window(
+                    mags, bin_size, mc
                 )
+
+                if np.isnan(b_value):
+                    continue
 
                 middle_index = len(window_data) // 2
                 time = window_data.time.iloc[middle_index]
@@ -483,6 +485,7 @@ class MagnitudeAnalysis:
                 b_values.append(b_value)
                 aki_uncs.append(aki_uncertainty)
                 shi_bolt_uncs.append(shi_bolt_uncertainty)
+                mc_values.append(mc)
 
         elif window_type == 'time':
             if not isinstance(window_size, str):
@@ -507,32 +510,35 @@ class MagnitudeAnalysis:
                 window_end = window_start + pd.Timedelta(window_size)
                 window_data = data.loc[window_start:window_end].reset_index()
 
-                if len(window_data) < 2:
-                    continue
-
                 mags = window_data.mag.values
 
-                _, _, b_value, aki_uncertainty, shi_bolt_uncertainty = (
-                    self._estimate_b_value(
-                        bin_size=bin_size,
-                        mc=mc,
-                        mags=mags,
-                        plot=False,
-                        return_values=True
-                    )
+                if len(mags) < 2 or np.all(np.isnan(mags)):
+                    continue
+
+                mc = self._calculate_mc_for_window(mags, bin_size, mc_method)
+
+                if np.isnan(mc):
+                    continue
+
+                b_value, aki_uncertainty, shi_bolt_uncertainty = self._calculate_b_value_for_window(
+                    mags, bin_size, mc
                 )
+
+                if np.isnan(b_value):
+                    continue
 
                 times.append(window_start + (window_end - window_start) / 2)
                 b_values.append(b_value)
                 aki_uncs.append(aki_uncertainty)
                 shi_bolt_uncs.append(shi_bolt_uncertainty)
+                mc_values.append(mc)
 
             data.reset_index(inplace=True)
 
         else:
             raise ValueError("window_type must be 'event' or 'time'.")
 
-        if plot:
+        if plot and times:
             selected_uncertainties = (
                 aki_uncs if uncertainty == 'aki' else shi_bolt_uncs
             )
@@ -545,10 +551,11 @@ class MagnitudeAnalysis:
                 uncertainty_label=uncertainty_label,
                 **kwargs
             )
+        elif plot and not times:
+            print("No data available to plot.")
 
         if return_values:
-            return times, b_values, aki_uncs, shi_bolt_uncs
-
+            return times, b_values, aki_uncs, shi_bolt_uncs, mc_values
 
     def _maxc(self, bin_size: float) -> float:
         """
@@ -876,3 +883,65 @@ class MagnitudeAnalysis:
         """
         decimal_str = str(number).split(".")[1] if "." in str(number) else ""
         return len(decimal_str)
+
+    def _calculate_mc_for_window(self, mags: np.ndarray, bin_size: float, mc_method: str) -> float:
+        if mc_method == 'maxc':
+            mags = mags[~np.isnan(mags)]
+
+            if len(mags) < 2:
+                return np.nan
+
+            lowest_bin = np.floor(np.min(mags) / bin_size) * bin_size
+            highest_bin = np.ceil(np.max(mags) / bin_size) * bin_size
+
+            if lowest_bin >= highest_bin:
+                return np.nan
+
+            bin_edges = np.arange(lowest_bin - bin_size / 2, highest_bin + bin_size, bin_size)
+
+            if len(bin_edges) < 2:
+                return np.nan
+
+            events_per_bin, _ = np.histogram(mags, bins=bin_edges)
+            bins = bin_edges[:-1] + bin_size / 2
+
+            if len(events_per_bin) == 0:
+                return np.nan
+
+            max_event_count_bin = bins[np.argmax(events_per_bin)]
+            decimals = self._count_decimals(bin_size)
+            mc = round(max_event_count_bin, decimals)
+            return mc
+        else:
+            raise ValueError(f"Unsupported mc_method: {mc_method}")
+
+    def _calculate_b_value_for_window(self, mags: np.ndarray, bin_size: float, mc: float) -> tuple:
+        decimals = self._count_decimals(bin_size)
+        mag_compl = round(mc, decimals)
+        threshold = mag_compl - (bin_size / 2)
+        log10_e = np.log10(np.exp(1))
+
+        mags = mags[~np.isnan(mags)]
+
+        fm = mags[mags >= threshold]
+        num_events = fm.size
+
+        if num_events < 2:
+            b_value = np.nan
+            aki_uncertainty = np.nan
+            shi_bolt_uncertainty = np.nan
+        else:
+            mean_magnitude = np.mean(fm)
+            delta_m = mean_magnitude - threshold
+
+            if delta_m == 0:
+                b_value = np.nan
+                aki_uncertainty = np.nan
+                shi_bolt_uncertainty = np.nan
+            else:
+                b_value = log10_e / delta_m
+                aki_uncertainty = b_value / np.sqrt(num_events)
+                variance = np.var(fm, ddof=1)
+                shi_bolt_uncertainty = 2.3 * b_value**2 * np.sqrt(variance / num_events)
+
+        return b_value, aki_uncertainty, shi_bolt_uncertainty
