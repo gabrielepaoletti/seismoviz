@@ -32,11 +32,11 @@ class Mc:
         return round(max_event_count_bin, decimals)
 
     def gft(
-        self,
-        bin_size: float,
-        mags: ArrayLike = None,
-        gft_plot: bool = False,
-        **kwargs
+            self,
+            bin_size: float,
+            mags: ArrayLike = None,
+            gft_plot: bool = False,
+            **kwargs
     ) -> float:
         """
         Estimates the completeness magnitude (Mc) using the Goodness-of-Fit Test (GFT).
@@ -115,13 +115,13 @@ class Mc:
         return mc
 
     def mbs(
-        self,
-        bin_size: float,
-        delta_magnitude: float = 0.4,
-        min_completeness: float = -3,
-        mags: ArrayLike = None,
-        mbs_plot: bool = False,
-        **kwargs
+            self,
+            bin_size: float,
+            delta_magnitude: float = 0.4,
+            min_completeness: float = -3,
+            mags: ArrayLike = None,
+            mbs_plot: bool = False,
+            **kwargs
     ) -> float:
         """
         Calculates the magnitude of completeness (Mc) using the 
@@ -214,15 +214,15 @@ class Mc:
         return mc
 
     def _plot_gft(
-        self,
-        mc: float,
-        bins: ArrayLike,
-        R_values: ArrayLike,
-        bin_size: float,
-        mags: ArrayLike = None,
-        save_figure: bool = False,
-        save_name: str = 'gft',
-        save_extension: str = 'jpg',
+            self,
+            mc: float,
+            bins: ArrayLike,
+            R_values: ArrayLike,
+            bin_size: float,
+            mags: ArrayLike = None,
+            save_figure: bool = False,
+            save_name: str = 'gft',
+            save_extension: str = 'jpg',
     ) -> None:
         """
         Plots the Goodness-of-Fit Test (GFT) results.
@@ -275,17 +275,17 @@ class Mc:
         pu.reset_style()
 
     def _plot_mbs(
-        self,
-        mc: float,
-        bins: ArrayLike,
-        individual_b_values: ArrayLike,
-        rolling_avg_b_values: ArrayLike,
-        shi_bolt_uncertainties: ArrayLike,
-        bin_size: float,
-        mags: ArrayLike = None,
-        save_figure: bool = False,
-        save_name: str = 'mbs',
-        save_extension: str = 'jpg',
+            self,
+            mc: float,
+            bins: ArrayLike,
+            individual_b_values: ArrayLike,
+            rolling_avg_b_values: ArrayLike,
+            shi_bolt_uncertainties: ArrayLike,
+            bin_size: float,
+            mags: ArrayLike = None,
+            save_figure: bool = False,
+            save_name: str = 'mbs',
+            save_extension: str = 'jpg',
     ) -> None:
         """
         Plots the Magnitude Binning Stability (MBS) results.
