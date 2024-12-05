@@ -8,9 +8,60 @@ from seismoviz.analysis.utils import plot_utils as pu
 from numpy.typing import ArrayLike
 
 
+class Mc:
+    def __init__(self, instance: object):
+        self._instance = instance
+
+    def maxc(self, bin_size: float, mags: np.ndarray = None) -> float:
+        """
+        Calculates the magnitude of completeness (Mc) for the seismic catalog
+        using the MAXC method.
+        """
+        bins, events_per_bin, _ = self._instance.fmd(
+            bin_size=bin_size,
+            plot=False,
+            return_values=True,
+            mags=mags
+        )
+
+        if len(events_per_bin) == 0 or len(bins) == 0:
+            return np.nan
+
+        max_event_count_bin = bins[np.argmax(events_per_bin)]
+        decimals = self._count_decimals(bin_size)
+        return round(max_event_count_bin, decimals)
+
+    @staticmethod
+    def _count_decimals(number):
+        """
+        Calculate the number of decimal places in a given number.
+        """
+        decimal_str = str(number).split(".")[1] if "." in str(number) else ""
+        return len(decimal_str)
+
+
+class Uncertainties:
+    def __init__(self):
+        pass
+
+    def shi_bolt(self, b_value: float, variance: float, num_events: int) -> float:
+        """
+        Calculates the Shi & Bolt uncertainty for the b-value estimation.
+        """
+        return 2.3 * b_value**2 * np.sqrt(variance / num_events)
+
+    def aki(self, b_value: float, num_events: int) -> float:
+        """
+        Calculates the Aki uncertainty for the b-value estimation.
+        """
+        return b_value / np.sqrt(num_events)
+
+
 class MagnitudeAnalysis:
     def __init__(self, instance: object):
         self._instance = instance
+        self.mc = Mc(self)
+        self.uncertainties = Uncertainties()
 
     def magnitude_time(
             self,
@@ -27,7 +78,7 @@ class MagnitudeAnalysis:
             ms_line_color: str = 'red',
             ms_line_width: float = 1,
             ms_line_style: str = '-',
-            ms_line_gradient : bool = True,
+            ms_line_gradient: bool = True,
             fig_size: tuple[float, float] = (10, 5),
             save_figure: bool = False,
             save_name: str = 'magnitude_time',
@@ -48,8 +99,8 @@ class MagnitudeAnalysis:
             Default is ``'jet'``.
 
         hl_ms : float
-            The minimum magnitude threshold for highlighting events. Vertical 
-            lines will be added to the plot at dates corresponding to seismic 
+            The minimum magnitude threshold for highlighting events. Vertical
+            lines will be added to the plot at dates corresponding to seismic
             events with a magnitude greater than or equal to this value.
 
         size : float or str, optional
@@ -82,24 +133,24 @@ class MagnitudeAnalysis:
             is ``'upper right'``.
 
         ms_line : float, optional
-            The magnitude threshold above which vertical lines will be added to 
+            The magnitude threshold above which vertical lines will be added to
             the plot. If ``None``, no vertical lines are added. Default is ``None``.
 
         ms_line_color : str, optional
-            The color of the vertical lines. Accepts any Matplotlib-compatible 
+            The color of the vertical lines. Accepts any Matplotlib-compatible
             color string. Default is ``'red'``.
 
         ms_line_width : float, optional
-            The thickness of the vertical lines. Default is 1.5.
+            The thickness of the vertical lines. Default is 1.
 
         ms_line_style : str, optional
             The style of the vertical lines. Default is ``'-'``.
 
         ms_line_gradient : bool, optional
-            If ``True``, the vertical lines will have a gradient effect, fading 
-            from the pecified color to transparent along the y-axis. If ``False``, 
-            the lines will be solid. Default is ``True``.    
-        
+            If ``True``, the vertical lines will have a gradient effect, fading
+            from the pecified color to transparent along the y-axis. If ``False``,
+            the lines will be solid. Default is ``True``.
+
         fig_size : tuple[float, float], optional
             Figure size for the plot. Default is ``(10, 5)``.
 
@@ -187,7 +238,6 @@ class MagnitudeAnalysis:
         plt.show()
         pu.reset_style()
 
-
     def fmd(
             self,
             bin_size: float,
@@ -197,7 +247,7 @@ class MagnitudeAnalysis:
             **kwargs
     ) -> tuple[ArrayLike, ArrayLike, ArrayLike]:
         """
-        Calculates the frequency-magnitude distribution (FMD) for seismic events, 
+        Calculates the frequency-magnitude distribution (FMD) for seismic events,
         which represents the number of events in each magnitude bin.
 
         Parameters
@@ -218,13 +268,13 @@ class MagnitudeAnalysis:
             Base name for the file if `save_figure` is ``True``. Default is ``'fmd'``.
 
         save_extension : str, optional
-            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default 
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default
             is ``'jpg'``.
 
         Returns
         -------
         .. warning::
-            Values are returned only if ``return_values`` argument is set to 
+            Values are returned only if ``return_values`` argument is set to
             ``True``
 
         tuple[ArrayLike, ArrayLike, ArrayLike]
@@ -233,7 +283,7 @@ class MagnitudeAnalysis:
             - ``events_per_bin`` : ArrayLike
                 Array with the number of events in each magnitude bin.
             - ``cumulative_events`` : ArrayLike
-                Array with the cumulative number of events for magnitudes greater than 
+                Array with the cumulative number of events for magnitudes greater than
                 or equal to each bin.
         """
         if mags is None:
@@ -278,62 +328,62 @@ class MagnitudeAnalysis:
 
     def b_value(self, bin_size: float, mc: str | float, **kwargs):
         """
-        Estimates the b-value for seismic events, and calculates the associated 
+        Estimates the b-value for seismic events, and calculates the associated
         uncertainties.
 
         Parameters
         ----------
         bin_size : float
-            The size of each magnitude bin for calculating frequency-magnitude 
+            The size of each magnitude bin for calculating frequency-magnitude
             distribution.
 
         mc : str or float
-            The completeness magnitude (threshold), above which the b-value 
+            The completeness magnitude (threshold), above which the b-value
             estimation is considered valid.
 
         plot : bool, optional
-            If ``True``, plots the frequency-magnitude distribution with the 
+            If ``True``, plots the frequency-magnitude distribution with the
             calculated b-value curve. Default is ``True``.
 
         return_values : bool, optional
-            If ``True``, returns the calculated values. Default is ``False``.            
+            If ``True``, returns the calculated values. Default is ``False``.
 
         plot_uncertainty : str, optional
-            Type of uncertainty to display in the plot. Options are ``'shi_bolt'`` 
-            for Shi and Bolt uncertainty and ``'aki'`` for Aki uncertainty. 
+            Type of uncertainty to display in the plot. Options are ``'shi_bolt'``
+            for Shi and Bolt uncertainty and ``'aki'`` for Aki uncertainty.
             Default is ``'shi_bolt'``.
 
         save_figure : bool, optional
             If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            Base name for the file if `save_figure` is ``True``. Default is 
+            Base name for the file if `save_figure` is ``True``. Default is
             ``'b-value'``.
 
         save_extension : str, optional
-            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). 
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``).
             Default is ``'jpg'``.
 
         Returns
         -------
         .. warning::
-            Values are returned only if ``return_values`` argument is set to 
+            Values are returned only if ``return_values`` argument is set to
             ``True``
-            
+
         tuple[float, float, float, float]
             - ``mc``: float
                 The magnitude of completeness value.
             - ``a_value`` : float
-                The a-value, representing the logarithmic scale of the seismicity 
+                The a-value, representing the logarithmic scale of the seismicity
                 rate.
             - ``b_value`` : float
-                The b-value, indicating the relative occurrence of large and 
+                The b-value, indicating the relative occurrence of large and
                 small earthquakes.
             - ``aki_uncertainty`` : float
                 The Aki uncertainty in the b-value estimation.
             - ``shi_bolt_uncertainty`` : float
                 The Shi and Bolt uncertainty in the b-value estimation.
-        
+
         Raise
         -----
         ValueError
@@ -365,54 +415,54 @@ class MagnitudeAnalysis:
         **kwargs
     ) -> tuple[list, list, list, list, list] | None:
         """
-        Calculates the b-value over time windows, either by grouping a fixed 
+        Calculates the b-value over time windows, either by grouping a fixed
         number of events or by fixed time intervals.
 
         Parameters
         ----------
         bin_size : float
-            The size of each magnitude bin for calculating frequency-magnitude 
+            The size of each magnitude bin for calculating frequency-magnitude
             distribution.
 
         mc_method : str, optional
             The method to calculate the magnitude of completeness.
 
         window_type : str, optional
-            The type of windowing method to use: ``'event'`` for a fixed number 
+            The type of windowing method to use: ``'event'`` for a fixed number
             of events per window, or ``'time'`` for time-based windows.
 
         window_size : int or str, optional
-            The size of each window. For ``'event'`` windowing, this should be 
-            an integer specifying the number of events. For ``'time'`` windowing, 
-            this should be a string representing a pandas time offset alias (e.g., 
+            The size of each window. For ``'event'`` windowing, this should be
+            an integer specifying the number of events. For ``'time'`` windowing,
+            this should be a string representing a pandas time offset alias (e.g.,
             ``'1D'`` for one day).
 
         step_size : int or str, optional
-            The step size for moving the window. For ``'event'`` windowing, this 
-            should be an integer. For ``'time'`` windowing, this should be a string 
-            representing a pandas time offset alias. If not provided, defaults 
+            The step size for moving the window. For ``'event'`` windowing, this
+            should be an integer. For ``'time'`` windowing, this should be a string
+            representing a pandas time offset alias. If not provided, defaults
             to the window_size (non-overlapping windows).
 
         uncertainty : str, optional
-            Type of uncertainty to display in the plot. Options are ``'shi_bolt'`` 
-            for Shi & Bolt uncertainty and ``'aki'`` for Aki uncertainty. Default 
+            Type of uncertainty to display in the plot. Options are ``'shi_bolt'``
+            for Shi & Bolt uncertainty and ``'aki'`` for Aki uncertainty. Default
             is ``'shi_bolt'``.
 
         min_events_ratio : float, optional
-            The minimum fraction (between 0 and 1) of events above the magnitude 
-            of completeness required to calculate the b-value for a window. Default 
+            The minimum fraction (between 0 and 1) of events above the magnitude
+            of completeness required to calculate the b-value for a window. Default
             is 0.5 (50%).
 
         plot : bool, optional
-            If ``True``, plots the frequency-magnitude distribution with the 
+            If ``True``, plots the frequency-magnitude distribution with the
             calculated b-value curve. Default is ``True``.
 
         ms_line : float, optional
-            The magnitude threshold above which vertical lines will be added to 
+            The magnitude threshold above which vertical lines will be added to
             the plot. If ``None``, no vertical lines are added. Default is ``None``.
 
         ms_line_color : str, optional
-            The color of the vertical lines. Accepts any Matplotlib-compatible 
+            The color of the vertical lines. Accepts any Matplotlib-compatible
             color string. Default is ``'red'``.
 
         ms_line_width : float, optional
@@ -422,28 +472,28 @@ class MagnitudeAnalysis:
             The style of the vertical lines. Default is ``'-'``.
 
         ms_line_gradient : bool, optional
-            If ``True``, the vertical lines will have a gradient effect, fading 
-            from the pecified color to transparent along the y-axis. If ``False``, 
+            If ``True``, the vertical lines will have a gradient effect, fading
+            from the pecified color to transparent along the y-axis. If ``False``,
             the lines will be solid. Default is ``True``.
 
         return_values : bool, optional
-            If ``True``, returns the calculated values. Default is ``False``.            
+            If ``True``, returns the calculated values. Default is ``False``.
 
         save_figure : bool, optional
             If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            Base name for the file if `save_figure` is ``True``. Default is 
+            Base name for the file if `save_figure` is ``True``. Default is
             ``'b-value'``.
 
         save_extension : str, optional
-            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). 
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``).
             Default is ``'jpg'``.
 
         Returns
         -------
         .. warning::
-            Values are returned only if ``return_values`` argument is set to 
+            Values are returned only if ``return_values`` argument is set to
             ``True``
 
         tuple[list, list, list, list]
@@ -459,12 +509,12 @@ class MagnitudeAnalysis:
         Raises
         ------
         ValueError
-            If invalid values or types are provided for ``window_type``, 
-            ``window_size``, or ``step_size``, or if ``min_events_ratio`` is 
+            If invalid values or types are provided for ``window_type``,
+            ``window_size``, or ``step_size``, or if ``min_events_ratio`` is
             not between 0 and 1.
         """
         if not (0 <= min_events_ratio <= 1):
-                raise ValueError("min_events_ratio must be between 0 and 1.")
+            raise ValueError("min_events_ratio must be between 0 and 1.")
 
         data = self._instance.data.sort_values('time').reset_index(drop=True)
 
@@ -502,11 +552,9 @@ class MagnitudeAnalysis:
                 if np.isnan(mc):
                     continue
 
-                # Calculate the number of events above Mc
                 threshold = mc - bin_size / 2
                 events_above_mc = mags[mags >= threshold]
 
-                # Check if the fraction of events above Mc meets the minimum requirement
                 if len(events_above_mc) < min_events_ratio * len(mags):
                     continue  # Skip this window
 
@@ -620,25 +668,6 @@ class MagnitudeAnalysis:
         if return_values:
             return times, b_values, aki_uncs, shi_bolt_uncs, mc_values
 
-    def _maxc(self, bin_size: float, mags: np.ndarray = None) -> float:
-        """
-        Calculates the magnitude of completeness (Mc) for the seismic catalog
-        using the MAXC method.
-        """
-        bins, events_per_bin, _ = self.fmd(
-            bin_size=bin_size,
-            plot=False,
-            return_values=True,
-            mags=mags
-        )
-
-        if len(events_per_bin) == 0 or len(bins) == 0:
-            return np.nan
-
-        max_event_count_bin = bins[np.argmax(events_per_bin)]
-        decimals = self._count_decimals(bin_size)
-        return round(max_event_count_bin, decimals)
-    
     def _estimate_mc(
             self,
             bin_size: float,
@@ -650,7 +679,7 @@ class MagnitudeAnalysis:
         method.
         """
         if method == 'maxc':
-            return self._maxc(bin_size, mags=mags)
+            return self.mc.maxc(bin_size, mags=mags)
         else:
             raise ValueError('Mc value is not valid.')
 
@@ -664,7 +693,7 @@ class MagnitudeAnalysis:
             **kwargs
     ) -> tuple[float, float, float, float]:
         """
-        Estimates the b-value for seismic events, and calculates the associated 
+        Estimates the b-value for seismic events, and calculates the associated
         uncertainties.
         """
         decimals = self._count_decimals(bin_size)
@@ -694,9 +723,10 @@ class MagnitudeAnalysis:
             else:
                 b_value = log10_e / delta_m
                 a_value = np.log10(num_events) + b_value * mag_compl
-                aki_uncertainty = b_value / np.sqrt(num_events)
                 variance = np.var(fm, ddof=1)
-                shi_bolt_uncertainty = 2.3 * b_value**2 * np.sqrt(variance / num_events)
+
+                aki_uncertainty = self.uncertainties.aki(b_value, num_events)
+                shi_bolt_uncertainty = self.uncertainties.shi_bolt(b_value, variance, num_events)
 
         if plot:
             bins, events_per_bin, cumulative_events = self.fmd(
@@ -723,14 +753,22 @@ class MagnitudeAnalysis:
         if return_values:
             return mag_compl, a_value, b_value, aki_uncertainty, shi_bolt_uncertainty
 
+    @staticmethod
+    def _count_decimals(number):
+        """
+        Calculate the number of decimal places in a given number.
+        """
+        decimal_str = str(number).split(".")[1] if "." in str(number) else ""
+        return len(decimal_str)
+
     def _plot_fmd(
             self,
-            bins: ArrayLike, 
-            events_per_bin: ArrayLike, 
-            cumulative_events: ArrayLike, 
-            bin_size: float, 
-            save_figure: bool = False, 
-            save_name: str = 'fmd', 
+            bins: ArrayLike,
+            events_per_bin: ArrayLike,
+            cumulative_events: ArrayLike,
+            bin_size: float,
+            save_figure: bool = False,
+            save_name: str = 'fmd',
             save_extension: str = 'jpg'
     ) -> None:
         """
@@ -743,11 +781,11 @@ class MagnitudeAnalysis:
         )
 
         ax.scatter(
-            bins, cumulative_events, color='white', marker='o', 
+            bins, cumulative_events, color='white', marker='o',
             edgecolor='black', linewidth=0.75, label='Cumulative no. of events'
         )
         ax.scatter(
-            bins, events_per_bin, color='white', marker='o', 
+            bins, events_per_bin, color='white', marker='o',
             edgecolor='red', linewidth=0.75, label='No. of events per mag. bin'
         )
 
@@ -795,20 +833,20 @@ class MagnitudeAnalysis:
         above_mc = bins >= mc
 
         ax.scatter(
-            bins[above_mc], cumulative_events[above_mc], color='white', marker='o', 
+            bins[above_mc], cumulative_events[above_mc], color='white', marker='o',
             edgecolor='black', linewidth=0.75, label='Cumulative no. of events'
         )
         ax.scatter(
-            bins[below_mc], cumulative_events[below_mc], color='black', marker='x', 
+            bins[below_mc], cumulative_events[below_mc], color='black', marker='x',
             linewidth=0.75
         )
 
         ax.scatter(
-            bins[above_mc], events_per_bin[above_mc], color='white', marker='o', 
+            bins[above_mc], events_per_bin[above_mc], color='white', marker='o',
             edgecolor='red', linewidth=0.75, label='No. of events per mag. bin'
         )
         ax.scatter(
-            bins[below_mc], events_per_bin[below_mc], color='red', marker='x', 
+            bins[below_mc], events_per_bin[below_mc], color='red', marker='x',
             linewidth=0.75
         )
 
@@ -820,11 +858,11 @@ class MagnitudeAnalysis:
 
         mc_index = np.where(bins == mc)
         ax.scatter(
-            bins[mc_index], cumulative_events[mc_index], color='black', marker='o', 
+            bins[mc_index], cumulative_events[mc_index], color='black', marker='o',
             s=50
         )
         ax.scatter(
-            bins[mc_index], events_per_bin[mc_index], color='red', marker='o', 
+            bins[mc_index], events_per_bin[mc_index], color='red', marker='o',
             s=50
         )
 
@@ -875,7 +913,7 @@ class MagnitudeAnalysis:
             ms_line_color: str = 'red',
             ms_line_width: float = 1.5,
             ms_line_style: str = '-',
-            ms_line_gradient : bool = True,
+            ms_line_gradient: bool = True,
             save_figure: bool = False,
             save_name: str = 'b_value_over_time',
             save_extension: str = 'jpg',
@@ -919,10 +957,3 @@ class MagnitudeAnalysis:
 
         plt.show()
         pu.reset_style()
-
-    def _count_decimals(self, number):
-        """
-        Calculate the number of decimal places in a given number.
-        """
-        decimal_str = str(number).split(".")[1] if "." in str(number) else ""
-        return len(decimal_str)

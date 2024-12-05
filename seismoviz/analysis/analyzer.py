@@ -8,7 +8,9 @@ class Analyzer(
     Combines analysis modules into a single interface for simplicity.
     """
     def __init__(self, instance: object):
-        super().__init__(instance)
+        Operations.__init__(self, instance)
+        MagnitudeAnalysis.__init__(self, instance)
+        StatisticalAnalysis.__init__(self, instance)
 
 
 class GeoAnalyzer(
