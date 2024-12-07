@@ -99,7 +99,7 @@ import seismoviz as sv
 catalog = sv.read_catalog(path='local_seismic_catalog.csv')
 
 # Plot magnitude-time distribution
-catalog.plot_magnitude_time(
+catalog.magnitude_time(
     color_by='depth',
     size='depth',
     cmap='YlOrRd',
@@ -114,7 +114,7 @@ import seismoviz as sv
 catalog = sv.read_catalog(path='local_seismic_catalog.csv')
 
 # Estimate b-value and plot it
-catalog.estimate_b_value(
+catalog.b_value(
     bin_size=0.1,
     mc='maxc',
     plot=True,
