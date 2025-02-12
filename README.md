@@ -116,9 +116,7 @@ catalog = sv.read_catalog(path='local_seismic_catalog.csv')
 # Estimate b-value and plot it
 catalog.b_value(
     bin_size=0.1,
-    mc='maxc',
-    plot=True,
-    return_values=False
+    mc='maxc'
 )
 ```
 ![b-value](docs/source/_images/b-value.jpg)
