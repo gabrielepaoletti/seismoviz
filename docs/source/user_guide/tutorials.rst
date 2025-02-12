@@ -18,4 +18,4 @@ Learn how to use SeismoViz efficiently by exploring its key functionalities, rec
 
 - `Guidelines for importing <tutorials/basic_guidelines.html#basic_guidelines-for-importing>`_
 - `Accessing library functions and classes <tutorials/basic_guidelines.html#accessing-library-functions-and-classes>`_
-- `Accessing Documentation Inline <tutorials/basic_guidelines.html#accessing-documentation-inline>`_
+- `Accessing documentation inline <tutorials/basic_guidelines.html#accessing-documentation-inline>`_
