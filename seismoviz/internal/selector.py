@@ -66,11 +66,9 @@ class CatalogSelector:
 
         Parameters
         ----------
-        size : float, optional
-            The size of the scatter plot points. Default is 1.
-
-        color : str, optional
-            The color of the points in the scatter plot. Default is 'black'.
+        **kwargs : dict, optional
+            Additional keyword arguments passed to Holoviews ``.opts()`` method 
+            for customizing the scatter plot.
         """
         scatter = self._plot_map(**kwargs)
         selection = streams.Selection1D(source=scatter)
@@ -144,11 +142,9 @@ class CrossSectionSelector:
 
         Parameters
         ----------
-        size : float, optional
-            The size of the scatter plot points. Default is 1.
-
-        color : str, optional
-            The color of the points in the scatter plot. Default is 'black'.
+        **kwargs : dict, optional
+            Additional keyword arguments passed to Holoviews ``.opts()`` method 
+            for customizing the scatter plot.
         """
         scatter = self._plot_section(**kwargs)
         selection = streams.Selection1D(source=scatter)
@@ -221,13 +217,7 @@ class CustomSelector:
         Set up the cross-section plot and initialize the selection stream.
 
         Parameters
-        ----------
-        size : float, optional
-            The size of the scatter plot points. Default is 1.
-
-        color : str, optional
-            The color of the points in the scatter plot. Default is 'black'.
-        
+        ----------        
         **kwargs : dict, optional
             Additional keyword arguments passed to Holoviews ``.opts()`` method 
             for customizing the scatter plot.
