@@ -854,8 +854,14 @@ class MagnitudeAnalysis:
         mags : ArrayLike, optional
             Array of magnitudes to use (default is ``None``).
 
-        **kwargs
-            Additional keyword arguments.
+        save_figure : bool, optional
+            If ``True``, saves the plot to a file. Default is ``False``.
+
+        save_name : str, optional
+            Base name for the file if ``save_figure`` is ``True``. Default is ``'b-value'``.
+
+        save_extension : str, optional
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default is ``'jpg'``.
 
         Returns
         -------
@@ -925,9 +931,15 @@ class MagnitudeAnalysis:
 
         uncertainty_method : str, optional
             The method for uncertainty estimation (default is ``'shi_bolt'``).
+        
+        save_figure : bool, optional
+            If ``True``, saves the plot to a file. Default is ``False``.
 
-        **kwargs
-            Additional keyword arguments.
+        save_name : str, optional
+            Base name for the file if ``save_figure`` is ``True``. Default is ``'b-value'``.
+
+        save_extension : str, optional
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default is ``'jpg'``.
 
         Returns
         -------
@@ -1002,8 +1014,32 @@ class MagnitudeAnalysis:
             If ``True``, return the computed values as a dictionary (default is 
             ``False``).
 
-        **kwargs
-            Additional keyword arguments.
+        ms_line : float, optional
+            Value to add vertical lines representing a magnitude scale (default is ``None``).
+
+        ms_line_color : str, optional
+            Color for the vertical lines (default is ``'red'``).
+
+        ms_line_width : float, optional
+            Line width for the vertical lines (default is ``1.5``).
+
+        ms_line_style : str, optional
+            Line style for the vertical lines (default is ``'-'``).
+
+        ms_line_gradient : bool, optional
+            If ``True``, apply a gradient to the vertical lines (default is ``True``).
+
+        fig_size : tuple of float, optional
+            Figure size for the plot. Default is ``(10, 5)``.
+
+        save_figure : bool, optional
+            If ``True``, saves the plot to a file. Default is ``False``.
+
+        save_name : str, optional
+            Base name for the file if ``save_figure`` is ``True``. Default is ``'b_value_over_time'``.
+
+        save_extension : str, optional
+            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default is ``'jpg'``.
 
         Returns
         -------
@@ -1187,25 +1223,6 @@ class MagnitudeAnalysis:
         """
         Estimate the catalog's magnitude of completeness (Mc) using the selected 
         method.
-
-        Parameters
-        ----------
-        bin_size : float
-            The size of the bin for the frequency-magnitude distribution.
-
-        method : str
-            The method to use for estimating Mc (``'maxc'``, ``'gft'``, or ``'mbs'``).
-
-        plot_mc : bool, optional
-            If ``True``, plot the Mc estimate (default is ``False``).
-
-        mags : ArrayLike, optional
-            Array of magnitudes to use (default is ``None``).
-
-        Returns
-        -------
-        float
-            The estimated magnitude of completeness.
         """
         if method == "maxc":
             return self.mc.maxc(bin_size, mags=mags)
@@ -1229,39 +1246,6 @@ class MagnitudeAnalysis:
         """
         Estimate the b-value for seismic events and calculate the associated 
         uncertainty.
-
-        Parameters
-        ----------
-        bin_size : float
-            The size of the bin for the frequency-magnitude distribution.
-
-        mc : float
-            The magnitude of completeness.
-
-        mags : ArrayLike, optional
-            Array of magnitudes to use (default is ``None``).
-
-        plot : bool, optional
-            If ``True``, plot the b-value estimation (default is ``True``).
-
-        return_values : bool, optional
-            If ``True``, return the computed values as a tuple (default is ``False``).
-
-        uncertainty_method : str, optional
-            The method for uncertainty estimation (default is ``'shi_bolt'``).
-
-        **kwargs
-            Additional keyword arguments.
-
-        Returns
-        -------
-        tuple of (float, float, float, float) or None
-            A tuple containing:
-                - magnitude_of_completeness,
-                - a_value,
-                - b_value,
-                - uncertainty_value.
-            Returns ``None`` if estimation is not possible.
         """
         decimals = self._count_decimals(bin_size)
         mag_compl = round(mc, decimals)
@@ -1322,16 +1306,6 @@ class MagnitudeAnalysis:
     def _count_decimals(self, number: float) -> int:
         """
         Calculate the number of decimal places in a given number.
-
-        Parameters
-        ----------
-        number : float
-            The number for which to count the decimal places.
-
-        Returns
-        -------
-        int
-            The number of decimal places.
         """
         decimal_str = str(number).split(".")[1] if "." in str(number) else ""
         return len(decimal_str)
@@ -1348,29 +1322,6 @@ class MagnitudeAnalysis:
     ) -> None:
         """
         Plot the frequency-magnitude distribution (FMD).
-
-        Parameters
-        ----------
-        bins : ArrayLike
-            The centers of the magnitude bins.
-
-        events_per_bin : ArrayLike
-            The number of events per bin.
-
-        cumulative_events : ArrayLike
-            The cumulative number of events.
-
-        bin_size : float
-            The size of the bin.
-
-        save_figure : bool, optional
-            If ``True``, saves the plot to a file. Default is ``False``.
-
-        save_name : str, optional
-            Base name for the file if ``save_figure`` is ``True``. Default is ``'fmd'``.
-
-        save_extension : str, optional
-            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default is ``'jpg'``.
         """
         pu.set_style(styling.DEFAULT)
         
@@ -1425,44 +1376,6 @@ class MagnitudeAnalysis:
     ) -> None:
         """
         Plot the b-value estimation with the frequency-magnitude distribution.
-
-        Parameters
-        ----------
-        bins : ArrayLike
-            The centers of the magnitude bins.
-
-        events_per_bin : ArrayLike
-            The number of events per bin.
-
-        cumulative_events : ArrayLike
-            The cumulative number of events.
-
-        bin_size : float
-            The size of the bin.
-
-        mc : float
-            The magnitude of completeness.
-
-        a_value : float
-            The calculated a-value.
-
-        b_value : float
-            The calculated b-value.
-
-        uncertainty_value : float
-            The uncertainty associated with the b-value.
-
-        uncertainty_method : str, optional
-            The method used for uncertainty estimation (default is ``'shi_bolt'``).
-
-        save_figure : bool, optional
-            If ``True``, saves the plot to a file. Default is ``False``.
-
-        save_name : str, optional
-            Base name for the file if ``save_figure`` is ``True``. Default is ``'b-value'``.
-
-        save_extension : str, optional
-            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default is ``'jpg'``.
         """
         pu.set_style(styling.DEFAULT)
         
@@ -1569,47 +1482,6 @@ class MagnitudeAnalysis:
     ) -> None:
         """
         Plot the b-value over time with associated uncertainty.
-
-        Parameters
-        ----------
-        times : ArrayLike
-            The time points corresponding to the b-value estimates.
-
-        b_values : ArrayLike
-            The estimated b-values.
-
-        uncertainty_values : ArrayLike
-            The uncertainties associated with the b-value estimates.
-
-        uncertainty_method : str, optional
-            The method used for uncertainty estimation (default is ``'shi_bolt'``).
-
-        ms_line : float, optional
-            Value to add vertical lines representing a magnitude scale (default is ``None``).
-
-        ms_line_color : str, optional
-            Color for the vertical lines (default is ``'red'``).
-
-        ms_line_width : float, optional
-            Line width for the vertical lines (default is ``1.5``).
-
-        ms_line_style : str, optional
-            Line style for the vertical lines (default is ``'-'``).
-
-        ms_line_gradient : bool, optional
-            If ``True``, apply a gradient to the vertical lines (default is ``True``).
-
-        fig_size : tuple of float, optional
-            Figure size for the plot. Default is ``(10, 5)``.
-
-        save_figure : bool, optional
-            If ``True``, saves the plot to a file. Default is ``False``.
-
-        save_name : str, optional
-            Base name for the file if ``save_figure`` is ``True``. Default is ``'b_value_over_time'``.
-
-        save_extension : str, optional
-            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default is ``'jpg'``.
         """
         pu.set_style(styling.DEFAULT)
 
