@@ -1,8 +1,10 @@
 import pandas as pd
 
-from seismoviz.components import Catalog, CrossSection
+from seismoviz.components import (
+    Catalog, CrossSection
+)
 from seismoviz.internal.selector import (
-    CatalogSelector, CrossSectionSelector, CustomSelector
+    MapSelection, CrossSectionSelection, CustomSelection
 )
 
 
@@ -133,117 +135,70 @@ def create_cross_section(
     )
 
 
-class select_on_map:
+def select_on_map(catalog: Catalog, **kwargs) -> MapSelection:
     """
-    Simulates a function for selecting data from a map.
+    Launch an interactive tool to select seismic events on a map.
 
     Parameters
     ----------
     catalog : Catalog
-        The ``Catalog`` object containing seismic data and plotting 
+        The ``Catalog`` object containing seismic data and plotting
         configurations.
 
     **kwargs : dict, optional
-        Additional keyword arguments passed to Holoviews `.opts()` method 
-        for customizing the scatter plot.
+        Additional keyword arguments for customizing the scatter plot.
+
+    Returns
+    -------
+    MapSelection
+        An interactive selection object with a ``confirm_selection()`` method.
     """
-
-    def __init__(
-        self,
-        catalog: Catalog,
-        **kwargs
-    ) -> None:
-        self._selector = CatalogSelector(catalog)
-        self._selector.select(**kwargs)
-
-    def confirm_selection(self) -> Catalog:
-        """
-        Confirms the selection and returns a ``Catalog`` of the selected data.
-
-        Returns
-        -------
-        Catalog
-            A ``Catalog`` object containing the selected data from the 
-            cross-section.
-        """
-        return Catalog(self._selector.sd)
+    return MapSelection(catalog, **kwargs)
 
 
-class select_on_section:
+def select_on_section(cross_section: CrossSection, **kwargs) -> CrossSectionSelection:
     """
-    Simulates a function for selecting data from a cross-section.
+    Launch an interactive tool to select seismic events on a cross-section.
 
     Parameters
     ----------
     cross_section : CrossSection
-        The ``CrossSection`` object containing seismic data and plotting 
+        The ``CrossSection`` object containing seismic data and plotting
         configurations.
 
     **kwargs : dict, optional
-        Additional keyword arguments passed to Holoviews `.opts()` method 
-        for customizing the scatter plot.
+        Additional keyword arguments for customizing the scatter plot.
+
+    Returns
+    -------
+    CrossSectionSelection
+        An interactive selection object with a ``confirm_selection()`` method.
     """
-
-    def __init__(
-        self,
-        cross_section: CrossSection,
-        **kwargs
-    ) -> None:
-        self._selector = CrossSectionSelector(cross_section)
-        self._selector.select(**kwargs)
-
-    def confirm_selection(self) -> Catalog:
-        """
-        Confirms the selection and returns a ``Catalog`` of the selected data.
-
-        Returns
-        -------
-        Catalog
-            A ``Catalog`` object containing the selected data from the 
-            cross-section.
-        """
-        return Catalog(data=self._selector.sd)
+    return CrossSectionSelection(cross_section, **kwargs)
 
 
-class custom_selection:
+def custom_selection(instance: type, x: str, y: str, **kwargs) -> CustomSelection:
     """
-    Simulates a function for selecting data from a custom plot.
+    Launch an interactive tool to select seismic events from a custom plot.
 
     Parameters
     ----------
     instance : type
-        The instance object containing seismic data and plotting configurations.
+        The instance object containing seismic data and plotting
+        configurations.
 
     x : str
-        The column name in the dataframe representing the x-axis variable for 
-        plotting.
+        The column name for the x-axis variable.
 
     y : str
-        The column name in the dataframe representing the y-axis variable for 
-        plotting.
+        The column name for the y-axis variable.
 
     **kwargs : dict, optional
-        Additional keyword arguments passed to Holoviews `.opts()` method 
-        for customizing the scatter plot.
+        Additional keyword arguments for customizing the scatter plot.
+
+    Returns
+    -------
+    CustomSelection
+        An interactive selection object with a ``confirm_selection()`` method.
     """
-    def __init__(
-        self,
-        instance: type,
-        x: str,
-        y: str,
-        **kwargs
-    ) -> None:
-        self._selector = CustomSelector(instance, x, y)
-        self._selector.select(**kwargs)
-
-    def confirm_selection(self) -> Catalog:
-        """
-        Confirms the selection and returns a ``Catalog`` of the selected data.
-
-        Returns
-        -------
-        Catalog
-            A ``Catalog`` object containing the selected data from the 
-            cross-section.
-        """
-        return Catalog(data=self._selector.sd)
+    return CustomSelection(instance, x, y, **kwargs)
