@@ -16,9 +16,9 @@ from matplotlib.collections import PathCollection
 
 class MapPlotter:
     def __init__(
-        self, 
-        projection=ccrs.Mercator(), 
-        transform=ccrs.PlateCarree()
+            self, 
+            projection: ccrs.CRS = ccrs.Mercator(), 
+            transform: ccrs.CRS = ccrs.PlateCarree()
     ) -> None:
         """
         Initializes MapPlotter with default projection and transformation 

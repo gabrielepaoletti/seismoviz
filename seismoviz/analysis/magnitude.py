@@ -1083,7 +1083,7 @@ class MagnitudeAnalysis:
                 times.append(window_data.time.iloc[middle_index])
                 b_values.append(b_val)
                 uncertainty_values.append(unc_val)
-                mc_values.append(mc_val.item())
+                mc_values.append(mc_val)
 
         elif window_type == "time":
             if not isinstance(window_size, str):
@@ -1313,10 +1313,10 @@ class MagnitudeAnalysis:
             )
         if return_values:
             return (
-                mag_compl.item(),
-                a_value.item(),
-                b_value.item(),
-                uncertainty_value.item()
+                mag_compl,
+                a_value,
+                b_value,
+                uncertainty_value
             )
         
     def _count_decimals(self, number: float) -> int:

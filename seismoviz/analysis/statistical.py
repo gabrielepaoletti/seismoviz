@@ -1,3 +1,4 @@
+import warnings
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -5,10 +6,12 @@ import matplotlib.pyplot as plt
 from seismoviz.analysis.utils import styling
 from seismoviz.analysis.utils import plot_utils as pu
 
+from numpy.typing import ArrayLike
 
 class StatisticalAnalysis:
     def __init__(self, instance: object):
         self._instance = instance
+        self._disable_warnings()
 
     def event_timeline(
             self,
@@ -377,6 +380,26 @@ class StatisticalAnalysis:
             else:
                 self._plot_interevent_time(plot_cov=True, **kwargs)
 
+    def fit_omori(
+            self,
+        ) -> dict:
+        """
+        Fit Omori's law to aftershock data.
+        """
+        raise NotImplementedError("fit_omori method is not yet implemented.")
+
+    def _omori_law(
+            self,
+            t: ArrayLike,
+            K: float,
+            c: float,
+            p: float
+        ) -> ArrayLike:
+        """
+        Omori law model function.
+        """
+        return K / ((t + c) ** p)
+
     def _plot_interevent_time(
             self,
             plot_vs: str = 'time',
@@ -552,3 +575,11 @@ class StatisticalAnalysis:
 
         plt.show()
         pu.reset_style()
+    
+    @staticmethod
+    def _disable_warnings() -> None:
+        """
+        Disables warnings.
+        """
+        warnings.simplefilter("ignore")
+        warnings.filterwarnings("ignore")

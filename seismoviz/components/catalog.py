@@ -93,3 +93,7 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
     @sync_metadata(Analyzer, 'cov')
     def cov(self, **kwargs):
         self._analyzer.cov(**kwargs)
+
+    @sync_metadata(Analyzer, 'fit_omori')
+    def fit_omori(self, **kwargs):
+        self._analyzer.fit_omori(**kwargs)

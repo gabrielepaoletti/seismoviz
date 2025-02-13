@@ -1,7 +1,9 @@
 import pandas as pd
 
 from seismoviz.components import Catalog, CrossSection
-from seismoviz.internal.selector import CatalogSelector, CrossSectionSelector
+from seismoviz.internal.selector import (
+    CatalogSelector, CrossSectionSelector, CustomSelector
+)
 
 
 def read_catalog(path: str, **kwargs) -> Catalog:
@@ -141,21 +143,18 @@ class select_on_map:
         The ``Catalog`` object containing seismic data and plotting 
         configurations.
 
-    size : float, optional
-        The size of the points in the scatter plot. Default is 1.
-
-    color : str, optional
-        The color of the points in the scatter plot. Default is ``'black'``.
+    **kwargs : dict, optional
+        Additional keyword arguments passed to Holoviews `.opts()` method 
+        for customizing the scatter plot.
     """
 
     def __init__(
         self,
         catalog: Catalog,
-        size: float = 1,
-        color: str = 'black'
+        **kwargs
     ) -> None:
         self._selector = CatalogSelector(catalog)
-        self._selector.select(size=size, color=color)
+        self._selector.select(**kwargs)
 
     def confirm_selection(self) -> Catalog:
         """
@@ -180,21 +179,62 @@ class select_on_section:
         The ``CrossSection`` object containing seismic data and plotting 
         configurations.
 
-    size : float, optional
-        The size of the points in the scatter plot. Default is 1.
-
-    color : str, optional
-        The color of the points in the scatter plot. Default is ``'black'``.
+    **kwargs : dict, optional
+        Additional keyword arguments passed to Holoviews `.opts()` method 
+        for customizing the scatter plot.
     """
 
     def __init__(
         self,
         cross_section: CrossSection,
-        size: float = 1,
-        color: str = 'black'
+        **kwargs
     ) -> None:
         self._selector = CrossSectionSelector(cross_section)
-        self._selector.select(size=size, color=color)
+        self._selector.select(**kwargs)
+
+    def confirm_selection(self) -> Catalog:
+        """
+        Confirms the selection and returns a ``Catalog`` of the selected data.
+
+        Returns
+        -------
+        Catalog
+            A ``Catalog`` object containing the selected data from the 
+            cross-section.
+        """
+        return Catalog(data=self._selector.sd)
+
+
+class custom_selection:
+    """
+    Simulates a function for selecting data from a custom plot.
+
+    Parameters
+    ----------
+    instance : type
+        The instance object containing seismic data and plotting configurations.
+
+    x : str
+        The column name in the dataframe representing the x-axis variable for 
+        plotting.
+
+    y : str
+        The column name in the dataframe representing the y-axis variable for 
+        plotting.
+
+    **kwargs : dict, optional
+        Additional keyword arguments passed to Holoviews `.opts()` method 
+        for customizing the scatter plot.
+    """
+    def __init__(
+        self,
+        instance: type,
+        x: str,
+        y: str,
+        **kwargs
+    ) -> None:
+        self._selector = CustomSelector(instance, x, y)
+        self._selector.select(**kwargs)
 
     def confirm_selection(self) -> Catalog:
         """

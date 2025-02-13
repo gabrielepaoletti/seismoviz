@@ -239,13 +239,14 @@ class GeoCatalog():
             pu.plot_highlighted_events(
                 ax=self.mp.ax,
                 data=self.ct.data,
+                transform=self.mp.transform,
                 hl_ms=hl_ms,
                 hl_size=hl_size,
                 hl_marker=hl_marker,
                 hl_color=hl_color,
                 hl_edgecolor=hl_edgecolor,
                 x='lon',
-                y='lat'
+                y='lat',
             )
 
         if legend:
@@ -999,7 +1000,7 @@ class GeoSection():
                     hl_color=hl_color,
                     hl_edgecolor=hl_edgecolor,
                     x='on_section_coords',
-                    y='depth'
+                    y='depth',
                 )
 
             ax.set_title(f'{title} {section + 1}', fontweight='bold')
@@ -1277,6 +1278,7 @@ class GeoSection():
             pu.plot_with_colorbar(
                 ax=self.mp.ax,
                 data=self.cs.catalog.data,
+                transform=self.mp.transform,
                 x='lon',
                 y='lat',
                 color_by=color_by,
@@ -1284,7 +1286,7 @@ class GeoSection():
                 edgecolor=edgecolor,
                 size=plt_size,
                 alpha=alpha,
-                legend=legend
+                legend=legend,
             )
         else:
             self.mp.scatter(
@@ -1301,6 +1303,7 @@ class GeoSection():
             pu.plot_highlighted_events(
                 ax=self.mp.ax,
                 data=self.cs.catalog.data,
+                transform=self.mp.transform,
                 hl_ms=hl_ms,
                 hl_size=hl_size,
                 hl_marker=hl_marker,

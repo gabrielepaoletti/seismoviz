@@ -65,7 +65,8 @@ def plot_with_colorbar(
     cbar_orientation: str = 'horizontal',
     cbar_pad: float = 0.06,
     cbar_aspect: int = 40,
-    cbar_shrink: float = 0.6
+    cbar_shrink: float = 0.6,
+    **kwargs
 ) -> PathCollection:
     """
     Plots a scatter plot on the given axes with an associated colorbar.
@@ -94,7 +95,7 @@ def plot_with_colorbar(
     scatter = ax.scatter(
         x=data[x], y=data[y], c=color_numeric, cmap=cmap,
         edgecolor=edgecolor, s=size, alpha=alpha, linewidth=0.25,
-        vmin=global_min, vmax=global_max, label=legend
+        vmin=global_min, vmax=global_max, label=legend, **kwargs
     )
 
     cbar = plt.colorbar(
@@ -118,16 +119,23 @@ def plot_highlighted_events(
     hl_color: str,
     hl_edgecolor: str,
     x: str,
-    y: str
+    y: str,
+    **kwargs,
 ) -> None:
     """
     Plots highlighted events on the given Axes.
     """
     large_quakes = data[data['mag'] > hl_ms]
     ax.scatter(
-        x=large_quakes[x], y=large_quakes[y], c=hl_color, s=hl_size,
-        marker=hl_marker, edgecolor=hl_edgecolor, linewidth=0.75,
-        label=f'Events M > {hl_ms}'
+        x=large_quakes[x],
+        y=large_quakes[y],
+        c=hl_color,
+        s=hl_size,
+        marker=hl_marker,
+        edgecolor=hl_edgecolor,
+        linewidth=0.75,
+        label=f'Events M > {hl_ms}',
+        **kwargs
     )
 
 
