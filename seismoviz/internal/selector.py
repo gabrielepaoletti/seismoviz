@@ -5,10 +5,6 @@ from seismoviz.components import Catalog
 
 
 class BaseSelector:
-    """
-    Base class for handling plotting and selection of seismic event data.
-    """
-
     def __init__(self) -> None:
         self.sd = None
 
@@ -58,11 +54,6 @@ class BaseSelector:
 
 
 class CatalogSelector(BaseSelector):
-    """
-    Selector for plotting seismic catalog data on a map and handling
-    selection.
-    """
-
     def __init__(self, catalog: object) -> None:
         self.ct = catalog
         super().__init__()
@@ -111,11 +102,6 @@ class CatalogSelector(BaseSelector):
 
 
 class CrossSectionSelector(BaseSelector):
-    """
-    Selector for plotting seismic cross-section data and handling
-    selection.
-    """
-
     def __init__(self, cross_section: object) -> None:
         self.cs = cross_section
         super().__init__()
@@ -165,10 +151,6 @@ class CrossSectionSelector(BaseSelector):
 
 
 class CustomSelector(BaseSelector):
-    """
-    Selector for custom plotting and selection of seismic event data.
-    """
-
     def __init__(self, instance: object, x: str, y: str) -> None:
         self.it = instance
         self.x = x
@@ -218,11 +200,6 @@ class CustomSelector(BaseSelector):
 
 
 class SelectionWrapper:
-    """
-    Base wrapper class, centralizes common functionality for the interactive
-    selection of seismic events.
-    """
-
     def __init__(self, selector, **kwargs) -> None:
         self._selector = selector
         self._selector.select(**kwargs)
@@ -242,18 +219,7 @@ class SelectionWrapper:
 class MapSelection(SelectionWrapper):
     """
     Provides an interactive interface for selecting seismic events on a map.
-
-    Parameters
-    ----------
-    catalog : Catalog
-        The Catalog object containing seismic data and plotting
-        configurations.
-
-    **kwargs : dict, optional
-        Additional keyword arguments passed to Holoviews `.opts()`
-        method for customizing the scatter plot.
     """
-
     def __init__(self, catalog: Catalog, **kwargs) -> None:
         super().__init__(CatalogSelector(catalog), **kwargs)
 
@@ -262,18 +228,7 @@ class CrossSectionSelection(SelectionWrapper):
     """
     Provides an interactive interface for selecting seismic events on a
     cross-section.
-
-    Parameters
-    ----------
-    cross_section : CrossSection
-        The CrossSection object containing seismic data and plotting
-        configurations.
-
-    **kwargs : dict, optional
-        Additional keyword arguments passed to Holoviews `.opts()`
-        method for customizing the scatter plot.
     """
-
     def __init__(self, cross_section, **kwargs) -> None:
         super().__init__(CrossSectionSelector(cross_section), **kwargs)
 
@@ -282,25 +237,6 @@ class CustomSelection(SelectionWrapper):
     """
     Provides an interactive interface for selecting seismic events from a
     custom plot.
-
-    Parameters
-    ----------
-    instance : type
-        The instance object containing seismic data and plotting
-        configurations.
-
-    x : str
-        The column name in the dataframe representing the x-axis variable
-        for plotting.
-
-    y : str
-        The column name in the dataframe representing the y-axis variable
-        for plotting.
-
-    **kwargs : dict, optional
-        Additional keyword arguments passed to Holoviews `.opts()`
-        method for customizing the scatter plot.
     """
-
     def __init__(self, instance: type, x: str, y: str, **kwargs) -> None:
         super().__init__(CustomSelector(instance, x, y), **kwargs)
