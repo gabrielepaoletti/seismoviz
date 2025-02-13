@@ -379,14 +379,14 @@ class Uncertainties:
         if method == "shi_bolt":
             if variance is None:
                 raise ValueError(
-                    "Variance must be provided for the ``'shi_bolt'`` method."
+                    "Variance must be provided for the 'shi_bolt' method."
                 )
             return self._shi_bolt(b_value, variance, num_events)
         elif method == "aki":
             return self._aki(b_value, num_events)
         else:
             raise ValueError(
-                "Uncertainty method must be ``'shi_bolt'`` or ``'aki'``."
+                "Uncertainty method must be 'shi_bolt' or 'aki'."
             )
 
 
