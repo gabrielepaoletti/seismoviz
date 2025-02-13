@@ -352,22 +352,6 @@ class Uncertainties:
     ) -> float:
         """
         Calculate the Shi & Bolt uncertainty for the b-value estimation.
-
-        Parameters
-        ----------
-        b_value : float
-            The estimated b-value.
-
-        variance : float
-            The variance of the magnitudes.
-
-        num_events : int
-            The number of events used for the estimation.
-
-        Returns
-        -------
-        float
-            The uncertainty calculated using the Shi & Bolt method.
         """
         return 2.3 * b_value**2 * np.sqrt(variance / num_events)
 
@@ -378,19 +362,6 @@ class Uncertainties:
     ) -> float:
         """
         Calculate the Aki uncertainty for the b-value estimation.
-
-        Parameters
-        ----------
-        b_value : float
-            The estimated b-value.
-
-        num_events : int
-            The number of events used for the estimation.
-
-        Returns
-        -------
-        float
-            The uncertainty calculated using the Aki method.
         """
         return b_value / np.sqrt(num_events)
 
@@ -404,31 +375,6 @@ class Uncertainties:
         """
         Compute the uncertainty for the b-value estimation based on the selected 
         method.
-
-        Parameters
-        ----------
-        method : str
-            The method to use for uncertainty calculation (``'shi_bolt'`` or ``'aki'``).
-
-        b_value : float
-            The estimated b-value.
-
-        num_events : int
-            The number of events used in the estimation.
-
-        variance : float, optional
-            The variance of the magnitudes (required for ``'shi_bolt'``).
-
-        Returns
-        -------
-        float
-            The computed uncertainty.
-
-        Raises
-        ------
-        ValueError
-            If the ``'shi_bolt'`` method is selected without providing a variance 
-            or if an unknown method is specified.
         """
         if method == "shi_bolt":
             if variance is None:
