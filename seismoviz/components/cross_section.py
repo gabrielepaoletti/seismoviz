@@ -4,12 +4,13 @@ import pandas as pd
 from seismoviz.components import Catalog
 from seismoviz.analysis.utils import convert_to_utm
 from seismoviz.analysis import Analyzer, GeoAnalyzer
-from seismoviz.internal.decorators import sync_metadata
+from seismoviz.internal.decorators import sync_methods
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 
 from numpy.typing import ArrayLike
 
 
+@sync_methods([Analyzer, GeoAnalyzer])
 class CrossSection(GeospatialMixin, DunderMethodMixin):
     """
     Represents a seismic cross section.
@@ -87,54 +88,42 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
         self._geo_analyzer = GeoAnalyzer(self)
 
     # Operations
-    @sync_metadata(Analyzer, 'filter')
     def filter(self, **kwargs):
         return self._analyzer.filter(**kwargs)
 
-    @sync_metadata(Analyzer, 'sort')
     def sort(self, **kwargs):
         return self._analyzer.sort(**kwargs)
 
-    @sync_metadata(Analyzer, 'deduplicate_events')
     def deduplicate_events(self):
         return self._analyzer.deduplicate_events()
 
     # Geographical analysis
-    @sync_metadata(GeoAnalyzer, 'plot_sections')
     def plot_sections(self, **kwargs):
         self._geo_analyzer.plot_sections(**kwargs)
 
-    @sync_metadata(GeoAnalyzer, 'plot_section_lines')
     def plot_section_lines(self, **kwargs):
         self._geo_analyzer.plot_section_lines(**kwargs)
     
     # Magnitude analysis
-    @sync_metadata(Analyzer, 'magnitude_time')
     def magnitude_time(self, **kwargs):
         self._analyzer.magnitude_time(**kwargs) 
 
-    @sync_metadata(Analyzer, 'fmd')
     def fmd(self, **kwargs):
         self._analyzer.fmd(**kwargs)
     
-    @sync_metadata(Analyzer, 'b_value')
     def b_value(self, **kwargs):
         return self._analyzer.b_value(**kwargs)
 
-    @sync_metadata(Analyzer, 'b_value_over_time')
     def b_value_over_time(self, **kwargs):
         return self._analyzer.b_value_over_time(**kwargs)
 
     # Statistical analysis
-    @sync_metadata(Analyzer, 'event_timeline')
     def event_timeline(self, **kwargs) -> None:
         self._analyzer.event_timeline(**kwargs)
 
-    @sync_metadata(Analyzer, 'interevent_time')
     def interevent_time(self, **kwargs):
         self._analyzer.interevent_time(**kwargs)
 
-    @sync_metadata(Analyzer, 'cov')
     def cov(self, **kwargs):
         self._analyzer.cov(**kwargs)
 
