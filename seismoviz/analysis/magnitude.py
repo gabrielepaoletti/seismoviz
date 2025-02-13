@@ -18,19 +18,6 @@ class Mc:
     def maxc(self, bin_size: float, mags: ArrayLike = None) -> float:
         """
         Calculate the magnitude of completeness (Mc) using the MAXC method.
-
-        Parameters
-        ----------
-        bin_size : float
-            The size of the bin for the frequency-magnitude distribution.
-
-        mags : ArrayLike, optional
-            Array of magnitudes to use (default is ``None``).
-
-        Returns
-        -------
-        float
-            The magnitude of completeness rounded to the proper number of decimals.
         """
         bins, events_per_bin, _ = self._ma.fmd(
             bin_size=bin_size,
@@ -54,26 +41,6 @@ class Mc:
     ) -> float:
         """
         Estimate the magnitude of completeness (Mc) using the Goodness-of-Fit Test (GFT).
-
-        Parameters
-        ----------
-        bin_size : float
-            The size of the bin for the frequency-magnitude distribution.
-
-        mags : ArrayLike, optional
-            Array of magnitudes to use (default is ``None``).
-
-        gft_plot : bool, optional
-            If ``True``, plot the GFT results (default is ``False``).
-
-        **kwargs
-            Additional keyword arguments to pass to the plotting function or 
-            b-value estimation.
-
-        Returns
-        -------
-        float
-            The estimated magnitude of completeness.
         """
         bins, _, cumulative_events = self._ma.fmd(
             bin_size=bin_size,
@@ -157,34 +124,6 @@ class Mc:
         """
         Calculate the magnitude of completeness (Mc) using the Magnitude 
         Binning Stability (MBS) method.
-
-        Parameters
-        ----------
-        bin_size : float
-            The size of the bin for the frequency-magnitude distribution.
-
-        delta_magnitude : float, optional
-            The magnitude interval for stability check (default is ``0.4``).
-
-        min_completeness : float, optional
-            The minimum completeness magnitude (default is ``-3``).
-
-        mags : ArrayLike, optional
-            Array of magnitudes to use (default is ``None``).
-
-        mbs_plot : bool, optional
-            If ``True``, plot the MBS results (default is ``False``).
-
-        uncertainty_method : str, optional
-            The method for uncertainty estimation (default is ``'shi_bolt'``).
-
-        **kwargs
-            Additional keyword arguments to pass to the plotting function.
-
-        Returns
-        -------
-        float
-            The estimated magnitude of completeness.
         """
         bins, _, _ = self._ma.fmd(
             bin_size=bin_size,
@@ -269,16 +208,6 @@ class Mc:
     def _count_decimals(self, number: float) -> int:
         """
         Calculate the number of decimal places in a given number.
-
-        Parameters
-        ----------
-        number : float
-            The number for which to count the decimal places.
-
-        Returns
-        -------
-        int
-            The number of decimal places.
         """
         decimal_str = str(number).split(".")[1] if "." in str(number) else ""
         return len(decimal_str)
@@ -296,32 +225,6 @@ class Mc:
     ) -> None:
         """
         Plot the Goodness-of-Fit Test (GFT) results.
-
-        Parameters
-        ----------
-        mc : float
-            The estimated magnitude of completeness.
-
-        bins : ArrayLike
-            The bin centers used in the FMD.
-
-        R_values : ArrayLike
-            The R statistic values corresponding to each bin.
-
-        bin_size : float
-            The size of the bin.
-
-        mags : ArrayLike, optional
-            Array of magnitudes used (default is ``None``).
-
-        save_figure : bool, optional
-            If ``True``, saves the plot to a file. Default is ``False``.
-
-        save_name : str, optional
-            Base name for the file if ``save_figure`` is ``True``. Default is ``'gft'``.
-
-        save_extension : str, optional
-            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default is ``'jpg'``.
         """
         pu.set_style(styling.DEFAULT)
         _, ax = plt.subplots(figsize=(10, 5))
@@ -389,41 +292,6 @@ class Mc:
     ) -> None:
         """
         Plot the Magnitude Binning Stability (MBS) results.
-
-        Parameters
-        ----------
-        mc : float
-            The estimated magnitude of completeness.
-
-        bins : ArrayLike
-            The bin centers.
-
-        individual_b_values : ArrayLike
-            The individual b-value estimates for each bin.
-
-        rolling_avg_b_values : ArrayLike
-            The rolling average of b-values over a specified magnitude interval.
-
-        uncertainty_values : ArrayLike
-            The uncertainties associated with the b-value estimates.
-
-        bin_size : float
-            The size of the bin.
-
-        mags : ArrayLike, optional
-            Array of magnitudes used (default is ``None``).
-
-        uncertainty_method : str, optional
-            The method used for uncertainty estimation (default is ``'shi_bolt'``).
-
-        save_figure : bool, optional
-            If ``True``, saves the plot to a file. Default is ``False``.
-
-        save_name : str, optional
-            Base name for the file if ``save_figure`` is ``True``. Default is ``'mbs'``.
-
-        save_extension : str, optional
-            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default is ``'jpg'``.
         """
         pu.set_style(styling.DEFAULT)
 
@@ -460,101 +328,6 @@ class Mc:
         ax.set_xticks(min_tick_positions, minor=True)
         ax.grid(True, alpha=0.25, axis='x', linestyle=':')
         ax.legend(loc='best', frameon=False)
-
-        if save_figure:
-            pu.save_figure(save_name, save_extension)
-
-        plt.show()
-        pu.reset_style()
-
-    def _plot_b_value_over_time(
-            self,
-            times: ArrayLike,
-            b_values: ArrayLike,
-            uncertainty_values: ArrayLike,
-            uncertainty_method: str = 'shi_bolt',
-            ms_line: float = None,
-            ms_line_color: str = 'red',
-            ms_line_width: float = 1.5,
-            ms_line_style: str = '-',
-            ms_line_gradient: bool = True,
-            fig_size: tuple[float, float] = (10, 5),
-            save_figure: bool = False,
-            save_name: str = 'b_value_over_time',
-            save_extension: str = 'jpg'
-    ) -> None:
-        """
-        Plot the b-value over time with associated uncertainty.
-
-        Parameters
-        ----------
-        times : ArrayLike
-            The time points corresponding to the b-value estimates.
-
-        b_values : ArrayLike
-            The estimated b-values.
-
-        uncertainty_values : ArrayLike
-            The uncertainties associated with the b-value estimates.
-
-        uncertainty_method : str, optional
-            The method used for uncertainty estimation (default is ``'shi_bolt'``).
-
-        ms_line : float, optional
-            Value to add vertical lines representing a magnitude scale (default is ``None``).
-
-        ms_line_color : str, optional
-            Color for the vertical lines (default is ``'red'``).
-
-        ms_line_width : float, optional
-            Line width for the vertical lines (default is ``1.5``).
-
-        ms_line_style : str, optional
-            Line style for the vertical lines (default is ``'-'``).
-
-        ms_line_gradient : bool, optional
-            If ``True``, apply a gradient to the vertical lines (default is ``True``).
-
-        fig_size : tuple[float, float], optional
-            Figure size for the plot. Default is ``(10, 5)``.
-
-        save_figure : bool, optional
-            If ``True``, saves the plot to a file. Default is ``False``.
-
-        save_name : str, optional
-            Base name for the file if ``save_figure`` is ``True``. Default is ``'b_value_over_time'``.
-
-        save_extension : str, optional
-            File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default is ``'jpg'``.
-        """
-        pu.set_style(styling.DEFAULT)
-
-        _, ax = plt.subplots(figsize=fig_size)
-        ax.set_title("b-value over time", fontweight="bold")
-        ax.plot(times, b_values, color="black", lw=0.75, label="b-value")
-
-        pu.add_vertical_lines(
-            ax=ax,
-            data=self._instance.data,
-            ms_line=ms_line,
-            color=ms_line_color,
-            linewidth=ms_line_width,
-            linestyle=ms_line_style,
-            gradient=ms_line_gradient
-        )
-
-        lower = np.array(b_values) - np.array(uncertainty_values)
-        upper = np.array(b_values) + np.array(uncertainty_values)
-        ax.fill_between(
-            times, lower, upper,
-            color="gray", alpha=0.3,
-            label=f"Uncertainty ({uncertainty_method})"
-        )
-        ax.set_ylabel("$b-value$")
-        ax.set_ylim(min(b_values), max(b_values) * 1.1)
-        ax.grid(True, axis="x", alpha=0.25, linestyle=":")
-        ax.legend(loc="best", frameon=False)
-        pu.format_x_axis_time(ax)
 
         if save_figure:
             pu.save_figure(save_name, save_extension)
@@ -858,7 +631,7 @@ class MagnitudeAnalysis:
             If ``True``, saves the plot to a file. Default is ``False``.
 
         save_name : str, optional
-            Base name for the file if ``save_figure`` is ``True``. Default is ``'b-value'``.
+            Base name for the file if ``save_figure`` is ``True``. Default is ``'fmd'``.
 
         save_extension : str, optional
             File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default is ``'jpg'``.
