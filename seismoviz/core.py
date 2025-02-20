@@ -76,10 +76,7 @@ def create_cross_section(
         An instance of the ``Catalog`` class containing seismic event data.
     
     center : tuple[float, float]
-        A tuple representing the geographical coordinates (lWhen ``custom`` is True, you can choose which graph to use for the sections
-    by selecting the columns with ``x`` and ``y``. If ``custom`` is False,
-    the selection is set automatically: a Catalog instance produces a map
-    selection, while a CrossSection instance produces a cross-section selection.ongitude, latitude) 
+        A tuple representing the geographical coordinates (longitude, latitude) 
         of the center of the cross-section.
 
     num_sections : tuple[int, int]
@@ -161,13 +158,13 @@ def select(
         An object containing seismic data and plotting configurations.
 
     x : str, optional
-        The column name for the x-axis variable. Required if ``custom`` is True.
+        The column name for the x-axis variable. Required if ``custom`` is ``True``.
 
     y : str, optional
-        The column name for the y-axis variable. Required if ``custom`` is True.
+        The column name for the y-axis variable. Required if ``custom`` is ``True``.
 
     custom : bool, optional
-        Flag to indicate if a custom selection should be used. Defaults to False.
+        Flag to indicate if a custom selection should be used. Defaults to ``False``.
 
     **kwargs : dict, optional
         Additional keyword arguments for customizing the selection.
