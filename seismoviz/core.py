@@ -135,70 +135,58 @@ def create_cross_section(
     )
 
 
-def select_on_map(catalog: Catalog, **kwargs) -> MapSelection:
+def select(
+        instance: type,
+        x: str = None,
+        y: str = None,
+        custom: bool = False,
+        **kwargs
+    ):
     """
     Launch an interactive tool to select seismic events on a map.
 
     Parameters
     ----------
-    catalog : Catalog
-        The ``Catalog`` object containing seismic data and plotting
-        configurations.
-
-    **kwargs : dict, optional
-        Additional keyword arguments for customizing the scatter plot.
-
-    Returns
-    -------
-    MapSelection
-        An interactive selection object with a ``confirm_selection()`` method.
-    """
-    return MapSelection(catalog, **kwargs)
-
-
-def select_on_section(cross_section: CrossSection, **kwargs) -> CrossSectionSelection:
-    """
-    Launch an interactive tool to select seismic events on a cross-section.
-
-    Parameters
-    ----------
-    cross_section : CrossSection
-        The ``CrossSection`` object containing seismic data and plotting
-        configurations.
-
-    **kwargs : dict, optional
-        Additional keyword arguments for customizing the scatter plot.
-
-    Returns
-    -------
-    CrossSectionSelection
-        An interactive selection object with a ``confirm_selection()`` method.
-    """
-    return CrossSectionSelection(cross_section, **kwargs)
-
-
-def custom_selection(instance: type, x: str, y: str, **kwargs) -> CustomSelection:
-    """
-    Launch an interactive tool to select seismic events from a custom plot.
-
-    Parameters
-    ----------
     instance : type
-        The instance object containing seismic data and plotting
-        configurations.
+        An object containing seismic data and plotting configurations.
 
-    x : str
-        The column name for the x-axis variable.
+    x : str, optional
+        The column name for the x-axis variable. Required if ``custom`` is True.
 
-    y : str
-        The column name for the y-axis variable.
+    y : str, optional
+        The column name for the y-axis variable. Required if ``custom`` is True.
+
+    custom : bool, optional
+        Flag to indicate if a custom selection should be used. Defaults to False.
 
     **kwargs : dict, optional
-        Additional keyword arguments for customizing the scatter plot.
+        Additional keyword arguments for customizing the selection.
 
     Returns
     -------
-    CustomSelection
-        An interactive selection object with a ``confirm_selection()`` method.
+    An interactive selection object with a ``confirm_selection()``
+    method.
+
+    Raises
+    ------
+    ValueError
+        If ``custom`` is True and either ``x`` or ``y`` is not provided, or if
+        the type of ``instance`` is unsupported.
     """
-    return CustomSelection(instance, x, y, **kwargs)
+    if custom:
+        if x is None or y is None:
+            raise ValueError('x and y must be provided if custom is True.')
+        
+        if not isinstance(instance, (Catalog, CrossSection)):
+            raise ValueError('Unsupported type for instance.') 
+        
+        return CustomSelection(instance, x, y, **kwargs)
+
+    elif isinstance(instance, Catalog):
+        return MapSelection(instance, **kwargs)
+    
+    elif isinstance(instance, CrossSection):
+        return CrossSectionSelection(instance, **kwargs)
+
+    else:
+        raise ValueError('Unsupported type for instance.')

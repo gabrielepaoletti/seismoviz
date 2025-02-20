@@ -12,8 +12,4 @@ Core
 
 .. autofunction:: seismoviz.core.create_cross_section
 
-.. autofunction:: seismoviz.core.select_on_map
-
-.. autofunction:: seismoviz.core.select_on_section
-
-.. autofunction:: seismoviz.core.custom_selection
+.. autofunction:: seismoviz.select
