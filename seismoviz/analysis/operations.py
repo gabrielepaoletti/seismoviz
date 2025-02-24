@@ -86,14 +86,9 @@ class Operations:
         instance.data = instance.data.sort_values(by=by, ascending=ascending)
         return instance
     
-    def deduplicate_events(self):
+    def deduplicate_events(self, **kwargs):
         """
         Removes duplicate entries based on specific attributes.
-
-        Parameters
-        ----------
-        instance : object
-            The instance containing the dataset (must have an attribute `data`).
 
         Returns
         -------
@@ -101,7 +96,8 @@ class Operations:
             The same instance, with duplicate entries removed.
         """
         instance = copy.deepcopy(self._instance)
-        instance.data = instance.data.drop_duplicates(
-subset=['lon', 'lat', 'depth', 'time']
-        )
+        if 'subset' not in kwargs:
+            kwargs['subset'] = ['lon', 'lat', 'depth', 'time', 'mag']
+    
+        instance.data = instance.data.drop_duplicates(**kwargs)
         return instance
