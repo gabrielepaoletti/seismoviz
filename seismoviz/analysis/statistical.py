@@ -97,7 +97,6 @@ class StatisticalAnalysis:
         if save_figure:
             pu.save_figure(save_name, save_extension)
 
-        plt.show()
         pu.reset_style()
 
     def interevent_time(self, unit='sec', plot: bool = True, **kwargs) -> None:
@@ -573,7 +572,6 @@ class StatisticalAnalysis:
         if save_figure:
             pu.save_figure(f'{save_name}{"_cov" if plot_cov else ""}', save_extension)
 
-        plt.show()
         pu.reset_style()
     
     @staticmethod

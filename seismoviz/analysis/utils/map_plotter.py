@@ -150,33 +150,72 @@ class MapPlotter:
     def inset(
             self,
             extent: tuple[float, float, float, float],
-            buffer: int = 3, 
-            inset_size: tuple[float, float] = (1.8, 1.8),
-            bounds_res: str = '50m'
-    ) -> plt.Axes:
-        """
-        Adds an inset map to the main map, showing a broader area around 
-        the specified extent.
-        """
-        main_ax_bbox = self.ax.get_position()
-        inset_left = main_ax_bbox.x1 - inset_size[0] / self.fig.get_figwidth() * (2.0 / 3.0)
-        inset_bottom = main_ax_bbox.y1 - inset_size[1] / self.fig.get_figheight() * (2.0 / 3.0)
-        inset_position = [
-            inset_left, inset_bottom, 
-            inset_size[0] / self.fig.get_figwidth(), 
-            inset_size[1] / self.fig.get_figheight()
-        ]
+            loc: str,
+            size: tuple[float, float],
+            buffer: int,
+            bounds_res: str
+        ) -> plt.Axes:
+        """Adds an inset map inside the main axis."""
+        fig_w = self.fig.get_figwidth()
+        fig_h = self.fig.get_figheight()
 
-        inset_ax = self.fig.add_axes(inset_position, projection=self.projection)
+        bbox = self.ax.get_position()
+        ax_w_fig = bbox.width
+        ax_h_fig = bbox.height
+
+        ax_w_inch = ax_w_fig * fig_w
+        ax_h_inch = ax_h_fig * fig_h
+        w_in_axes = size[0] / ax_w_inch
+        h_in_axes = size[1] / ax_h_inch
+
+        pad_fraction = 0.01
+        largest_dim = max(ax_w_fig, ax_h_fig)
+        pad_in_fig = pad_fraction * largest_dim
+        pad_in_axes = pad_in_fig / largest_dim
+
+        inset_side_in_axes = min(w_in_axes, h_in_axes)
+
+        if loc == 'upper right':
+            left = 1.0 - pad_in_axes - inset_side_in_axes
+            bottom = 1.0 - pad_in_axes - inset_side_in_axes
+
+        elif loc == 'upper left':
+            left = pad_in_axes
+            bottom = 1.0 - pad_in_axes - inset_side_in_axes
+
+        elif loc == 'lower right':
+            left = 1.0 - pad_in_axes - inset_side_in_axes
+            bottom = pad_in_axes
+
+        elif loc == 'lower left':
+            left = pad_in_axes
+            bottom = pad_in_axes
+
+        elif loc == 'center':
+            left = 0.5 - inset_side_in_axes / 2.0
+            bottom = 0.5 - inset_side_in_axes / 2.0
+
+        else:
+            raise ValueError(
+                "Parameter 'loc' must be one of: 'upper right', 'upper left', "
+                "'lower right', 'lower left', or 'center'."
+            )
+
+        inset_ax = self.ax.inset_axes(
+            [left, bottom, w_in_axes, inset_side_in_axes],
+            transform=self.ax.transAxes,
+            projection=self.projection
+        )
+
         inset_extent = [
-            extent[0] - buffer, extent[1] + buffer, 
+            extent[0] - buffer, extent[1] + buffer,
             extent[2] - buffer, extent[3] + buffer
         ]
         inset_ax.set_extent(inset_extent, crs=self.transform)
 
         inset_ax.add_feature(cf.OCEAN.with_scale(bounds_res), color='lightblue')
-        inset_ax.add_feature(cf.COASTLINE.with_scale(bounds_res), lw=0.5)
-        inset_ax.add_feature(cf.BORDERS.with_scale(bounds_res), lw=0.3)
+        inset_ax.add_feature(cf.COASTLINE.with_scale(bounds_res), lw=0.75)
+        inset_ax.add_feature(cf.BORDERS.with_scale(bounds_res), lw=0.75)
 
         inset_ax.plot(
             [extent[0], extent[1], extent[1], extent[0], extent[0]],

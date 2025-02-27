@@ -156,6 +156,9 @@ cython_debug/
 
 # Test-specific files
 playground.ipynb
+stations.csv
+normal_faults.csv
+thrust_faults.csv
 global_seismic_catalog.csv
 local_seismic_catalog.csv
 branding

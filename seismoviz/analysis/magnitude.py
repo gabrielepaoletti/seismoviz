@@ -273,7 +273,6 @@ class Mc:
         if save_figure:
             pu.save_figure(save_name, save_extension)
 
-        plt.show()
         pu.reset_style()
 
     def _plot_mbs(
@@ -332,7 +331,6 @@ class Mc:
         if save_figure:
             pu.save_figure(save_name, save_extension)
 
-        plt.show()
         pu.reset_style()
 
 
@@ -545,7 +543,6 @@ class MagnitudeAnalysis:
         if save_figure:
             pu.save_figure(save_name, save_extension)
 
-        plt.show()
         pu.reset_style()
 
     def fmd(
@@ -1075,7 +1072,6 @@ class MagnitudeAnalysis:
         if save_figure:
             pu.save_figure(save_name, save_extension)
 
-        plt.show()
         pu.reset_style()
 
     def _plot_b_value(
@@ -1180,7 +1176,6 @@ class MagnitudeAnalysis:
         if save_figure:
             pu.save_figure(save_name, save_extension)
 
-        plt.show()
         pu.reset_style()
 
     def _plot_b_value_over_time(
@@ -1234,5 +1229,4 @@ class MagnitudeAnalysis:
         if save_figure:
             pu.save_figure(save_name, save_extension)
 
-        plt.show()
         pu.reset_style()

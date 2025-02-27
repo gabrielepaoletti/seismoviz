@@ -9,13 +9,14 @@ from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
 from seismoviz.analysis.utils import styling
 from seismoviz.analysis.utils import MapPlotter
+from seismoviz.analysis.utils import monkey_patch
 from seismoviz.analysis.utils import plot_utils as pu
 from seismoviz.analysis.utils import convert_to_geographical, convert_to_utm
 
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from seismoviz.components import Catalog, CrossSection, SubCatalog
+    from seismoviz.components import Catalog, CrossSection
 
 
 class GeoCatalog():
@@ -33,38 +34,40 @@ class GeoCatalog():
         self.mp = MapPlotter(projection, transform)
 
     def plot_map(
-        self,
-        color_by: str = None,
-        cmap: str = 'jet',
-        title: str = None,
-        hl_ms: int = None,
-        hl_size: float = 200,
-        hl_marker: str = '*',
-        hl_color: str = 'red',
-        hl_edgecolor: str = 'darkred',
-        size: float | str = 10,
-        size_scale_factor: tuple[int, int] = (1, 3),
-        color: str = 'grey',
-        edgecolor: str = 'black',
-        alpha: float = 0.75,
-        legend: str = None,
-        legend_loc: str = 'lower left',
-        size_legend: bool = False,
-        size_legend_loc: str = 'lower right',
-        terrain_style: str = 'satellite',
-        terrain_cmap: str = 'gray_r',
-        terrain_alpha: str = 0.35,
-        inset: bool = False,
-        xlim: tuple[float, float] = None,
-        ylim: tuple[float, float] = None,
-        inset_buffer: float = 3,
-        bounds_res: str = '50m',
-        bmap_res: int = 5,
-        projection=ccrs.Mercator(),
-        transform=ccrs.PlateCarree(),
-        save_figure: bool = False,
-        save_name: str = 'map',
-        save_extension: str = 'jpg'
+            self,
+            color_by: str = None,
+            cmap: str = 'jet',
+            title: str = None,
+            hl_ms: int = None,
+            hl_size: float = 200,
+            hl_marker: str = '*',
+            hl_color: str = 'red',
+            hl_edgecolor: str = 'darkred',
+            size: float | str = 10,
+            size_scale_factor: tuple[int, int] = (1, 3),
+            color: str = 'grey',
+            edgecolor: str = 'black',
+            alpha: float = 0.75,
+            legend: str = None,
+            legend_loc: str = 'lower left',
+            size_legend: bool = False,
+            size_legend_loc: str = 'lower right',
+            terrain_style: str = 'satellite',
+            terrain_cmap: str = 'gray_r',
+            terrain_alpha: str = 0.35,
+            inset: bool = False,
+            inset_size: tuple[float, float] = (1.8, 1.8),
+            inset_loc: str = 'upper right',
+            inset_buffer: float = 3,
+            xlim: tuple[float, float] = None,
+            ylim: tuple[float, float] = None,
+            bounds_res: str = '50m',
+            bmap_res: int = 5,
+            projection=ccrs.Mercator(),
+            transform=ccrs.PlateCarree(),
+            save_figure: bool = False,
+            save_name: str = 'map',
+            save_extension: str = 'jpg'
     ) -> None:
         """
         Visualizes seismic events on a geographical map.
@@ -172,6 +175,15 @@ class GeoCatalog():
             If ``True``, adds an inset map for broader geographic context. 
             Default is ``False``.
 
+        inset_loc : str, optional
+            The location of the inset within the main axis. Options include
+            ``'upper right'``, ``'upper left'``, ``'lower right'``,
+            ``'lower left'``, or ``'center'``. Default is ``'upper right'``.
+
+        inset_size : tuple[float, float], optional
+            The size of the inset in inches (width, height). Default is 
+            ``(1.8, 1.8)``.
+
         inset_buffer : float, optional
             Scaling factor for the area surrounding the selection shape 
             in the inset map. Default is 3.
@@ -200,6 +212,7 @@ class GeoCatalog():
         None
             A map with seismic events.
         """
+        
         self.mp.transform, self.mp.projection = transform, projection
 
         self.mp.fig, self.mp.ax = self.mp.create_base_map(
@@ -274,40 +287,53 @@ class GeoCatalog():
 
         if inset:
             self.mp.inset(
-                main_extent, buffer=inset_buffer, bounds_res=bounds_res
+                extent=main_extent,
+                loc=inset_loc,
+                size=inset_size,
+                buffer=inset_buffer, bounds_res=bounds_res
             )
+
+        #plt.sca(self.mp.ax)
+
+        # Make plot editable after the function is called
+        # orig_scatter = self.mp.ax.scatter
+
+        # def auto_transform_scatter(*args, **kwargs):
+        #     if "transform" not in kwargs:
+        #         kwargs["transform"] = self.mp.transform
+        #     return orig_scatter(*args, **kwargs)
+
+        # self.mp.ax.scatter = auto_transform_scatter
 
         if save_figure:
             pu.save_figure(save_name, save_extension)
 
-        plt.show()
-
     def plot_space_time(
-        self,
-        center: tuple[float, float],
-        strike: int,
-        color_by: str = None,
-        cmap: str = 'jet',
-        hl_ms: int = None,
-        hl_size: float = 200,
-        hl_marker: str = '*',
-        hl_color: str = 'red',
-        hl_edgecolor: str = 'darkred',
-        size: float | str = 10,
-        size_scale_factor: tuple[float, float] = (1, 2),
-        color: str = 'grey',
-        edgecolor: str = 'black',
-        alpha: float = 0.75,
-        xlim: tuple[str, str] = None,
-        ylim: tuple[float, float] = None,
-        legend: str = None,
-        legend_loc: str = 'lower right',
-        size_legend: bool = False,
-        size_legend_loc: str = 'upper right',
-        fig_size: tuple[float, float] = (10, 5),
-        save_figure: bool = False,
-        save_name: str = 'space_time',
-        save_extension: str = 'jpg'
+            self,
+            center: tuple[float, float],
+            strike: int,
+            color_by: str = None,
+            cmap: str = 'jet',
+            hl_ms: int = None,
+            hl_size: float = 200,
+            hl_marker: str = '*',
+            hl_color: str = 'red',
+            hl_edgecolor: str = 'darkred',
+            size: float | str = 10,
+            size_scale_factor: tuple[float, float] = (1, 2),
+            color: str = 'grey',
+            edgecolor: str = 'black',
+            alpha: float = 0.75,
+            xlim: tuple[str, str] = None,
+            ylim: tuple[float, float] = None,
+            legend: str = None,
+            legend_loc: str = 'lower right',
+            size_legend: bool = False,
+            size_legend_loc: str = 'upper right',
+            fig_size: tuple[float, float] = (10, 5),
+            save_figure: bool = False,
+            save_name: str = 'space_time',
+            save_extension: str = 'jpg'
     ) -> None:
         """
         Plots the space-time distribution of seismic events along a specified 
@@ -499,7 +525,6 @@ class GeoCatalog():
         if save_figure:
             pu.save_figure(save_name, save_extension)
 
-        plt.show()
         pu.reset_style()
 
     def plot_on_section(
@@ -524,7 +549,6 @@ class GeoCatalog():
             scale_legend: bool = True,
             scale_legend_loc: str  = 'lower right',
             ylabel: str = 'Depth [km]',
-            normalize: bool = True,
             save_figure: bool = False,
             save_name: str = 'on_section',
             save_extension: str = 'jpg'
@@ -729,9 +753,7 @@ class GeoCatalog():
         if save_figure:
             pu.save_figure(save_name, save_extension)
         
-        plt.show()
         pu.reset_style()
-
 
     def _get_distance_from_center(
         self,
@@ -1050,7 +1072,7 @@ class GeoSection():
             if save_figure:
                 pu.save_figure(f'{save_name}_{section}', save_extension)
 
-            plt.show()
+
             pu.reset_style()
 
     def plot_section_lines(
@@ -1085,9 +1107,11 @@ class GeoSection():
             terrain_cmap: str = 'gray_r',
             terrain_alpha: str = 0.35,
             inset: bool = False,
+            inset_size: tuple[float, float] = (1.8, 1.8),
+            inset_loc: str = 'upper right',
+            inset_buffer: float = 3,
             xlim: tuple[float, float] = None,
             ylim: tuple[float, float] = None,
-            inset_buffer: float = 3,
             bounds_res: str = '50m',
             bmap_res: int = 5,
             projection=ccrs.Mercator(),
@@ -1232,6 +1256,15 @@ class GeoSection():
             If ``True``, adds an inset map for broader geographic context. 
             Default is ``False``.
 
+        inset_loc : str, optional
+            The location of the inset within the main axis. Options include
+            ``'upper right'``, ``'upper left'``, ``'lower right'``,
+            ``'lower left'``, or ``'center'``. Default is ``'upper right'``.
+
+        inset_size : tuple[float, float], optional
+            The size of the inset in inches (width, height). Default is 
+            ``(1.8, 1.8)``.
+
         inset_buffer : float, optional
             Scaling factor for the area surrounding the selection shape 
             in the inset map. Default is 3.
@@ -1354,12 +1387,25 @@ class GeoSection():
                 )
 
         if inset:
-            self.mp.inset(main_extent, buffer=inset_buffer, bounds_res=bounds_res)
+            self.mp.inset(
+                extent=main_extent,
+                loc=inset_loc,
+                size=inset_size,
+                buffer=inset_buffer, bounds_res=bounds_res
+            )
+
+        orig_scatter = self.mp.ax.scatter
+
+        def auto_transform_scatter(*args, **kwargs):
+            if "transform" not in kwargs:
+                kwargs["transform"] = self.mp.transform
+            return orig_scatter(*args, **kwargs)
+
+        self.mp.ax.scatter = auto_transform_scatter
 
         if save_figure:
             pu.save_figure(save_name, save_extension)
 
-        plt.show()
 
     def _get_section_lines(self) -> list[tuple[list[float], list[float]]]:
         """
