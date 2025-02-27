@@ -293,18 +293,6 @@ class GeoCatalog():
                 buffer=inset_buffer, bounds_res=bounds_res
             )
 
-        #plt.sca(self.mp.ax)
-
-        # Make plot editable after the function is called
-        # orig_scatter = self.mp.ax.scatter
-
-        # def auto_transform_scatter(*args, **kwargs):
-        #     if "transform" not in kwargs:
-        #         kwargs["transform"] = self.mp.transform
-        #     return orig_scatter(*args, **kwargs)
-
-        # self.mp.ax.scatter = auto_transform_scatter
-
         if save_figure:
             pu.save_figure(save_name, save_extension)
 
@@ -1393,15 +1381,6 @@ class GeoSection():
                 size=inset_size,
                 buffer=inset_buffer, bounds_res=bounds_res
             )
-
-        orig_scatter = self.mp.ax.scatter
-
-        def auto_transform_scatter(*args, **kwargs):
-            if "transform" not in kwargs:
-                kwargs["transform"] = self.mp.transform
-            return orig_scatter(*args, **kwargs)
-
-        self.mp.ax.scatter = auto_transform_scatter
 
         if save_figure:
             pu.save_figure(save_name, save_extension)
