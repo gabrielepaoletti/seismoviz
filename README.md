@@ -128,7 +128,7 @@ SeismoViz allows you to interactively explore your seismic catalog, enabling you
 import seismoviz as sv
 
 # Initialize selector object to open the interactive GUI
-selector = sv.select_on_section(cross_section=cs)
+selector = sv.select(instance=cs)
 ```
 ![Interactive selection](docs/source/_images/interactive_selection.gif)
 
