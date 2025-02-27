@@ -1,8 +1,6 @@
-# monkey_patch_maps.py
 import cartopy.crs as ccrs
 from cartopy.mpl.geoaxes import GeoAxesSubplot
 
-# Scegli il default transform per le mappe (ad es. PlateCarree)
 DEFAULT_TRANSFORM = ccrs.PlateCarree()
 
 def auto_transform_scatter(self, *args, **kwargs):
@@ -20,7 +18,7 @@ def auto_transform_annotate(self, *args, **kwargs):
         kwargs["transform"] = DEFAULT_TRANSFORM
     return self._orig_annotate(*args, **kwargs)
 
-# Applica il patch solo se non già patchato
+# Apply the patch only if not already patched
 if not hasattr(GeoAxesSubplot, '_orig_scatter'):
     GeoAxesSubplot._orig_scatter = GeoAxesSubplot.scatter
     GeoAxesSubplot.scatter = auto_transform_scatter
