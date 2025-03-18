@@ -140,6 +140,7 @@ def select(
         x: str = None,
         y: str = None,
         custom: bool = False,
+        section_ids: list = None,
         **kwargs
     ):
     """
@@ -165,6 +166,11 @@ def select(
 
     custom : bool, optional
         Flag to indicate if a custom selection should be used. Defaults to ``False``.
+        
+    section_ids : int, list, optional
+        When the instance is a ``CrossSection``, this parameter allows specifying
+        which section(s) to display. Can be a single section ID (int) or a list of IDs.
+        If specified, only events from the selected section(s) will be displayed.
 
     **kwargs : dict, optional
         Additional keyword arguments for customizing the selection.
@@ -192,7 +198,7 @@ def select(
         return MapSelection(instance, **kwargs)
     
     elif isinstance(instance, CrossSection):
-        return CrossSectionSelection(instance, **kwargs)
+        return CrossSectionSelection(instance, section_ids=section_ids, **kwargs)
 
     else:
         raise ValueError('Unsupported type for instance.')

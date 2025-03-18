@@ -102,20 +102,31 @@ class CatalogSelector(BaseSelector):
 
 
 class CrossSectionSelector(BaseSelector):
-    def __init__(self, cross_section: object) -> None:
+    def __init__(self, cross_section: object, section_ids: list = None) -> None:
         self.cs = cross_section
+        self.section_ids = section_ids
         super().__init__()
 
     @property
     def data(self):
         """
-        Return the cross-section data.
+        Return the cross-section data, filtered by section_ids if specified.
 
         Returns
         -------
         pandas.DataFrame
             Seismic event data.
         """
+        if self.section_ids is not None:
+            # Convert single value to list for uniform handling
+            if not isinstance(self.section_ids, list):
+                ids = [self.section_ids]
+            else:
+                ids = self.section_ids
+                
+            # Filter data by section_id using pandas .loc method for multi-index
+            return self.cs.data.loc[ids]
+        
         return self.cs.data
 
     def _set_bounds(self, plot, element) -> None:
@@ -229,8 +240,8 @@ class CrossSectionSelection(SelectionWrapper):
     Provides an interactive interface for selecting seismic events on a
     cross-section.
     """
-    def __init__(self, cross_section, **kwargs) -> None:
-        super().__init__(CrossSectionSelector(cross_section), **kwargs)
+    def __init__(self, cross_section, section_ids=None, **kwargs) -> None:
+        super().__init__(CrossSectionSelector(cross_section, section_ids), **kwargs)
 
 
 class CustomSelection(SelectionWrapper):
