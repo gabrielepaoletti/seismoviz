@@ -1013,7 +1013,7 @@ class GeoSection():
                     y='depth',
                 )
 
-            ax.set_title(f'{title} {section + 1}', fontweight='bold')
+            ax.set_title(f'{title} {section}', fontweight='bold')
             ax.set_ylabel(ylabel)
             ax.xaxis.set_visible(False)
             ax.invert_yaxis()
