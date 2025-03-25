@@ -63,8 +63,8 @@ class GeoCatalog():
             ylim: tuple[float, float] = None,
             bounds_res: str = '50m',
             bmap_res: int = 5,
-            projection=ccrs.Mercator(),
-            transform=ccrs.PlateCarree(),
+            projection: ccrs.Projection = ccrs.Mercator(),
+            transform: ccrs.Projection = ccrs.PlateCarree(),
             save_figure: bool = False,
             save_name: str = 'map',
             save_extension: str = 'jpg'
@@ -1292,7 +1292,9 @@ class GeoSection():
             bmap_res=bmap_res
         )
 
-        plt_size = pu.process_size_parameter(size, self.cs.catalog.data, size_scale_factor)
+        plt_size = pu.process_size_parameter(
+            size, self.cs.catalog.data, size_scale_factor
+        )
 
         if color_by:
             self.mp.fig.set_figheight(10)
@@ -1311,8 +1313,14 @@ class GeoSection():
             )
         else:
             self.mp.scatter(
-                x=self.cs.catalog.data.lon, y=self.cs.catalog.data.lat, c=color, s=plt_size,
-                edgecolor=edgecolor, linewidth=0.25, alpha=alpha, label=legend
+                x=self.cs.catalog.data.lon,
+                y=self.cs.catalog.data.lat,
+                c=color,
+                s=plt_size,
+                edgecolor=edgecolor,
+                linewidth=0.25,
+                alpha=alpha,
+                label=legend
             )
 
         main_extent = self.mp.extent(self.cs.catalog.data, xlim=xlim, ylim=ylim)

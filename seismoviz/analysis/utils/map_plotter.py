@@ -227,8 +227,8 @@ class MapPlotter:
 
     def plot(
             self,
-            x: ArrayLike,
-            y: ArrayLike,
+            x: list,
+            y: list,
         **kwargs) -> list[plt.Line2D]:
         """
         Plots data on the map using matplotlib's plot method, applying 
