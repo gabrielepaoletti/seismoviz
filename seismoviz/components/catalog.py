@@ -79,6 +79,9 @@ class Catalog(GeospatialMixin, DunderMethodMixin):
     def interevent_time(self, **kwargs):
         self._analyzer.interevent_time(**kwargs)
 
+    def seismicity_rate(self, **kwargs):
+        self._analyzer.seismicity_rate(**kwargs)
+
     def cov(self, **kwargs):
         self._analyzer.cov(**kwargs)
 
