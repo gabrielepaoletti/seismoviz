@@ -7,8 +7,6 @@ from seismoviz.analysis import Analyzer, GeoAnalyzer
 from seismoviz.internal.decorators import sync_methods
 from seismoviz.internal.mixins import DunderMethodMixin, GeospatialMixin
 
-from numpy.typing import ArrayLike
-
 
 @sync_methods([Analyzer, GeoAnalyzer])
 class CrossSection(GeospatialMixin, DunderMethodMixin):
@@ -123,6 +121,9 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
 
     def interevent_time(self, **kwargs):
         self._analyzer.interevent_time(**kwargs)
+    
+    def seismicity_rate(self, **kwargs):
+        self._analyzer.seismicity_rate(**kwargs)
 
     def cov(self, **kwargs):
         self._analyzer.cov(**kwargs)
@@ -132,8 +133,8 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
             x: float, 
             y: float, 
             z: float, 
-            normal: ArrayLike, 
-            origin: ArrayLike
+            normal: list[float], 
+            origin: list[float]
     ) -> float:
         """
         Calculate the perpendicular distance of a point (x, y, z) from 
@@ -150,7 +151,7 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
             center_y: float, 
             section_centers: float, 
             strike: float
-    ) -> tuple[ArrayLike, ArrayLike]:
+    ) -> tuple[list[float], list[float]]:
         """
         Calculate the positions of section centers based on a reference 
         point and strike angle.
