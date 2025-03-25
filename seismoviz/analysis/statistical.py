@@ -98,11 +98,114 @@ class StatisticalAnalysis:
 
         pu.reset_style()
 
-    def seismicity_rate(self, unit: str = '1D', **kwargs) -> None:
-        """
-        Calculates the seismicity rate for the instance.
-        """
-        raise NotImplementedError("seismicity_rate method is not yet implemented.")
+    def seismicity_rate(
+                self,
+                unit: str = '1D',
+                fig_size: tuple[float, float] = (10, 5),
+                color: str = 'grey',
+                ms_line: float = None,
+                ms_line_color: str = 'red',
+                ms_line_width: float = 1.5,
+                ms_line_style: str = '-',
+                ms_line_gradient: bool = True,
+                save_figure: bool = False,
+                save_name: str = 'seismicity_rate',
+                save_extension: str = 'jpg',
+                **kwargs
+        ) -> None:
+            """
+            Calculates and plots the seismicity rate as a histogram showing the 
+            frequency of events over time.
+
+            Parameters
+            ----------
+            unit : str, optional
+                Time unit for grouping events. Accepts pandas time frequency strings
+                such as '1D' (daily), '1H' (hourly), '1W' (weekly), etc. Default is '1D'.
+
+            fig_size : tuple[float, float], optional
+                Figure size for the plot. Default is ``(10, 5)``.
+
+            color : str, optional
+                Color of the histogram bars. Default is ``'steelblue'``.
+
+
+            ms_line : float, optional
+                The magnitude threshold above which vertical lines will be added to 
+                the plot. If ``None``, no vertical lines are added. Default is ``None``.
+
+            ms_line_color : str, optional
+                The color of the vertical lines. Accepts any Matplotlib-compatible 
+                color string. Default is ``'red'``.
+
+            ms_line_width : float, optional
+                The thickness of the vertical lines. Default is 1.5.
+
+            ms_line_style : str, optional
+                The style of the vertical lines. Default is ``'-'``.
+
+            ms_line_gradient : bool, optional
+                If ``True``, the vertical lines will have a gradient effect, fading 
+                from the specified color to transparent along the y-axis. If ``False``, 
+                the lines will be solid. Default is ``True``.
+
+            save_figure : bool, optional
+                If ``True``, saves the plot to a file. Default is ``False``.
+
+            save_name : str, optional
+                Base name for the file if `save_figure` is ``True``. Default is
+                ``'seismicity_rate'``.
+
+            save_extension : str, optional
+                File format for the saved figure (e.g., ``'jpg'``, ``'png'``). Default
+                is ``'jpg'``.
+
+            Returns
+            -------
+            None
+                A seismicity rate histogram plot.
+            """
+            pu.set_style(styling.DEFAULT)
+
+            self._instance.sort(by='time', ascending=True)
+            
+            events_count = self._instance.data.set_index('time')
+            events_count = events_count.index.to_series().resample(unit).count()
+            
+            fig, ax = plt.subplots(figsize=fig_size)
+            
+            ax.bar(
+                events_count.index,
+                events_count.values,
+                width=pd.Timedelta(unit).total_seconds() / 86400,
+                color=color,
+                **kwargs
+            )
+            
+            ax.set_title('Seismicity Rate', fontweight='bold')
+            ax.set_ylabel('Number of events')
+            ax.set_xlabel('Time')
+            
+            pu.format_x_axis_time(ax)
+            
+            pu.add_vertical_lines(
+                ax=ax,
+                data=self._instance.data,
+                ms_line=ms_line,
+                color=ms_line_color,
+                linewidth=ms_line_width,
+                linestyle=ms_line_style,
+                gradient=ms_line_gradient
+            )
+            
+            ax.grid(True, axis='y', linestyle=':', alpha=0.25)
+            
+            plt.tight_layout()
+            
+            if save_figure:
+                pu.save_figure(save_name, save_extension)
+            
+            pu.reset_style()
 
     def interevent_time(self, unit='sec', plot: bool = True, **kwargs) -> None:
         """
