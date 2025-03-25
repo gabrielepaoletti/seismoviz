@@ -39,5 +39,6 @@ Statistical analysis methods
 ----------------------------
 
 .. automethod:: seismoviz.components.cross_section.CrossSection.event_timeline
+.. automethod:: seismoviz.components.cross_section.CrossSection.seismicity_rate
 .. automethod:: seismoviz.components.cross_section.CrossSection.interevent_time
 .. automethod:: seismoviz.components.cross_section.CrossSection.cov

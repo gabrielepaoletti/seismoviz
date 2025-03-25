@@ -39,5 +39,6 @@ Statistical analysis methods
 ----------------------------
 
 .. automethod:: seismoviz.components.catalog.Catalog.event_timeline
+.. automethod:: seismoviz.components.catalog.Catalog.seismicity_rate
 .. automethod:: seismoviz.components.catalog.Catalog.interevent_time
 .. automethod:: seismoviz.components.catalog.Catalog.cov
