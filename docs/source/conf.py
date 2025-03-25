@@ -18,7 +18,7 @@ sys.path.insert(0, os.path.abspath('../../'))
 # -- Project information -----------------------------------------------------
 
 project = 'seismoviz'
-copyright = '2024, Gabriele Paoletti'
+copyright = '2025, Gabriele Paoletti'
 author = 'Gabriele Paoletti'
 
 # The full version, including alpha/beta/rc tags
