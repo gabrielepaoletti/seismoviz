@@ -8,17 +8,19 @@ from seismoviz.internal.selector import (
 )
 
 
-def read_catalog(path: str, **kwargs) -> Catalog:
+def read_catalog(source: str | pd.DataFrame, **kwargs) -> Catalog:
     """
-    Reads a CSV file and returns a ``Catalog`` object.
+    Creates a ``Catalog`` object from either a CSV file path or a pandas DataFrame.
 
     Parameters
     ----------
-    path : str
-        The path to the CSV file containing the seismic catalog.
+    source : str or pd.DataFrame
+        Either a path to a CSV file containing the seismic catalog or
+        a pandas DataFrame with the catalog data already loaded.
 
     **kwargs
-        Additional keyword arguments to pass to ``pandas.read_csv()``.
+        Additional keyword arguments to pass to ``pandas.read_csv()``
+        when source is a file path.
     
     Returns
     -------
@@ -28,32 +30,34 @@ def read_catalog(path: str, **kwargs) -> Catalog:
     Examples
     --------
 
-    Basic usage:
+    From a CSV file:
     
     .. code-block:: python
 
-        # Reading a catalog with default settings
+        # Reading a catalog from a CSV file
         catalog = sv.read_catalog(
-            path='seismic_data.csv'
+            source='seismic_data.csv'
         )
-
-    For a more customized behavior, you can pass ``pd.read_csv()`` arguments:
-
+    
+    From a DataFrame:
+    
     .. code-block:: python
 
-        # Reading a catalog with a custom delimiter and selected columns
-        catalog = sv.read_catalog(
-            path='seismic_data.csv', 
-            delimiter=';', 
-            usecols=['id', 'lon', 'lat', 'depth', 'time', 'mag']
-        )
+        # Creating a catalog from an existing DataFrame
+        catalog = sv.read_catalog(source=df)
     
     .. warning::
-        The input CSV file must contain the following columns: 
+        The input must contain the following columns: 
         ``lon``, ``lat``, ``time``, ``depth``, ``mag``, and ``id``.
         If any of these columns are missing, an error will be raised.
     """
-    data = pd.read_csv(path, parse_dates=['time'], **kwargs)
+    if isinstance(source, str):
+        data = pd.read_csv(source, parse_dates=['time'], **kwargs)
+    elif isinstance(source, pd.DataFrame):
+        data = source
+    else:
+        raise TypeError('`source` must be either a string path or a pandas DataFrame')
+    
     return Catalog(data)
 
 

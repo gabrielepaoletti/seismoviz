@@ -4,7 +4,6 @@ import matplotlib.pyplot as plt
 
 from seismoviz.analysis.utils import styling
 from seismoviz.analysis.utils import plot_utils as pu
-from numpy.typing import ArrayLike
 
 
 class Mc:
@@ -15,7 +14,7 @@ class Mc:
     def __init__(self, ma_instance: "MagnitudeAnalysis"):
         self._ma = ma_instance
 
-    def maxc(self, bin_size: float, mags: ArrayLike = None) -> float:
+    def maxc(self, bin_size: float, mags: list[float] = None) -> float:
         """
         Calculate the magnitude of completeness (Mc) using the MAXC method.
         """
@@ -35,7 +34,7 @@ class Mc:
     def gft(
             self,
             bin_size: float,
-            mags: ArrayLike = None,
+            mags: list[float] = None,
             gft_plot: bool = False,
             **kwargs
     ) -> float:
@@ -116,7 +115,7 @@ class Mc:
             bin_size: float,
             delta_magnitude: float = 0.4,
             min_completeness: float = -3,
-            mags: ArrayLike = None,
+            mags: list[float] = None,
             mbs_plot: bool = False,
             uncertainty_method: str = 'shi_bolt',
             **kwargs
@@ -215,10 +214,10 @@ class Mc:
     def _plot_gft(
             self,
             mc: float,
-            bins: ArrayLike,
-            R_values: ArrayLike,
+            bins: list[float],
+            R_values: list[float],
             bin_size: float,
-            mags: ArrayLike = None,
+            mags: list[float] = None,
             save_figure: bool = False,
             save_name: str = 'gft',
             save_extension: str = 'jpg',
@@ -278,12 +277,12 @@ class Mc:
     def _plot_mbs(
             self,
             mc: float,
-            bins: ArrayLike,
-            individual_b_values: ArrayLike,
-            rolling_avg_b_values: ArrayLike,
-            uncertainty_values: ArrayLike,
+            bins: list[float],
+            individual_b_values: list[float],
+            rolling_avg_b_values: list[float],
+            uncertainty_values: list[float],
             bin_size: float,
-            mags: ArrayLike = None,
+            mags: list[float] = None,
             save_figure: bool = False,
             save_name: str = 'mbs',
             save_extension: str = 'jpg',
@@ -550,9 +549,9 @@ class MagnitudeAnalysis:
             bin_size: float,
             plot: bool = True,
             return_values: bool = False,
-            mags: ArrayLike = None,
+            mags: list[float] = None,
             **kwargs
-    ) -> tuple[ArrayLike, ArrayLike, ArrayLike]:
+    ) -> tuple[list[float], list[float], list[float]]:
         """
         Calculate the frequency-magnitude distribution (FMD) for seismic events.
 
@@ -567,7 +566,7 @@ class MagnitudeAnalysis:
         return_values : bool, optional
             If ``True``, return the computed values (default is ``False``).
 
-        mags : ArrayLike, optional
+        mags : list[float], optional
             Array of magnitudes to use (default is ``None``).
 
         save_figure : bool, optional
@@ -581,7 +580,7 @@ class MagnitudeAnalysis:
 
         Returns
         -------
-        tuple of ArrayLike
+        tuple of list[float]
             A tuple containing:
                 - bins: The centers of the magnitude bins.
                 - events_per_bin: The number of events per bin.
@@ -934,7 +933,7 @@ class MagnitudeAnalysis:
             bin_size: float,
             method: str,
             plot_mc: bool = False,
-            mags: ArrayLike = None
+            mags: list[float] = None
     ) -> float:
         """
         Estimate the catalog's magnitude of completeness (Mc) using the selected 
@@ -953,7 +952,7 @@ class MagnitudeAnalysis:
             self,
             bin_size: float,
             mc: float,
-            mags: ArrayLike = None,
+            mags: list[float] = None,
             plot: bool = True,
             return_values: bool = False,
             uncertainty_method: str = 'shi_bolt',
@@ -1028,9 +1027,9 @@ class MagnitudeAnalysis:
 
     def _plot_fmd(
             self,
-            bins: ArrayLike,
-            events_per_bin: ArrayLike,
-            cumulative_events: ArrayLike,
+            bins: list[float],
+            events_per_bin: list[float],
+            cumulative_events: list[float],
             bin_size: float,
             save_figure: bool = False,
             save_name: str = 'fmd',
@@ -1076,9 +1075,9 @@ class MagnitudeAnalysis:
 
     def _plot_b_value(
             self,
-            bins: ArrayLike,
-            events_per_bin: ArrayLike,
-            cumulative_events: ArrayLike,
+            bins: list[float],
+            events_per_bin: list[float],
+            cumulative_events: list[float],
             bin_size: float,
             mc: float,
             a_value: float,
@@ -1180,9 +1179,9 @@ class MagnitudeAnalysis:
 
     def _plot_b_value_over_time(
             self,
-            times: ArrayLike,
-            b_values: ArrayLike,
-            uncertainty_values: ArrayLike,
+            times: list[float],
+            b_values: list[float],
+            uncertainty_values: list[float],
             uncertainty_method: str = 'shi_bolt',
             ms_line: float = None,
             ms_line_color: str = 'red',
