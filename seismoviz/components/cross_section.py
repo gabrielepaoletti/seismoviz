@@ -47,7 +47,8 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
         include in the cross-section.
 
     section_distance : float, optional
-        The distance (in km) between adjacent sections. Default is 1.
+        The distance (in km) between adjacent sections. Must be greater
+        than 0. Default is 1.
 
     Raises
     ------
@@ -59,11 +60,11 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
             data: Catalog, 
             center: tuple[float, float], 
             num_sections: tuple[int, int], 
-            tickness: int, 
+            thickness: int,
             strike: int,
             map_length: int, 
             depth_range: tuple[float, float], 
-            section_distance: int = 0
+            section_distance: float = 1.0
     ) -> None:
         if isinstance(data, Catalog):
             self.catalog = data
@@ -75,10 +76,13 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
 
         self.center = center
         self.num_sections = num_sections
-        self.tickness = tickness
+        self.thickness = thickness
         self.strike = strike
         self.map_length = map_length
         self.depth_range = depth_range
+
+        if section_distance <= 0:
+            raise ValueError('section_distance must be greater than 0.')
         self.section_distance = section_distance
         self.data = self._cross_section()
 
@@ -211,7 +215,7 @@ class CrossSection(GeospatialMixin, DunderMethodMixin):
             )
 
             close_and_in_depth = np.where(
-                (dist < self.tickness) & in_depth_range & 
+                (dist < self.thickness) & in_depth_range &
                 (np.abs(on_section_coords) < self.map_length / 2)
             )
 
