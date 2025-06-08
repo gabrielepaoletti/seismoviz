@@ -45,8 +45,8 @@ class StatisticalAnalysis:
             The style of the vertical lines. Default is ``'-'``.
 
         ms_line_gradient : bool, optional
-            If ``True``, the vertical lines will have a gradient effect, fading 
-            from the pecified color to transparent along the y-axis. If ``False``, 
+            If ``True``, the vertical lines will have a gradient effect, fading
+            from the specified color to transparent along the y-axis. If ``False``,
             the lines will be solid. Default is ``True``.
 
         fig_size : tuple[float, float], optional
