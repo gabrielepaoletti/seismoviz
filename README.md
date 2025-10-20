@@ -19,7 +19,7 @@ import pandas as pd
 import seismoviz as sv
 
 # Read the catalog from a file
-catalog = sv.read_catalog(path='global_seismic_catalog.csv')
+catalog = sv.read_catalog(source='global_seismic_catalog.csv')
 
 # Remove duplicates
 catalog.deduplicate_events()
