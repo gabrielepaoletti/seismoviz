@@ -96,7 +96,7 @@ SeismoViz simplifies seismic data analysis with built-in tools for exploring cat
 import seismoviz as sv
 
 # Read the catalog from a file
-catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+catalog = sv.read_catalog(source='local_seismic_catalog.csv')
 
 # Plot magnitude-time distribution
 catalog.magnitude_time(
@@ -111,7 +111,7 @@ catalog.magnitude_time(
 import seismoviz as sv
 
 # Read the catalog from a file
-catalog = sv.read_catalog(path='local_seismic_catalog.csv')
+catalog = sv.read_catalog(source='local_seismic_catalog.csv')
 
 # Estimate b-value and plot it
 catalog.b_value(
