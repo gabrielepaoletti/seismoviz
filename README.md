@@ -45,7 +45,7 @@ SeismoViz provides tools to quickly create clear and publication-ready visualiza
 import seismoviz as sv
 
 # Read the catalog from a file
-catalog = sv.read_catalog(path='global_seismic_catalog.csv')
+catalog = sv.read_catalog(source='global_seismic_catalog.csv')
 
 # Create a map showing earthquake locations
 catalog.plot_map(
